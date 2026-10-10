@@ -73,6 +73,14 @@ SAVINGS_CASES = [
     ("It saves 5% on bills.", False),  # weight-like number, no fact
     ("That would save £400 a year on bills.", False),  # no £ bill figure exists
     ("Carbon falls by 1.9 t CO2e/year.", True),
+    # live demo-laptop reply: an electricity carbon INCREASE folded into a "save" sentence (must fail)
+    (
+        "You can expect to save 1.9 tonnes of CO2e annually, with 160 kg CO2e from electricity and "
+        "2,030 kg CO2e from gas.",
+        False,
+    ),
+    ("Carbon falls by 1.9 t CO2e/year overall, although electricity adds 160 kg CO2e.", True),
+    ("Gas carbon drops by 2,030 kg CO2e. Electricity carbon goes up by 160 kg CO2e.", True),
     ("Carbon falls by 1,870 kg.", True),
     ("Carbon falls by 2.5 t CO2e/year.", False),
     ("Payback in 7 years.", False),  # small int + time unit

@@ -124,6 +124,7 @@ _INCREASE_CUE = re.compile(
     r"adds?|adding|more electricity|more gas)\b",
     re.IGNORECASE,
 )
+_SENTENCE_SPLIT = re.compile(r"[.!?](?=\s|$)|\n")  # not "3.5"
 _CLAUSE_SPLIT = re.compile(
     r"[.;!?](?=\s|$)|\n|,\s*(?:but|while|whereas|although)\b", re.IGNORECASE
 )  # not "3.5"
@@ -287,7 +288,12 @@ def _direction_ok(text: str, span: tuple[int, int]) -> bool:
 
     cues = [c for c in (nearest(before, True), nearest(after, False)) if c]
     if not cues:
-        return True
+        # No cue nearby: fine when copied bare, but not inside a sentence that frames everything as a saving
+        # ("save 2.0 tonnes … with 200 kg from electricity" turns an electricity increase into a saving).
+        s0 = max([0] + [m.end() for m in _SENTENCE_SPLIT.finditer(text) if m.end() <= span[0]])
+        ends2 = [m.start() for m in _SENTENCE_SPLIT.finditer(text) if m.start() >= span[1]]
+        sentence = text[s0 : (min(ends2) if ends2 else len(text))]
+        return not (_SAVING_CUE.search(sentence) and not _INCREASE_CUE.search(sentence))
     kind = min(cues, key=lambda c: int(c.split(":")[1])).split(":")[0]
     return kind == "up"
 
