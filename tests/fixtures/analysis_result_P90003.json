@@ -325,8 +325,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 500.0,
-      "cost_high_gbp": 1500.0,
+      "cost_low_gbp": 400.0,
+      "cost_high_gbp": 1000.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -341,8 +341,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 1000.0,
-      "cost_high_gbp": 3000.0,
+      "cost_low_gbp": 1800.0,
+      "cost_high_gbp": 4600.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -358,7 +358,7 @@
       "incremental_saving": null,
       "standalone_carbon_kg": null,
       "cost_low_gbp": 8000.0,
-      "cost_high_gbp": 15000.0,
+      "cost_high_gbp": 22000.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -377,8 +377,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 4000.0,
-      "cost_high_gbp": 9000.0,
+      "cost_low_gbp": 5000.0,
+      "cost_high_gbp": 10000.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -399,7 +399,7 @@
       "incremental_saving": null,
       "standalone_carbon_kg": null,
       "cost_low_gbp": 150.0,
-      "cost_high_gbp": 400.0,
+      "cost_high_gbp": 350.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -439,8 +439,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 5000.0,
-      "cost_high_gbp": 8000.0,
+      "cost_low_gbp": 5500.0,
+      "cost_high_gbp": 8500.0,
       "assessor_likelihood": 0.5
     }
   ],

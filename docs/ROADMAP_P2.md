@@ -46,8 +46,11 @@ workstream lands the body). The one in-phase dependency: B's `insulation_sub_sco
 - [x] CR-1 … CR-8 implemented (see Decisions); tests in `test_diff.py`, `test_format.py`, `test_orchestrator.py`
 
 ### Phase 4 — Hand-off (when teammates deliver)
-- [ ] T4.1 P1 replaces `TODO_SOURCE` values; P1 writes `config/generated/*` → rerun tests + fixtures
-- [ ] T4.2 P3 ships `greenhome/ml/registry.py::load_models()` → set `models: real` in `global.yaml`
+- [x] T4.1 P1's sourced `retrofit_catalogue`, `emission_factors`, `regions`, `intensity_bounds` adopted verbatim
+  (still placeholder: `imputation.yaml`, `engine.yaml: peers_fallback`)
+- [ ] T4.2 P3 ships `greenhome/ml/registry.py::load_models(models_dir: Path) -> Models` (container in
+  `ml/protocols.py`) → set `models: real` in `global.yaml`. P5's `/v1/health` reads `engine.cfg.global_.models`
+  and `engine.models.versions()`: do not rename.
 - [ ] T4.3 P3 tunes `score.yaml: suitability` thresholds on val (D13)
 - [ ] T4.4 P5 passes `CustomerContext` from memory (D14)
 
@@ -190,5 +193,15 @@ class Engine:
   `analysis_id` includes ctx (CR-5); engine applies every `CustomerContext` rule incl. `priority` →
   `score.yaml: suitability.priority_weights` (CR-6, budget uses net mid cost, not `cost_high`);
   `format.py` CR-8 names, "—" for unknown, `/year` units, `fmt_delta` (CR-8).
+- P1 config compatibility: P1-generated files load with `extra="ignore"` (their extra keys are documentation);
+  P2-owned files stay `extra="forbid"`. Catalogue `applies_to` (alias of README's `applies_to_end_use`);
+  `state_field` derived from a fixed retrofit → field map when absent; national `hdd_factor` = 1.0 by
+  definition, national PV yield/profile = regional mean; region share tolerance 1e-3 (P1 writes 5 dp).
+- Retrofit costs are flat indicative ranges (P1: "typical semi"); `cost_scales_with_floor_area` is not applied
+  because no reference floor area is defined.
+- Stub solar = kWp(type) × regional PV yield × mid self-consumption, capped at grid import (P1 catalogue gives
+  kWp, not a fractional effect).
+- `tests/conftest.py` puts its own directory on `sys.path`, so `from conftest import …` works whether or not
+  `tests/` has an `__init__.py`.
 - In every result, `rank` and `incremental_saving` describe the reported package (recommended, custom or
   none), so incremental savings always sum to `savings.saving` (IT3).

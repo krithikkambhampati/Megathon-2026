@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from greenhome.contracts import FEATURE_FIELDS, AnnualEnergy, CleanHome, HomeInput
+
+# Keep `from conftest import …` working even if tests/ becomes a package (tests/__init__.py).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # The PS example home (README P1.10, P2.4 worked example).
 P10001: dict[str, Any] = {

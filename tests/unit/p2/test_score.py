@@ -109,11 +109,8 @@ def test_p10001_golden_example():
     assert intensity_comp.inputs["i_best"] == b.i_best and intensity_comp.inputs["i_worst"] == b.i_worst
     assert r.components[0].inputs == {"energy_rating": "E"}
     assert r.method_version == CFG.score.method_version
-    if (b.i_best, b.i_worst) == (50, 300):  # README worked example uses the placeholder bounds
-        assert subs[1] == pytest.approx(40.94, abs=0.01)
-        assert r.score_raw == pytest.approx(36.088, abs=1e-3)
-        assert (r.score, r.score_class) == (36, "poor")
-        assert r.score_range == (36, 36)
+    assert (r.score, r.score_class) == classify(r.score_raw)
+    assert r.score_range == (r.score, r.score)  # every input is user-given
 
 
 def test_dwelling_above_excludes_roof():

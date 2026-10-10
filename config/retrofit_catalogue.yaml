@@ -1,76 +1,124 @@
-# Retrofit catalogue [P1 fills values with sources; P2 owns schema — see greenhome/config.py:RetrofitSpec].
-# TODO_SOURCE (P1): every number below is a placeholder until replaced with a cited value (README D3).
-# effect_range_frac: fraction of the end-use demand removed, keyed by the starting value of `state_field`
-#   ("default" applies to any starting value). Insulation/glazing/controls act on space-heating DEMAND.
+# Retrofit catalogue (Part 1 authors the values; Part 2 owns the schema; README section 7.4).
+# This catalogue takes precedence over the PS2 illustrative table, as PS2 section 4 allows.
+#
+# Field meanings
+#   stage              ordering stage: fabric -> glazing -> controls -> heating -> generation
+#   applies_to         which end use the effect acts on in the simulator (Part 1 physics.py)
+#   effect_range_frac  [low, high] fractional REDUCTION of that end use, keyed by the home's
+#                      STARTING state; a per-home draw within the range is a hidden simulator factor
+#   cost_gbp           indicative installed cost range for a typical semi-detached home (scaled by
+#                      floor area in the engine where noted), before grants
+#   observed_need      gas saving actually observed in NEED for real installs (performance-gap check)
+#   source_status      verified = read from an official source; secondary = official figure quoted by
+#                      a secondary source; engineering = our documented engineering assumption
+#
+# Sources (accessed 2026-10-10):
+#   PS2   Lloyds Megathon PS2 brief, section 4 illustrative impacts
+#   EST   Energy Saving Trust advice pages (figures quoted via MoneySuperMarket/ExpertSure/E.ON Next 2025-26)
+#   NEED15 DECC NEED summary of analysis 2015 (observed gas savings, 2011/2012 installs)
+#   NEED21 BEIS NEED report 2021 (persistence of savings)
+#   EoH   Energy Systems Catapult, Electrification of Heat demonstration project (median ASHP SPF 2.80)
+#   BUS   Boiler Upgrade Scheme (Ofgem/DESNZ): GBP 7,500 ASHP grant, England & Wales
+#   DESNZ_PV  DESNZ solar PV cost data 2024/25 (median 4 kWp domestic system ~GBP 7,500)
+
 - retrofit: loft_insulation
   stage: fabric
-  applies_to_end_use: space_heating
-  state_field: roof_insulation
-  effect_range_frac: {none: [0.15, 0.20], low: [0.10, 0.15], medium: [0.03, 0.06]}
-  cost_gbp: [500, 1500]
+  applies_to: space_heating
+  effect_range_frac: {none: [0.15, 0.20], low: [0.08, 0.12], medium: [0.02, 0.05]}
+  cost_gbp: [400, 1000]
+  cost_scales_with_floor_area: true
   lifetime_years: 40
   prerequisites: []
   soft_after: []
-  source: "TODO_SOURCE Energy Saving Trust; PS2 illustrative 12–18%"
-  notes: "Effect is on space-heating DEMAND, so it reduces the heating fuel"
+  observed_need: {gas_saving_frac: [0.026, 0.028], source: "NEED15"}
+  source: "PS2 (12-18% of space-heating demand, overall); EST via secondary (semi ~GBP 825-930 for 270mm; top-ups GBP 400-900)"
+  source_status: secondary
+  notes: "Starting-state ranges bracket the PS2 12-18% figure: none->full gets the upper end, top-ups much less."
+
 - retrofit: cavity_wall_insulation
   stage: fabric
-  applies_to_end_use: space_heating
-  state_field: wall_insulation
-  effect_range_frac: {none: [0.15, 0.25], partial: [0.05, 0.10]}
-  cost_gbp: [1000, 3000]
+  applies_to: space_heating
+  effect_range_frac: {none: [0.15, 0.25], partial: [0.06, 0.10]}
+  cost_gbp: [1800, 4600]
+  cost_scales_with_floor_area: true
   lifetime_years: 40
   prerequisites: []
   soft_after: []
-  source: "TODO_SOURCE"
+  observed_need: {gas_saving_frac: [0.084, 0.092], source: "NEED15; 10.5% in Hamilton et al. 2016, Energy Efficiency, doi:10.1007/s12053-015-9418-3"}
+  source: "EST via secondary (semi ~GBP 2,700, detached ~GBP 4,600); engineering range for unfilled cavity"
+  source_status: secondary
+
 - retrofit: solid_wall_insulation
   stage: fabric
-  applies_to_end_use: space_heating
-  state_field: wall_insulation
-  effect_range_frac: {none: [0.15, 0.25], partial: [0.05, 0.10]}
-  cost_gbp: [8000, 15000]
-  lifetime_years: 30
+  applies_to: space_heating
+  effect_range_frac: {none: [0.20, 0.30], partial: [0.08, 0.12]}
+  cost_gbp: [8000, 22000]
+  cost_scales_with_floor_area: true
+  lifetime_years: 36
   prerequisites: []
   soft_after: []
-  source: "TODO_SOURCE"
+  observed_need: null
+  source: "engineering assumption (solid walls lose more heat than cavity walls); cost range internal-external, to verify"
+  source_status: engineering
+  notes: "Internal insulation only for listed/conservation homes (feasibility rule, Part 2)."
+
 - retrofit: double_glazing
   stage: glazing
-  applies_to_end_use: space_heating
-  state_field: glazing
-  effect_range_frac: {single: [0.10, 0.15], partial_double: [0.04, 0.08], secondary: [0.02, 0.05]}
-  cost_gbp: [4000, 9000]
+  applies_to: space_heating
+  effect_range_frac: {single: [0.08, 0.12], partial_double: [0.03, 0.06], secondary: [0.02, 0.04]}
+  cost_gbp: [5000, 10000]
+  cost_scales_with_floor_area: true
   lifetime_years: 25
   prerequisites: []
   soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation]
-  source: "TODO_SOURCE"
+  observed_need: null
+  source: "PS2 (8-12% of space-heating demand); cost range to verify"
+  source_status: engineering
+
 - retrofit: smart_thermostat
   stage: controls
-  applies_to_end_use: space_heating
-  state_field: smart_controls
-  effect_range_frac: {default: [0.05, 0.10]}
-  cost_gbp: [150, 400]
-  lifetime_years: 10
+  applies_to: space_heating
+  effect_range_frac: {none: [0.08, 0.10], timer_only: [0.06, 0.09], programmer_thermostat: [0.05, 0.07],
+                      programmer_thermostat_trvs: [0.03, 0.05]}
+  cost_gbp: [150, 350]
+  cost_scales_with_floor_area: false
+  lifetime_years: 12
   prerequisites: []
   soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation, double_glazing]
-  source: "TODO_SOURCE"
+  observed_need: null
+  source: "PS2 (5-10% of heating energy use); starting-state scaling is our assumption"
+  source_status: engineering
+
 - retrofit: air_source_heat_pump
   stage: heating
-  applies_to_end_use: space_and_water_heating
-  scop_range: [2.4, 3.4]             # lower end applies to poor fabric (high flow temps)
+  applies_to: heat_supply          # replaces the heating appliance; moves space heat + hot water to electricity
+  scop_range: [2.4, 3.2]           # EoH median SPF 2.80 (cold-day median 2.44); lower end for poor fabric
+  scop_poor_fabric_penalty: 0.3    # subtracted when insulation sub-score < 50 (high flow temperatures)
   cost_gbp: [8000, 14000]
-  grant_gbp: 7500                    # Boiler Upgrade Scheme (England & Wales), verify at event
+  grant_gbp: 7500                  # BUS standard rate (temporary GBP 9,000 for some off-gas homes from 21 Jul 2026)
+  cost_scales_with_floor_area: true
   lifetime_years: 20
   prerequisites: [{insulation_sub_score_min: 50, or_in_package_any: [loft_insulation, cavity_wall_insulation, solid_wall_insulation]}]
   soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation, double_glazing, smart_thermostat]
-  source: "TODO_SOURCE UK Electrification of Heat demonstration project; Energy Saving Trust"
-  notes: "Physics-based saving is larger than the PS's illustrative 15–25% (README §2.2)"
+  observed_need: null
+  source: "EoH (median ASHP SPF 2.80); BUS grant GBP 7,500; cost range to verify"
+  source_status: secondary
+  notes: >
+    PS2's illustrative 15-25% purchased-energy reduction is far below physics: replacing a 75-88% efficient
+    gas boiler with an SCOP ~2.8 heat pump cuts purchased heating kWh by ~70%. We model physics and
+    document the deviation (README section 2.2). Electricity use RISES while gas falls; cooking gas remains.
+
 - retrofit: solar_pv
   stage: generation
-  applies_to_end_use: electricity_import
-  state_field: renewables
-  effect_range_frac: {default: [0.20, 0.35]}
-  cost_gbp: [5000, 8000]
+  applies_to: grid_import          # reduces grid imports via self-consumption, not underlying demand
+  kwp_by_property_type: {detached: 4.0, semi_detached: 3.5, terraced: 3.0, bungalow: 3.5}
+  self_consumption_frac_range: [0.30, 0.50]
+  self_consumption_bonus_with_heat_pump: 0.05
+  cost_gbp: [5500, 8500]
+  cost_scales_with_floor_area: false
   lifetime_years: 25
   prerequisites: []
   soft_after: [air_source_heat_pump]
-  source: "TODO_SOURCE"
+  observed_need: null
+  source: "PS2 (20-35% grid-import reduction); DESNZ_PV median 4 kWp ~GBP 7,500; yield from PVGIS per region (config/regions.yaml)"
+  source_status: secondary

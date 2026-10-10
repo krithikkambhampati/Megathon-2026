@@ -96,12 +96,12 @@
   },
   "score": {
     "status": "ok",
-    "score": 61,
-    "score_raw": 60.56666666666666,
+    "score": 63,
+    "score_raw": 63.270114942528735,
     "score_class": "moderate",
     "score_range": [
-      61,
-      61
+      63,
+      63
     ],
     "components": [
       {
@@ -118,14 +118,14 @@
       {
         "key": "consumption_intensity",
         "weight": 0.2,
-        "sub_score": 85.33333333333333,
-        "contribution": 17.066666666666666,
+        "sub_score": 98.85057471264366,
+        "contribution": 19.770114942528735,
         "inputs": {
           "purchased_kwh": 5200.0,
           "floor_area_m2": 60.0,
           "intensity_kwh_m2": 86.66666666666667,
-          "i_best": 50.0,
-          "i_worst": 300.0
+          "i_best": 85.0,
+          "i_worst": 230.0
         },
         "provenance": "user",
         "sub_score_range": null
@@ -241,9 +241,9 @@
         "gas_kwh": 0.0,
         "net_kwh": 234.0
       },
-      "standalone_carbon_kg": 48.437999999999995,
+      "standalone_carbon_kg": 30.64464,
       "cost_low_gbp": 150.0,
-      "cost_high_gbp": 400.0,
+      "cost_high_gbp": 350.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -268,7 +268,7 @@
         "gas_kwh": 0.0,
         "net_kwh": 1924.0
       },
-      "standalone_carbon_kg": 430.56,
+      "standalone_carbon_kg": 272.3968,
       "cost_low_gbp": 8000.0,
       "cost_high_gbp": 14000.0,
       "assessor_likelihood": 0.5
@@ -285,8 +285,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 500.0,
-      "cost_high_gbp": 1500.0,
+      "cost_low_gbp": 400.0,
+      "cost_high_gbp": 1000.0,
       "assessor_likelihood": null
     },
     {
@@ -301,8 +301,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 1000.0,
-      "cost_high_gbp": 3000.0,
+      "cost_low_gbp": 1800.0,
+      "cost_high_gbp": 4600.0,
       "assessor_likelihood": null
     },
     {
@@ -318,7 +318,7 @@
       "incremental_saving": null,
       "standalone_carbon_kg": null,
       "cost_low_gbp": 8000.0,
-      "cost_high_gbp": 15000.0,
+      "cost_high_gbp": 22000.0,
       "assessor_likelihood": null
     },
     {
@@ -333,8 +333,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 4000.0,
-      "cost_high_gbp": 9000.0,
+      "cost_low_gbp": 5000.0,
+      "cost_high_gbp": 10000.0,
       "assessor_likelihood": null
     },
     {
@@ -349,8 +349,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 5000.0,
-      "cost_high_gbp": 8000.0,
+      "cost_low_gbp": 5500.0,
+      "cost_high_gbp": 8500.0,
       "assessor_likelihood": null
     }
   ],
@@ -387,12 +387,12 @@
     "saving_high": null
   },
   "carbon": {
-    "electricity_kg": 446.70599999999996,
+    "electricity_kg": 282.61168,
     "gas_kg": 0.0,
-    "total_kg": 446.70599999999996,
-    "ef_electricity": 0.207,
-    "ef_gas": 0.183,
-    "ef_source": "electricity: TODO_SOURCE DESNZ Greenhouse gas reporting: conversion factors, sheet UK electricity (2024); gas: TODO_SOURCE DESNZ Greenhouse gas reporting: conversion factors, Natural gas (kWh, gross CV) (2024)"
+    "total_kg": 282.61168,
+    "ef_electricity": 0.13096,
+    "ef_gas": 0.18231,
+    "ef_source": "electricity: DESNZ Greenhouse gas reporting: conversion factors 2026, flat file v1.2 (https://assets.publishing.service.gov.uk/media/6a6c9748862aaf18d9c62ac9/ghg-conversion-factors-2026-flat-format-revised.xlsx) (2026); gas: DESNZ Greenhouse gas reporting: conversion factors 2026, flat file v1.2 (https://assets.publishing.service.gov.uk/media/6a6c9748862aaf18d9c62ac9/ghg-conversion-factors-2026-flat-format-revised.xlsx) (2026)"
   },
   "value": {
     "status": "ok",
@@ -412,7 +412,7 @@
   "score_after": {
     "status": "ok",
     "score": 81,
-    "score_raw": 80.944,
+    "score_raw": 81.0,
     "score_class": "highly_efficient",
     "score_range": [
       81,
@@ -433,14 +433,14 @@
       {
         "key": "consumption_intensity",
         "weight": 0.2,
-        "sub_score": 99.72000000000001,
-        "contribution": 19.944000000000003,
+        "sub_score": 100.0,
+        "contribution": 20.0,
         "inputs": {
           "purchased_kwh": 3042.0,
           "floor_area_m2": 60.0,
           "intensity_kwh_m2": 50.7,
-          "i_best": 50.0,
-          "i_worst": 300.0
+          "i_best": 85.0,
+          "i_worst": 230.0
         },
         "provenance": "derived",
         "sub_score_range": null

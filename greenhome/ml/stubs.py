@@ -77,7 +77,7 @@ def _after(clean: CleanHome, names: set[str], elec: float, gas: float) -> tuple[
     other = fuel - heat
     for r in Retrofit:
         spec = cat[r.value]
-        if r.value in names and spec.applies_to_end_use == "space_heating":
+        if r.value in names and spec.applies_to == "space_heating":
             state = getattr(home, spec.state_field) if spec.state_field else None
             heat *= 1 - spec.effect_mid_frac(state)
     heat_pump = (
@@ -93,8 +93,20 @@ def _after(clean: CleanHome, names: set[str], elec: float, gas: float) -> tuple[
             heat /= STUB_SCOP
         elec = heat + other
     if Retrofit.solar_pv.value in names:
-        elec *= 1 - cat[Retrofit.solar_pv.value].effect_mid_frac(home.renewables)
+        elec -= _pv_self_used(clean, elec)
     return elec, gas
+
+
+def _pv_self_used(clean: CleanHome, elec: float) -> float:
+    """Grid import displaced by PV: kWp(type) × regional yield × mid self-consumption, capped at import.
+    Falls back to a fractional `effect_range_frac` if the catalogue gives one instead of kWp."""
+    spec = get_config().catalogue[Retrofit.solar_pv.value]
+    if not spec.kwp_by_property_type:
+        return elec * spec.effect_mid_frac(clean.home.renewables)
+    kwp = spec.kwp_by_property_type.get(clean.home.property_type, min(spec.kwp_by_property_type.values()))
+    lo, hi = spec.self_consumption_frac_range or (0.0, 0.0)
+    generation = kwp * get_config().region(clean.home.region).pv_yield_kwh_per_kwp
+    return min(generation * (lo + hi) / 2, elec)
 
 
 class StubRating:
