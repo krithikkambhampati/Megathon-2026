@@ -10,6 +10,7 @@ import greenhome.llm.client as client_mod
 from greenhome.llm.client import (
     CachedClient,
     LLMError,
+    LLMRateLimited,
     LLMTimeout,
     OllamaClient,
     OpenAICompatClient,
@@ -173,6 +174,102 @@ def test_openai_compat_cut_off_reply_is_an_error() -> None:
         c.generate("s", [])
 
 
+def test_openai_compat_sends_model_extras_and_reads_groq_usage() -> None:
+    seen = {}
+    usage = {
+        "prompt_tokens": 9,
+        "completion_tokens": 40,
+        "completion_tokens_details": {"reasoning_tokens": 30},
+    }
+    last = {"choices": [{"delta": {}, "finish_reason": "stop"}], "x_groq": {"usage": usage}}
+    body = (
+        f"data: {json.dumps({'choices': [{'delta': {'content': 'ok'}}]})}\n\n"
+        f"data: {json.dumps(last)}\n\ndata: [DONE]\n\n"
+    )
+
+    def handler(req):
+        seen["body"] = json.loads(req.content)
+        return httpx.Response(200, content=body.encode())
+
+    s = _settings(
+        "openai_compat", request_extra={"m:": {"reasoning_effort": "low", "include_reasoning": False}}
+    )
+    c = OpenAICompatClient(s, _http(handler))
+    assert c.generate("S", []) == "ok"
+    assert seen["body"]["reasoning_effort"] == "low" and seen["body"]["include_reasoning"] is False
+    assert seen["body"]["stream_options"] == {"include_usage": True}
+    assert (c.last_usage.completion_tokens, c.last_usage.reasoning_tokens) == (40, 30)
+
+
+def test_ollama_body_never_gets_hosted_extras() -> None:
+    seen = {}
+
+    def handler(req):
+        seen["body"] = json.loads(req.content)
+        return httpx.Response(200, content=_ollama_lines("ok"))
+
+    OllamaClient(_settings(request_extra={"m:": {"reasoning_effort": "low"}}), _http(handler)).generate(
+        "S", []
+    )
+    assert "reasoning_effort" not in seen["body"]
+
+
+@pytest.mark.parametrize(
+    ("headers", "wait"),
+    [
+        ({"retry-after": "7"}, 7.0),
+        ({"x-ratelimit-reset-tokens": "764ms"}, 0.764),
+        ({"x-ratelimit-reset-requests": "8m38.4s"}, 518.4),
+        ({}, 10.0),
+    ],
+)
+def test_429_raises_rate_limited_then_cools_down_without_requests(headers, wait) -> None:
+    calls = []
+
+    def handler(req):
+        calls.append(req)
+        return httpx.Response(429, headers=headers, text="slow down")
+
+    c = OpenAICompatClient(_settings("openai_compat"), _http(handler))
+    with pytest.raises(LLMRateLimited) as e:
+        c.generate("s", [])
+    assert e.value.retry_after_s == pytest.approx(wait)
+    if wait > 0.5:
+        with pytest.raises(LLMRateLimited):
+            c.generate("s", [])
+        assert len(calls) == 1  # cooling down: no second request
+
+
+def test_openai_compat_has_model_reads_models_list_and_ping_401() -> None:
+    models = httpx.Response(200, json={"data": [{"id": "m:1"}, {"id": "other"}]})
+    assert OpenAICompatClient(_settings("openai_compat"), _http(lambda r: models)).has_model()
+    other = httpx.Response(200, json={"data": [{"id": "other"}]})
+    assert not OpenAICompatClient(_settings("openai_compat"), _http(lambda r: other)).has_model()
+    denied = OpenAICompatClient(_settings("openai_compat"), _http(lambda r: httpx.Response(401)))
+    assert not denied.ping()
+
+
+def test_openai_compat_warm_up_asks_for_a_real_short_answer() -> None:
+    seen = {}
+
+    def handler(req):
+        seen["body"] = json.loads(req.content)
+        return httpx.Response(200, content=_sse("pong"))
+
+    c = OpenAICompatClient(_settings("openai_compat", max_tokens={"warmup_hosted": 128}), _http(handler))
+    assert c.warm_up() >= 0
+    assert seen["body"]["max_tokens"] == 128 and seen["body"]["messages"][0]["content"]
+
+
+def test_cached_client_caches_ping_result() -> None:
+    n = []
+    inner = SimpleNamespace(
+        name="x", settings=SimpleNamespace(ping_cache_s=30.0), ping=lambda t=2: n.append(1) or True
+    )
+    c = CachedClient(inner)
+    assert c.ping() and c.ping() and len(n) == 1
+
+
 def test_gpu_fraction_reads_api_ps() -> None:
     ps = httpx.Response(200, json={"models": [{"name": "m:1", "size": 100, "size_vram": 80}]})
     assert OllamaClient(_settings(), _http(lambda r: ps)).gpu_fraction() == 0.8
@@ -269,3 +366,22 @@ def test_warm_up_still_raises_real_errors() -> None:
     )
     with pytest.raises(LLMError):
         c.warm_up()
+
+
+def test_failover_client_moves_on_only_when_rate_limited() -> None:
+    from greenhome.llm.client import FailoverClient
+
+    def stub(name, reply):
+        def gen(*a, **k):
+            if isinstance(reply, Exception):
+                raise reply
+            return reply
+
+        return SimpleNamespace(name=name, settings=_settings("openai_compat"), last_usage=None, generate=gen)
+
+    limited = LLMRateLimited("429", 5.0)
+    assert FailoverClient([stub("a", limited), stub("b", "ok")]).generate("s", []) == "ok"
+    with pytest.raises(LLMRateLimited):
+        FailoverClient([stub("a", limited), stub("b", limited)]).generate("s", [])
+    with pytest.raises(LLMError):  # a real error is not a quota problem: no failover
+        FailoverClient([stub("a", LLMError("boom")), stub("b", "ok")]).generate("s", [])

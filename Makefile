@@ -44,7 +44,7 @@ eval:
 	$(call run_mod,training.evaluation_report,,P3)
 	$(call run_mod,evaluation.eval_llm,,P4)
 
-# P4's model benchmark: run on the demo laptop with Ollama running (writes reports/llm_bench_<host>.md)
+# P4's model benchmark against the configured provider (.env; Ollama path only for LLM_PROVIDER=ollama)
 llm-bench:
 	$(call run_mod,evaluation.llm_bench,,P4)
 

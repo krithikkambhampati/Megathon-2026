@@ -152,3 +152,22 @@ def test_report_fields_and_feedback(p10001) -> None:
     assert "99,999 kWh" in r.unsupported and "1,240 kWh (direction)" in r.unsupported
     fb = feedback(r)
     assert "not in FACTS: 99,999 kWh" in fb and "increases, not savings" in fb and "guarantee" in fb
+
+
+@pytest.mark.parametrize(
+    ("text", "ok"),
+    [
+        (
+            "Loft insulation would increase gas use by 840 kWh/year.",
+            False,
+        ),  # a saving told as a rise (live bug)
+        ("Loft insulation saves 840 kWh/year of gas.", True),
+        ("Loft insulation saves an additional 840 kWh/year of gas.", True),  # "additional" is not a rise
+        ("840 kWh/year less gas with loft insulation.", True),
+    ],
+)
+def test_saving_described_as_an_increase_fails(p10001, text, ok) -> None:
+    r = check(text, build_fact_sheet(p10001, "recommendations"))
+    assert r.passed is ok, r.unsupported
+    if not ok:
+        assert "840 kWh (saving)" in r.unsupported and "savings, not increases" in feedback(r)

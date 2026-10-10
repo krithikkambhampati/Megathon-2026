@@ -22,18 +22,24 @@ computed numbers (shown as "Template answer").
 
 Run every Python command through `uv run …` or a `make` target, never with a system `python`.
 
-## 2. Language model (optional)
+## 2. Language model (hosted on Groq)
 
-1. Install Ollama ≥ 0.5 and start it: `sudo systemctl enable --now ollama` (or `ollama serve` in a terminal).
-   On a 6 GB GPU set `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_FLASH_ATTENTION=1` and `OLLAMA_KV_CACHE_TYPE=q8_0` for
-   the Ollama service.
-2. Pull the model pinned in `config/llm.yaml` (`model:`). Before it is pinned, pull the `candidates` listed
-   there and run `make llm-bench` (below) to choose one.
-3. `cp .env.example .env` and set `LLM_PROVIDER=ollama`. Leave `LLM_MODEL=` empty to use the pinned model.
-   A hosted OpenAI-compatible model also works: `LLM_PROVIDER=openai_compat`, `LLM_BASE_URL=<…/v1>`,
-   `LLM_MODEL=<model>`, `LLM_API_KEY=<key>` (in `.env` only, never committed).
-4. `make api`. The log shows the LLM and its warm-up time; `/v1/health` shows `"llm_ok": true` and the
-   dashboard's sidebar says "LLM: on". Answers then show "✓ all N numbers verified" when the checker passes.
+Explanations and chat use a hosted open-weight model on Groq: `openai/gpt-oss-120b`, pinned in
+`config/llm.yaml`. No GPU or Ollama needed.
+
+1. `cp .env.example .env` and put your Groq key (https://console.groq.com/keys) in it as `LLM_API_KEY=...`.
+   Leave `LLM_MODEL=` empty to use the pinned model. `.env` is gitignored: never commit the key.
+2. `make api`. The log shows `LLM on: openai_compat:openai/gpt-oss-120b` and its warm-up time (~0.5 s);
+   `/v1/health` shows `"llm_ok": true` and the dashboard's sidebar says "LLM: on". Answers then show
+   "✓ all N numbers verified" when the checker passes.
+
+Free tier: 1000 requests/day and 8000 tokens/min per model. On HTTP 429 the client tries
+`openai/gpt-oss-20b` (its own quota), then falls back to the template answer.
+
+**Offline alternative (Ollama):** install Ollama ≥ 0.5, `ollama pull qwen2.5:7b-instruct-q4_K_M` (the demo-laptop
+benchmark winner, `reports/llm_bench_cachyos-x8664.md`) and set `LLM_PROVIDER=ollama`,
+`LLM_BASE_URL=http://localhost:11434`, `LLM_MODEL=qwen2.5:7b-instruct-q4_K_M` in `.env`. On a 6 GB GPU set
+`OLLAMA_NUM_PARALLEL=1`, `OLLAMA_FLASH_ATTENTION=1` and `OLLAMA_KV_CACHE_TYPE=q8_0` for the Ollama service.
 
 Every `make` target reads `.env` when it exists.
 
@@ -83,7 +89,7 @@ the same things automatically.
 | Sidebar says "API unreachable" | Start `make api` first; the dashboard expects it on `GREENHOME_API_URL` (default `http://localhost:8000`) |
 | "Address already in use" | Something is on port 8000/8501: stop it, or run uvicorn/streamlit with another `--port` |
 | `VIRTUAL_ENV … does not match` warning | Harmless: an outer virtual environment (e.g. pyenv) is active; uv uses the project's `.venv` |
-| Explanations say "Template answer" | The language model is off or slow (25 s budget per answer): check `ollama ps` and `/v1/health` |
+| Explanations say "Template answer" | The language model is off, slow or rate limited (25 s budget per answer): check `LLM_API_KEY` in `.env` and `/v1/health` |
 | "Explanations aren't available yet" | `greenhome/llm/` is missing: pull the latest `main` |
 
 ## 7. Dependencies (team rule)

@@ -5,6 +5,11 @@
 > our current plan, locks the key decisions, defines the **shared contracts** every part must obey, and splits
 > the work into **5 parts** with step-by-step instructions and the integration hazards each owner must watch.
 >
+> **Decision update (2026-10-11), supersedes L5 and every "local Ollama" mention below:** the LLM is a
+> **hosted open-weight model on Groq** (OpenAI-compatible API, free tier): `openai/gpt-oss-120b`, failing over
+> to `openai/gpt-oss-20b` when rate limited. Set `LLM_API_KEY` in `.env` (see `docs/RUN.md`). Local Ollama
+> remains an optional offline fallback. Guardrails are unchanged: hosted models still invent numbers.
+>
 > **Team assumptions:** 5 people, one owner per part, 24–36 h hackathon, a local/free LLM (Ollama),
 > FastAPI + Streamlit, mostly real UK public data (EPC, Land Registry, UK HPI, NEED) plus synthetic data
 > where real data cannot exist (metered monthly energy, post-retrofit outcomes).

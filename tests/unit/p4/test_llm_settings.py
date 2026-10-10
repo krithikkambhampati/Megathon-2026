@@ -77,6 +77,22 @@ def test_pinned_model_with_provider_means_on() -> None:
         assert s.enabled
 
 
+def test_pinned_hosted_model_and_reasoning_room() -> None:
+    s = load_llm_settings(env={"LLM_PROVIDER": "openai_compat"})
+    assert s.enabled and s.model == "openai/gpt-oss-120b"
+    # gpt-oss counts hidden reasoning tokens toward max_tokens: tiny caps return empty replies
+    assert s.tokens("router") >= 128 and s.tokens("explain") >= 600 and s.tokens("warmup_hosted") >= 64
+    assert s.extra_for() == {"reasoning_effort": "low", "include_reasoning": False}
+    assert s.extra_for("qwen/qwen3.8-27b") == {"reasoning_effort": "none"}
+    assert s.extra_for("some-other-model") == {}
+
+
+def test_api_key_never_in_repr() -> None:
+    s = load_llm_settings(env={"LLM_PROVIDER": "openai_compat", "LLM_API_KEY": "gsk_secret123"})
+    assert s.api_key == "gsk_secret123"
+    assert "gsk_secret123" not in repr(s) and "gsk_secret123" not in str(s)
+
+
 def test_bad_provider_rejected() -> None:
     with pytest.raises(ValueError):
         load_llm_settings(env={"LLM_PROVIDER": "claude"})

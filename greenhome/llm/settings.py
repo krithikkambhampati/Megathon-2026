@@ -11,10 +11,10 @@ import os
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 CONFIG_PATH = Path(__file__).resolve().parents[2] / "config" / "llm.yaml"
 UNPINNED = "TODO_PIN_AFTER_BENCH"
@@ -40,8 +40,10 @@ class LLMSettings(BaseModel):
     provider: Provider | None = None
     model: str = UNPINNED
     base_url: str = "http://localhost:11434"
-    api_key: str | None = None
+    api_key: str | None = Field(default=None, repr=False)  # never in repr/logs
     candidates: list[str] = []
+    fallback_models: list[str] = []  # openai_compat: tried in order when the model is rate limited
+    request_extra: dict[str, dict[str, Any]] = {}  # model-id prefix → extra body fields (openai_compat)
     temperature: float = 0.0
     seed: int = 42
     num_ctx: int = 4096
@@ -55,11 +57,18 @@ class LLMSettings(BaseModel):
     warmup_timeout_s: float = 120.0
     max_tokens: dict[str, int] = {}
     cache_max_entries: int = 1024
+    ping_cache_s: float = 30.0
 
     @property
     def enabled(self) -> bool:
         """An LLM is configured: provider set and a real model tag pinned."""
         return self.provider is not None and bool(self.model) and self.model != UNPINNED
+
+    def extra_for(self, model: str | None = None) -> dict[str, Any]:
+        """Extra request fields for this model: the longest matching prefix in `request_extra`, else {}."""
+        model = model or self.model
+        hits = [p for p in self.request_extra if model.startswith(p)]
+        return dict(self.request_extra[max(hits, key=len)]) if hits else {}
 
     def tokens(self, prompt: str, default: int = 300) -> int:
         return self.max_tokens.get(prompt, default)

@@ -119,6 +119,12 @@ _SAVING_CUE = re.compile(
     r"decreas\w*)\b",
     re.IGNORECASE,
 )
+# Narrower cue set for the reverse check (a saving described as a rise): "an extra/additional 840 kWh saved"
+# must not count as an increase.
+_RISE_CUE = re.compile(
+    r"\b(?:increas\w*|ris(?:e|es|ing)|rose|goes up|go up|higher|more electricity|more gas)\b",
+    re.IGNORECASE,
+)
 _INCREASE_CUE = re.compile(
     r"\b(?:increas\w*|ris(?:e|es|ing)|rose|goes up|go up|higher|extra|additional|"
     r"adds?|adding|more electricity|more gas)\b",
@@ -265,9 +271,12 @@ def _matches(m: Mention, allowed: list[_Allowed]) -> list[_Allowed]:
     return hits
 
 
-def _direction_ok(text: str, span: tuple[int, int]) -> bool:
-    """For a number that is only ever an increase: the nearest direction cue (±6 words, same clause) must be
-    an increase cue, not a saving cue. No cue at all is fine (e.g. '3,600 kWh/year increase' copied as is)."""
+def _direction_ok(text: str, span: tuple[int, int], expected: str = "up") -> bool:
+    """For a number that is only ever an increase (or only ever a saving): the nearest direction cue
+    (±6 words, same clause) must point the same way. No cue at all is fine (e.g. '3,600 kWh/year increase'
+    copied as is).
+    """
+    up_cue = _INCREASE_CUE if expected == "up" else _RISE_CUE
     starts = [0] + [m.end() for m in _CLAUSE_SPLIT.finditer(text) if m.end() <= span[0]]
     ends = [m.start() for m in _CLAUSE_SPLIT.finditer(text) if m.start() >= span[1]]
     clause_start, clause_end = max(starts), (min(ends) if ends else len(text))
@@ -280,7 +289,7 @@ def _direction_ok(text: str, span: tuple[int, int]) -> bool:
             # look at 1- and 2-word windows so "goes up" / "more electricity" count
             w2 = " ".join(seq[i : i + 2] if not reverse else reversed(seq[i : i + 2]))
             for w in (seq[i], w2):
-                if _INCREASE_CUE.search(w):
+                if up_cue.search(w):
                     return f"up:{i}"
                 if _SAVING_CUE.search(w):
                     return f"down:{i}"
@@ -293,9 +302,11 @@ def _direction_ok(text: str, span: tuple[int, int]) -> bool:
         s0 = max([0] + [m.end() for m in _SENTENCE_SPLIT.finditer(text) if m.end() <= span[0]])
         ends2 = [m.start() for m in _SENTENCE_SPLIT.finditer(text) if m.start() >= span[1]]
         sentence = text[s0 : (min(ends2) if ends2 else len(text))]
+        if expected == "down":  # mirror: a saving inside a sentence that only talks about rises
+            return not (_RISE_CUE.search(sentence) and not _SAVING_CUE.search(sentence))
         return not (_SAVING_CUE.search(sentence) and not _INCREASE_CUE.search(sentence))
     kind = min(cues, key=lambda c: int(c.split(":")[1])).split(":")[0]
-    return kind == "up"
+    return kind == expected
 
 
 def banned_phrases(text: str) -> list[str]:
@@ -323,6 +334,8 @@ def check(text: str, sheet: FactSheet, *, extra_allowed: list[Fact] | None = Non
             continue
         if all(h.direction == "up" for h in hits) and not _direction_ok(text, m.span):
             unsupported.append(f"{m.raw} (direction)")
+        elif all(h.direction == "down" for h in hits) and not _direction_ok(text, m.span, "down"):
+            unsupported.append(f"{m.raw} (saving)")
     for rx in _NEVER_CLAIMS:
         unsupported += [f"{mt.group(0).strip()} (no such figure)" for mt in rx.finditer(text)]
     banned = banned_phrases(text)
@@ -345,6 +358,9 @@ def feedback(report: CheckReport) -> str:
     dirs = [u.removesuffix(" (direction)") for u in report.unsupported if u.endswith("(direction)")]
     if dirs:
         parts.append(f"These are increases, not savings: {', '.join(dirs)}. Say that use goes up.")
+    savs = [u.removesuffix(" (saving)") for u in report.unsupported if u.endswith("(saving)")]
+    if savs:
+        parts.append(f"These are savings, not increases: {', '.join(savs)}. Say that use goes down.")
     never = [
         u.removesuffix(" (no such figure)") for u in report.unsupported if u.endswith("(no such figure)")
     ]

@@ -3,6 +3,20 @@
 Deliverable E: prompts, model and API details, guardrails, evaluation approach and results.
 Code: `greenhome/llm/`. Config: `config/llm.yaml`. Evaluation: `evaluation/`. Build plan: `docs/ROADMAP_P4.md`.
 
+> **Runtime (decision 2026-10-11): hosted on Groq, not local Ollama.** `LLM_PROVIDER=openai_compat`,
+> `LLM_BASE_URL=https://api.groq.com/openai/v1`, key in `.env` only. Model `openai/gpt-oss-120b` (open-weight,
+> Apache-2.0), chosen in a live probe: it routed test messages correctly in ~0.3–0.7 s and follows the JSON
+> schema. `gpt-oss-20b` misrouted a what-if and `qwen/qwen3.8-27b` misclassified one in JSON mode.
+> - gpt-oss is a reasoning model: hidden reasoning counts toward `max_tokens`, so requests send
+>   `reasoning_effort: low`, `include_reasoning: false` (`request_extra` in `config/llm.yaml`) and the
+>   caps leave room for it (router 256, parse 400, answers 700). A reply cut at the cap is never shown.
+> - Free tier per model: 1000 requests/day, 8000 tokens/min. On HTTP 429 the client cools down for the
+>   `retry-after` time and the request goes to `fallback_models` (`openai/gpt-oss-20b`, its own quota); if
+>   all are limited, the user gets the checked template. `/v1/health` pings are cached for 30 s.
+> - Privacy: only the fact sheet (engine numbers and labels, no address or personal data) is sent to Groq.
+> - The checker now also rejects a saving described as an increase (seen live; the retry fixed it).
+> - Sections below that describe Ollama on the demo laptop apply only to the optional offline path.
+
 ## 1. What the LLM does, and what it never does
 
 The Green Home Score, savings, carbon and value numbers all come from P2's engine and P3's models. The LLM
