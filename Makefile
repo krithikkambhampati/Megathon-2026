@@ -38,11 +38,14 @@ test:
 lint:
 	uv run ruff check .
 
+# .env (if present) holds LLM settings etc.; uvicorn loads it (python-dotenv ships with uvicorn[standard])
+ENV_FILE := $(if $(wildcard .env),--env-file .env,)
+
 api:
-	uv run uvicorn api.main:app --port 8000
+	uv run uvicorn api.main:app --port 8000 $(ENV_FILE)
 
 api-fixture:
-	GREENHOME_ENGINE_MODE=fixture uv run uvicorn api.main:app --port 8000
+	GREENHOME_ENGINE_MODE=fixture uv run uvicorn api.main:app --port 8000 $(ENV_FILE)
 
 ui:
 	uv run streamlit run ui/app.py

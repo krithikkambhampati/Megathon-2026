@@ -159,7 +159,9 @@ def test_diff_unknown_id(fixture_client):
 
 
 # ---------- explain ----------
-def test_explain_unavailable_until_p4(fixture_client):
+def test_explain_unavailable_without_p4_module(fixture_client, monkeypatch):
+    # None in sys.modules makes the import raise ImportError, whether or not P4 has shipped the file
+    monkeypatch.setitem(sys.modules, "greenhome.llm.explainer", None)
     r = fixture_client.post("/v1/explain", json={"analysis_id": "x", "section": "score"})
     assert r.status_code == 503
     assert r.json()["error"]["code"] == "explanation_unavailable"
