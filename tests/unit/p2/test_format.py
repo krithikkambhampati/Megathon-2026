@@ -27,6 +27,10 @@ def test_round_score_half_up(x, expected) -> None:
     (f.fmt_pct, 3.45, "3.5%"),
     (f.fmt_pct, 0.15, "0.2%"),
     (f.fmt_score, 36.088, "36"),
+    (f.fmt_points, 11.75, "11.8"),
+    (f.fmt_points, 4.4616, "4.5"),
+    (f.fmt_intensity, 197.65, "198 kWh/m²/year"),
+    (f.fmt_intensity, 1234.4, "1,234 kWh/m²/year"),
     (f.fmt_sap, 61.5, "62"),
 ])
 def test_formatters(fn, x, expected) -> None:
@@ -35,7 +39,7 @@ def test_formatters(fn, x, expected) -> None:
 
 def test_every_formatter_handles_none() -> None:
     for fn in (f.fmt_kwh, f.fmt_kwh_saving, f.fmt_kg, f.fmt_kg_saving, f.fmt_tonnes, f.fmt_gbp_value,
-               f.fmt_gbp_cost, f.fmt_pct, f.fmt_score, f.fmt_sap):
+               f.fmt_gbp_cost, f.fmt_pct, f.fmt_score, f.fmt_sap, f.fmt_points, f.fmt_intensity):
         assert fn(None) == f.UNKNOWN == "—"
     assert f.fmt_range(None, 1) == f.fmt_delta(None, "score") == "—"
 

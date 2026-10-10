@@ -88,7 +88,7 @@ def test_roof_conflict_nulls_then_imputes():
     clean = validate_and_clean(home_input(roof_type="dwelling_above"))
     flag = _flag(clean, "CONFLICT_ROOF_VS_TYPE")
     assert flag.severity == "error" and flag.field == "roof_type"
-    assert clean.home.roof_type == IMP.feature_mode.default["roof_type"]
+    assert clean.home.roof_type == IMP.feature_mode("1950_1966", "semi_detached")["roof_type"]
     assert clean.provenance["roof_type"] == "imputed"
     assert "IMPUTED_FIELD" in _codes(clean)
 
@@ -99,16 +99,23 @@ def test_flat_with_dwelling_above_is_fine():
     assert clean.home.roof_type == "dwelling_above"
 
 
-@pytest.mark.parametrize(("ptype", "beds", "table", "idx"), [
-    ("semi_detached", 3, "_default", 3), ("flat", 2, "flat", 2), ("detached", 15, "_default", -1),
-    (None, 1, "_default", 1),
-])
-def test_floor_area_imputed(ptype, beds, table, idx):
+@pytest.mark.parametrize(("ptype", "beds"), [("semi_detached", 3), ("flat", 2), ("detached", 15), (None, 1)])
+def test_floor_area_imputed(ptype, beds):
     clean = validate_and_clean(home_input(property_type=ptype, bedrooms=beds, floor_area_m2=None))
-    assert clean.home.floor_area_m2 == IMP.floor_area_m2[table][idx]
+    assert clean.home.floor_area_m2 == IMP.floor_area(ptype, beds)
     assert clean.provenance["floor_area_m2"] == "imputed"
     flag = next(f for f in clean.flags if f.code == "IMPUTED_FIELD" and f.field == "floor_area_m2")
-    assert flag.evidence["value"] == IMP.floor_area_m2[table][idx]
+    assert flag.evidence["value"] == IMP.floor_area(ptype, beds)
+
+
+def test_floor_area_table_lookups():
+    table = IMP.floor_area_by_type_bedrooms
+    assert IMP.floor_area("semi_detached", 3) == table["semi_detached"]["3"]["median_m2"]
+    assert IMP.floor_area("detached", 15) == table["detached"]["5+"]["median_m2"]  # 5+ bucket
+    assert IMP.floor_area("flat", 0) == table["flat"]["1"]["median_m2"]  # studios use the 1-bed row
+    rows = [t["2"] for t in table.values()]  # unknown type → n-weighted mean over types
+    expected = sum(r["median_m2"] * r["n"] for r in rows) / sum(r["n"] for r in rows)
+    assert IMP.floor_area(None, 2) == pytest.approx(expected)
 
 
 def test_floor_area_unknown_without_bedrooms():
@@ -118,22 +125,30 @@ def test_floor_area_unknown_without_bedrooms():
     assert clean.intensity_kwh_m2 is None
 
 
-def test_feature_modes_layered():
+def test_feature_modes_from_age_type_cell():
     clean = validate_and_clean(home_input(
-        age_band="1900_1929", property_type="flat", wall_type=None, glazing=None, roof_type=None,
+        age_band="1900_1929", property_type="terraced", wall_type=None, glazing=None, roof_type=None,
     ))
-    assert clean.home.wall_type == "solid"  # by_age_band
-    assert clean.home.glazing == IMP.feature_mode.default["glazing"]  # _default
-    assert clean.home.roof_type == "dwelling_above"  # by_property_type
+    cell = IMP.feature_mode_by_age_type["1900_1929"]["terraced"]
+    for field in ("wall_type", "glazing", "roof_type"):
+        assert getattr(clean.home, field) == cell[field]["value"]
     imputed = {f.field: f.evidence for f in clean.flags if f.code == "IMPUTED_FIELD"}
     assert set(imputed) == {"wall_type", "glazing", "roof_type"}
-    assert imputed["wall_type"]["value"] == "solid" and "method" in imputed["wall_type"]
+    assert "method" in imputed["wall_type"]
     assert all(clean.provenance[f] == "imputed" for f in imputed)
 
 
-def test_unknown_age_band_uses_default():
+def test_unknown_age_band_votes_across_cells():
     clean = validate_and_clean(home_input(age_band=None, wall_insulation=None))
-    assert clean.home.wall_insulation == IMP.feature_mode.default["wall_insulation"]
+    assert clean.home.wall_insulation == IMP.feature_mode(None, "semi_detached")["wall_insulation"]
+
+
+def test_feature_mode_votes_weight_by_homes_covered():
+    cells = [c for by_type in IMP.feature_mode_by_age_type.values() for c in by_type.values()]
+    votes: dict[str, float] = {}
+    for c in cells:
+        votes[c["glazing"]["value"]] = votes.get(c["glazing"]["value"], 0) + c["n"] * c["glazing"]["share"]
+    assert IMP.feature_mode(None, None)["glazing"] == max(votes, key=votes.get)
 
 
 def test_main_fuel_derived_from_user_heating():
@@ -146,14 +161,14 @@ def test_main_fuel_derived_from_user_heating():
 
 def test_main_fuel_imputed_from_imputed_heating():
     clean = validate_and_clean(home_input(heating_system=None, main_fuel=None))
-    assert clean.home.heating_system == IMP.feature_mode.default["heating_system"]
+    assert clean.home.heating_system == IMP.feature_mode("1950_1966", "semi_detached")["heating_system"]
     assert clean.home.main_fuel == "mains_gas"
     assert clean.provenance["main_fuel"] == "imputed"
 
 
 def test_typical_energy_imputed():
     clean = validate_and_clean(home_input(energy=_energy(None, None)))
-    typical = IMP.typical_energy_kwh["mains_gas"][CFG.floor_area_band(85.0)]
+    typical, _ = IMP.typical_energy("mains_gas", "gas_boiler_condensing", 85.0)
     assert clean.energy.electricity_kwh == typical["electricity_kwh"]
     assert clean.energy.gas_kwh == typical["gas_kwh"]
     assert clean.energy.purchased_kwh == typical["electricity_kwh"] + typical["gas_kwh"]
@@ -162,6 +177,21 @@ def test_typical_energy_imputed():
     assert clean.intensity_kwh_m2 == pytest.approx(clean.energy.purchased_kwh / 85)
     flag = _flag(clean, "ENERGY_FROM_TYPICAL_HOMES")
     assert flag.severity == "warning" and flag.evidence["fuels"] == ["electricity_kwh", "gas_kwh"]
+
+
+def test_typical_energy_tables():
+    et = IMP.energy_typical
+    gas, band = IMP.typical_energy("mains_gas", None, 50.0)  # NEED bands are upper-edge inclusive
+    assert band == "<50" and gas["gas_kwh"] == et.gas_homes_need_median_kwh_by_floor_area["gas"]["<50"]
+    elec, band = IMP.typical_energy("electricity", "heat_pump", 120.0)
+    table = et.electric_heated_homes_synthetic_median_electricity_kwh["heat_pump"]
+    assert (elec["gas_kwh"], elec["electricity_kwh"]) == (0.0, table[band]["median_kwh"])
+    sparse = et.electric_heated_homes_synthetic_median_electricity_kwh["electric_direct"]
+    if ">200" not in sparse:  # P1 drops cells with n < 30 → nearest existing band
+        _, band = IMP.typical_energy("electricity", "electric_direct", 300.0)
+        assert band in sparse
+    assert IMP.typical_energy("other", "other_fuel_boiler", 80.0) is None
+    assert IMP.typical_energy("electricity", None, 80.0) is None
 
 
 def test_typical_energy_only_for_missing_fuel():

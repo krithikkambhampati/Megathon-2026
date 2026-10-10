@@ -12,7 +12,6 @@ import pytest
 
 from greenhome.config import REPO_ROOT, get_config
 from greenhome.contracts import HomeInput, Scenario
-from greenhome.core.features import FEATURE_COLUMNS
 from greenhome.core.orchestrator import Engine
 
 FIXTURES = REPO_ROOT / "tests" / "fixtures"
@@ -121,23 +120,20 @@ def test_it9_analysis_id_is_stable(homes: dict[str, HomeInput]) -> None:
 
 
 @pytest.mark.skipif(not _model_feature_files(), reason="P3 has not shipped models/*/features.json yet")
-@pytest.mark.parametrize("path", _model_feature_files(), ids=lambda p: p.parent.name)
-def test_it10_model_features_come_from_the_kernel(path: Path) -> None:
-    spec = json.loads(path.read_text())
-    features = spec["features"] if isinstance(spec, dict) else spec
-    assert set(features) <= set(FEATURE_COLUMNS)
-    in_kernel_order = [c for c in FEATURE_COLUMNS if c in features]
-    assert features == in_kernel_order, "column order must follow FEATURE_COLUMNS"
+def test_it10_real_models_serve_every_fixture(homes: dict[str, HomeInput]) -> None:
+    """P3's wrappers compare each model's saved columns with greenhome.ml.features at predict time and raise
+    on a mismatch, so analysing every fixture home with the real models is the train/serve skew check."""
+    from greenhome.ml.registry import load_models
+
+    engine = Engine.from_config(models=load_models(get_config().models_dir))
+    for home in homes.values():
+        engine.analyse(home)
 
 
 @pytest.mark.skipif(not _model_feature_files(), reason="P3 has not shipped models/*/features.json yet")
 @pytest.mark.parametrize("path", _model_feature_files(), ids=lambda p: p.parent.name)
 def test_it11_no_hidden_simulator_factor_is_a_feature(path: Path) -> None:
     assert not HIDDEN_FACTORS & set(json.dumps(json.loads(path.read_text())).replace('"', " ").split())
-
-
-def test_it11_kernel_has_no_hidden_factor() -> None:
-    assert not HIDDEN_FACTORS & set(FEATURE_COLUMNS)
 
 
 def test_it12_json_has_no_nan(engine: Engine, homes: dict[str, HomeInput]) -> None:

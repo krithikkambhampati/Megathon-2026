@@ -25,7 +25,7 @@ Estimates are for one focused engineer/agent. `→` = depends on.
 | WS | Files | Tests | → |
 |---|---|---|---|
 | A (done) | `core/annualise.py`, `core/validate.py` | `test_annualise.py`, `test_validate.py` | T0 |
-| B (done) | `core/score.py`, `core/features.py`, `core/transitions.py` | `test_score.py` (Hypothesis + golden), `test_features.py`, `test_transitions.py` | T0 |
+| B (done) | `core/score.py`, `core/features.py` (removed later, see Decisions), `core/transitions.py` | `test_score.py` (Hypothesis + golden), `test_features.py`, `test_transitions.py` | T0 |
 | C (done) | `core/feasibility.py`, `core/issues.py`, `core/carbon.py` | `test_feasibility.py`, `test_issues.py`, `test_carbon.py` | T0 |
 | D (done) | `ml/stubs.py`, `core/ordering.py`, `core/value.py` | `test_stubs.py`, `test_ordering.py`, `test_value.py` | T0 |
 
@@ -47,7 +47,8 @@ workstream lands the body). The one in-phase dependency: B's `insulation_sub_sco
 
 ### Phase 4 — Hand-off (when teammates deliver)
 - [x] T4.1 P1's sourced `retrofit_catalogue`, `emission_factors`, `regions`, `intensity_bounds` adopted verbatim
-  (still placeholder: `imputation.yaml`, `engine.yaml: peers_fallback`)
+  plus `config/generated/imputation.yaml` (P2's placeholder `config/imputation.yaml` deleted). Still
+  placeholder: `engine.yaml: peers_fallback`, until P1 commits `peer_percentiles.parquet`.
 - [ ] T4.2 P3 ships `greenhome/ml/registry.py::load_models(models_dir: Path) -> Models` (container in
   `ml/protocols.py`) → set `models: real` in `global.yaml`. P5's `/v1/health` reads `engine.cfg.global_.models`
   and `engine.models.versions()`: do not rename.
@@ -119,9 +120,7 @@ def compute_score(clean: CleanHome) -> ScoreResult
     # README P2.4 + P2.5. Unknown = provenance in {"imputed", "assumed"}. Range: enumerate every value of
     # each unknown score_feature_field (exact; ≤3 by min-info rule) and an imputed rating ±rating_band_spread.
 
-# core/features.py  [WS-B]
-FEATURE_COLUMNS: list[str]   # fixed order, exported to P3's features.json
-def build_model_features(homes: list[CleanHome], packages: list[frozenset[str]] | None = None) -> pd.DataFrame
+# core/features.py  [WS-B]  — REMOVED: P3's greenhome/ml/features.py is the single feature builder
 
 # core/transitions.py  [WS-B]
 def apply_retrofits(home: HomeInput, package: Iterable[str]) -> HomeInput   # idempotent, order-free
@@ -174,8 +173,7 @@ class Engine:
 
 ## Decisions made while building (not in the team guide)
 - `config/engine.yaml` [P2] holds validation/annualise/value thresholds, SAP band ranges, area bands, stage
-  order and placeholder peer percentiles; `config/imputation.yaml` [P1 values, P2 schema] holds imputation
-  tables. Both are needed by "no magic numbers".
+  order and placeholder peer percentiles. Imputation tables are P1's `config/generated/imputation.yaml`.
 - `score.yaml` gains `score_range.rating_band_spread` and `suitability` (D13 names that block).
 - Catalogue entries gain `state_field` (which field the `effect_range_frac` keys refer to).
 - `contracts.py` tightens two patterns from the §7.1 conventions (`property_id` `^P\d{5,}$`, month `01–12`)
@@ -205,5 +203,11 @@ class Engine:
   `tests/` has an `__init__.py`.
 - `CONTRACT_VERSION` 1.1.0 (PR #1 review): `ResultDiff` adds `score_after` / `class_after` rows; `score` /
   `score_class` stay (they move only with overrides). Fixtures regenerated.
+- One feature builder: P3's `greenhome/ml/features.py` (per-model, DataFrame-based, suits training) replaces
+  P2's `core/features.py`, which no engine code used. IT10 = "real models serve every fixture home": P3's
+  wrappers compare each model's saved columns with their builder at predict time and raise on mismatch.
+- Floor-area bands are upper-edge inclusive (≤50, 50–90, …) to match P1's `pd.cut`; P1's peer labels
+  (`50-90`) map to the contract's (`50_90`).
+- `format.py` adds `fmt_points` (1 dp) and `fmt_intensity` (whole kWh/m²/year) for P5's UI.
 - In every result, `rank` and `incremental_saving` describe the reported package (recommended, custom or
   none), so incremental savings always sum to `savings.saving` (IT3).
