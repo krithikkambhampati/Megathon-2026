@@ -2,12 +2,13 @@ import json
 import sys
 import types
 from pathlib import Path
+from typing import get_args
 
 import pytest
 from fastapi.testclient import TestClient
 
 from api.main import create_app
-from greenhome.contracts import CheckReport, HomeInput
+from greenhome.contracts import CONTRACT_VERSION, CheckReport, DiffKey, HomeInput
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
 HOME_IDS = sorted(p.stem.removeprefix("home_input_") for p in FIXTURES.glob("home_input_*.json"))
@@ -42,7 +43,7 @@ def _no_nan(text: str) -> None:
 def test_health_fixture_mode(fixture_client):
     body = fixture_client.get("/v1/health").json()
     assert body["models_mode"] == "fixture"
-    assert body["contract_version"] == "1.0.0"
+    assert body["contract_version"] == CONTRACT_VERSION
     assert body["model_versions"]  # taken from the fixture
     assert body["status"] == "degraded"
 
@@ -95,7 +96,7 @@ def test_analyse_engine_mode(engine_client, pid):
     r = engine_client.post("/v1/analyse", json={"home": _home(pid)})
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["contract_version"] == "1.0.0"
+    assert body["contract_version"] == CONTRACT_VERSION
     assert len(body["recommendations"]) == 7
     _no_nan(r.text)
 
@@ -131,7 +132,10 @@ def test_scenario_and_diff_engine_mode(engine_client):
         "/v1/diff", json={"base_analysis_id": base["analysis_id"], "new_analysis_id": new["analysis_id"]}
     )
     assert d.status_code == 200, d.text
-    assert len(d.json()["rows"]) == 10
+    rows = d.json()["rows"]
+    assert [r["key"] for r in rows] == list(get_args(DiffKey))
+    after = {r["key"]: r for r in rows}["score_after"]
+    assert after["new"] != after["base"]  # solar-only vs the full package: the after-score must differ
     _no_nan(d.text)
 
 
