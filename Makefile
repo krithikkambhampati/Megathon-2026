@@ -22,14 +22,19 @@ data-raw:
 data:
 	$(call run_mod,data_pipeline.run_all,,P1)
 
+# P3's order (docs/MODELS.md): rating, energy, recommender, value (~30 min total)
 train:
-	$(call run_mod,training.train_all,,P3)
+	$(call run_mod,training.train_rating,,P3)
+	$(call run_mod,training.train_energy,,P3)
+	$(call run_mod,training.train_recommender,,P3)
+	$(call run_mod,training.train_value,,P3)
 
 portfolio:
 	$(call run_mod,api.build_portfolio,--split test,P5)
 
 eval:
-	$(call run_mod,evaluation.eval_ml,,P3)
+	$(call run_mod,training.model_sizes,,P3)
+	$(call run_mod,training.evaluation_report,,P3)
 	$(call run_mod,evaluation.eval_llm,,P4)
 
 test:
