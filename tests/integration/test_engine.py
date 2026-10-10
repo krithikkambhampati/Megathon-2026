@@ -18,8 +18,13 @@ FIXTURES = REPO_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(FIXTURES))
 from generate import home_inputs, render  # noqa: E402
 
-HIDDEN_FACTORS = {"setpoint_factor", "occupancy_factor", "true_scop", "pv_orientation_factor",
-                  "self_consumption_frac"}
+HIDDEN_FACTORS = {
+    "setpoint_factor",
+    "occupancy_factor",
+    "true_scop",
+    "pv_orientation_factor",
+    "self_consumption_frac",
+}
 TIME_BUDGET_S = 0.5
 
 
@@ -148,7 +153,30 @@ def test_fixtures_are_current(homes: dict[str, HomeInput]) -> None:
 
     engine = Engine.from_config(models=load_stub_models())
     for key, home in homes.items():
-        committed = (FIXTURES / f"analysis_result_{key}.json").read_text()
-        stale = f"stale fixture {key}: run tests/fixtures/generate.py"
-        assert render(engine.analyse(home)) == committed, stale
+        committed = json.loads((FIXTURES / f"analysis_result_{key}.json").read_text())
+        fresh = json.loads(render(engine.analyse(home)))
+        where = _first_difference(fresh, committed)
+        assert where is None, f"stale fixture {key} at {where}: run tests/fixtures/generate.py"
 
+
+def _first_difference(a, b, path: str = "$") -> str | None:
+    """Path of the first real difference. Floats match to 1e-9 relative: the last binary digit of a sum
+    differs between machines/BLAS builds, which is not a stale fixture."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        if a.keys() != b.keys():
+            return f"{path} keys {sorted(a.keys() ^ b.keys())}"
+        return next((d for k in a if (d := _first_difference(a[k], b[k], f"{path}.{k}"))), None)
+    if isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            return f"{path} length {len(a)} != {len(b)}"
+        return next(
+            (
+                d
+                for i, (x, y) in enumerate(zip(a, b, strict=True))
+                if (d := _first_difference(x, y, f"{path}[{i}]"))
+            ),
+            None,
+        )
+    if isinstance(a, float) and isinstance(b, (int, float)) and not isinstance(b, bool):
+        return None if math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-9) else f"{path} {a!r} != {b!r}"
+    return None if a == b else f"{path} {a!r} != {b!r}"

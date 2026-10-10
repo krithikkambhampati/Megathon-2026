@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from greenhome.contracts import AnalysisResult, RejectedRetrofit, Scenario
+from greenhome.format import fmt_intensity
 from greenhome.llm.facts import build_fact_sheet, build_facts, data_notes, humanise
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
@@ -139,7 +140,8 @@ def test_score_sheet_has_floor_area_and_peer_use_with_shared_formatters(results)
     sheet = build_fact_sheet(results["P10001"], "score")
     assert sheet.get("home.floor_area_m2").display == "85 m²"
     assert sheet.get("peer.intensity_kwh_m2").display == "198 kWh/m²/year"
-    assert sheet.get("peer.p50_kwh_m2").display == "165 kWh/m²/year"
+    # the typical-home figure comes from P1's peer table, so read it from the result rather than hard-code it
+    assert sheet.get("peer.p50_kwh_m2").display == fmt_intensity(results["P10001"].peer.p50_kwh_m2)
 
 
 def test_notes_use_field_labels(results) -> None:
