@@ -1,1 +1,77 @@
 /* lenders screen styles. Uses tokens from /styles.css only. */
+.lenders-intro { max-width: 760px; margin-bottom: 48px; }
+.lenders-block { padding-block: 48px; border-top: 1px solid var(--line); }
+.lenders-block:first-of-type { border-top: 0; padding-top: 0; }
+.lenders-quiet { margin-top: 16px; }
+
+/* headline stats */
+.lenders-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 32px; }
+.lenders-stats .stat { padding-left: 16px; border-left: 1px solid var(--line); }
+@media (max-width: 900px) { .lenders-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* distribution */
+.lenders-dist { display: grid; gap: 10px; max-width: 760px; }
+.lenders-dist-row { display: grid; grid-template-columns: 210px 1fr 40px; align-items: center; gap: 16px; }
+.lenders-dist-track { height: 12px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
+.lenders-dist-bar { height: 100%; border-radius: var(--r-pill); transition: width .2s var(--ease); }
+.lenders-dist-n { text-align: right; font-weight: 600; }
+
+/* filters */
+.lenders-filters { display: flex; flex-wrap: wrap; gap: 16px 20px; align-items: flex-end; }
+.lenders-filters .field { min-width: 200px; }
+.lenders-filters .segmented { max-width: 100%; overflow-x: auto; }
+
+/* table */
+.lenders-table-wrap { overflow: hidden; }
+.lenders-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.lenders-table th { text-align: left; font-size: 12.5px; font-weight: 550; color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); white-space: nowrap; }
+.lenders-table td { padding: 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.lenders-table tbody tr:last-child td { border-bottom: 0; }
+.lenders-table tr.is-link { cursor: pointer; transition: background .15s var(--ease); }
+.lenders-table tr.is-link:hover { background: var(--brand-tint); }
+.lenders-rank { width: 64px; color: var(--muted); }
+.lenders-sort { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.lenders-sort:hover, .lenders-sort.is-active { color: var(--ink); }
+.lenders-sort svg { opacity: 0; transition: transform .15s var(--ease), opacity .15s var(--ease); }
+.lenders-sort:hover svg { opacity: .5; }
+.lenders-sort.is-active svg { opacity: 1; }
+.lenders-sort svg.is-up { transform: rotate(180deg); }
+.lenders-home { min-width: 220px; }
+.lenders-open { padding: 0; border: 0; background: none; text-align: left; font-weight: 600; color: var(--ink); cursor: pointer; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+.lenders-open:hover { color: var(--brand); text-decoration-color: currentColor; }
+.lenders-title { font-weight: 600; }
+.lenders-noepc { display: inline-grid; place-items: center; width: 32px; color: var(--faint); }
+.lenders-score { font-weight: 600; min-width: 2ch; }
+.lenders-table .class-pill { white-space: nowrap; }
+.lenders-pot { display: grid; gap: 6px; min-width: 96px; }
+.lenders-pot-track { display: block; height: 4px; border-radius: var(--r-pill); background: var(--surface-3); overflow: hidden; }
+.lenders-pot-track span { display: block; height: 100%; background: var(--brand); border-radius: var(--r-pill); }
+.lenders-issues { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; font-size: 13px; color: var(--ink-2); }
+.lenders-note { margin-top: 6px; color: var(--warn); }
+.lenders-go { width: 32px; color: var(--faint); }
+.lenders-table tr.is-link:hover .lenders-go { color: var(--brand); }
+
+/* small screens: each home becomes a stacked card */
+@media (max-width: 760px) {
+  .lenders-table-wrap { background: transparent; border: 0; }
+  .lenders-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .lenders-table, .lenders-table tbody, .lenders-table tr, .lenders-table td { display: block; width: auto; }
+  .lenders-table tr { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 16px; margin-bottom: 12px; position: relative; }
+  .lenders-table td { display: grid; grid-template-columns: 132px 1fr; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .lenders-table td::before { content: attr(data-label); font-family: var(--sans); letter-spacing: 0; font-size: 12.5px; font-weight: 550; color: var(--muted); }
+  .lenders-table tbody tr td:last-of-type, .lenders-table td.lenders-go { border-bottom: 0; }
+  .lenders-table td.lenders-home { grid-template-columns: 1fr; padding-top: 12px; padding-right: 36px; }
+  .lenders-table td.lenders-home::before, .lenders-table td.lenders-go::before { content: none; }
+  .lenders-table td.lenders-rank { position: absolute; top: 6px; right: 16px; border: 0; padding: 0; color: var(--faint); display: flex; gap: 1px; width: auto; }
+  .lenders-table td.lenders-rank::before { content: "#"; font-size: inherit; color: inherit; font-weight: inherit; }
+  .lenders-table td.lenders-go { display: none; }
+  .lenders-table tbody tr td:nth-last-child(2) { border-bottom: 0; }
+  .lenders-home { min-width: 0; }
+  .lenders-dist-row { grid-template-columns: 150px 1fr 32px; gap: 12px; }
+  .lenders-filters .field { min-width: 0; flex: 1 1 100%; }
+}
+@media (max-width: 420px) {
+  .lenders-stats { grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+  .lenders-stats .stat { padding-left: 12px; }
+  .lenders-table td { grid-template-columns: 110px 1fr; }
+}

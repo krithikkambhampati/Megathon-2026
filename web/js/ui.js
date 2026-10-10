@@ -134,9 +134,31 @@ export const EmptyState = ({ title, body, action }) => html`<div class="empty st
   <strong style=${{ color: "var(--ink)" }}>${title}</strong>${body && html`<p>${body}</p>`}${action}</div>`;
 
 // ---------- AI answer ----------
+// The model writes light Markdown (**bold**, "-"/"*" bullets). Render that much; everything else is plain text.
+// Internal fact references like "(see F6)" are dropped: they mean nothing to a homeowner.
+function inline(s) {
+  return s.split(/(\*\*[^*]+\*\*)/g).filter(Boolean)
+    .map((part, i) => part.startsWith("**") && part.endsWith("**") && part.length > 4 ? html`<strong key=${i}>${part.slice(2, -2)}</strong>` : part.replace(/\*/g, ""));
+}
+function richText(text) {
+  const clean = String(text ?? "").replace(/\s*\((?:see\s+)?F\d+(?:\s*(?:,|and)\s*F\d+)*\)/gi, "").trim();
+  const blocks = [];
+  let list = null;
+  for (const raw of clean.split("\n")) {
+    const line = raw.trim();
+    const bullet = line.match(/^(?:[-*•]|\d+[.)])\s+(.*)$/);
+    if (bullet) { (list ||= []).push(bullet[1]); continue; }
+    if (list) { blocks.push({ list }); list = null; }
+    if (line) blocks.push({ p: line.replace(/^#+\s*/, "") });
+  }
+  if (list) blocks.push({ list });
+  return blocks.map((b, i) => b.list
+    ? html`<ul key=${i}>${b.list.map((li, j) => html`<li key=${j}>${inline(li)}</li>`)}</ul>`
+    : html`<p key=${i}>${inline(b.p)}</p>`);
+}
 export function AiAnswer({ text, check }) {
   const verified = check && !check.fallback_used;
-  return html`<div class="ai"><div class="ai-text">${text}</div>
+  return html`<div class="ai"><div class="ai-text">${richText(text)}</div>
     <div class="ai-meta"><${Icon} name=${verified ? "shield" : "check"} size=${14} />
       ${verified ? "Every figure checked against your report" : "Standard summary of your report"}</div></div>`;
 }
