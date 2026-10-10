@@ -25,3 +25,18 @@ build/
 .vscode/
 .idea/
 .DS_Store
+
+# Part 1: data stays on the build machine (team decision); regenerate with
+# `python -m data_pipeline.run_all` (docs/DATA.md)
+data/processed/*
+!data/processed/.gitkeep
+data/examples/*
+!data/examples/.gitkeep
+config/generated/*.parquet
+# Part 3: trained models and predictions stay on the build machine (team decision);
+# retrain with the training/ scripts (docs/MODELS.md)
+models/*
+!models/.gitkeep
+outputs/test_predictions/*
+!outputs/test_predictions/.gitkeep
+reports/*.log

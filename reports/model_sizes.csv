@@ -1,0 +1,12 @@
+model,files,trees,leaves,parameters,size_mb
+energy_elec,1.0,949.0,59787.0,177463.0,5.65
+energy_gas,1.0,264.0,16632.0,49368.0,1.61
+rating,1.0,1899.0,119637.0,355113.0,10.76
+recommender/air_source_heat_pump,1.0,96.0,3993.0,11787.0,0.44
+recommender/cavity_wall_insulation,1.0,376.0,23688.0,70312.0,2.58
+recommender/double_glazing,1.0,359.0,22617.0,67133.0,2.44
+recommender/loft_insulation,1.0,1615.0,101745.0,302005.0,11.02
+recommender/smart_thermostat,1.0,1426.0,89838.0,266662.0,9.76
+recommender/solar_pv,1.0,735.0,46305.0,137445.0,5.03
+recommender/solid_wall_insulation,1.0,494.0,31122.0,92378.0,3.4
+TOTAL,10.0,8213.0,515364.0,1529666.0,52.7
