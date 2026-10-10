@@ -176,3 +176,22 @@ def test_saving_described_as_an_increase_fails(p10001, text, ok) -> None:
     assert r.passed is ok, r.unsupported
     if not ok:
         assert "840 kWh (saving)" in r.unsupported and "savings, not increases" in feedback(r)
+
+
+# ---------- infeasible retrofits (prompt rule 6) ----------
+@pytest.mark.parametrize(
+    "text,ok",
+    [
+        ("The recommended plan includes loft insulation.", False),
+        ("We recommend solar panels for this flat.", False),
+        ("Loft insulation isn't possible because another home is above, so it is not in the plan.", True),
+        ("Solar panels are not suitable, so we recommend a smart thermostat instead.", True),
+        ("We recommend a smart thermostat.", True),
+    ],
+)
+def test_recommending_an_infeasible_retrofit_fails(text, ok) -> None:
+    sheet = build_fact_sheet(_result("P90002"), "recommendations")
+    report = check(text, sheet)
+    assert report.passed is ok
+    if not ok:
+        assert "Not possible for this home" in feedback(report)

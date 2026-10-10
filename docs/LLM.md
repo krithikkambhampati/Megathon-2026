@@ -113,13 +113,20 @@ The system prompt's rules (a unit test checks they are present):
 3. If the user asks for a figure that isn't in FACTS, say this tool doesn't estimate it, then help as best
    you can without inventing one.
 4. Savings are "estimated". Property value changes are "indicative" and not guaranteed or causal.
-5. If DATA_NOTES list missing, assumed or conflicting data, mention the ones that affect your answer.
-6. Don't recommend a retrofit marked infeasible. Explain its REASON instead.
+5. If DATA_NOTES list missing, estimated, assumed or conflicting data, mention each one that relates to
+   your answer in a short sentence, so the homeowner knows which figures rest on it.
+6. Never recommend a retrofit marked infeasible or not possible, and never say it is in the plan.
+   Say plainly that it isn't possible for this home and give its REASON.
 7. If electricity use goes up while gas goes down, say so explicitly.
 8. No personal financial or mortgage advice. Plain, warm English, at most 250 words, no tables.
 ```
 Before 2026-10-11 the prompt was stricter (exact copies only, no general context, ≤ 170 words) and every
-off-topic message got a fixed reply without calling the LLM.
+off-topic message got a fixed reply without calling the LLM. Rules 5 and 6 were tightened after the eval
+below, which found data notes and infeasibility reasons often left out (§8). Rules 5 and 6 were tightened after the eval
+below, which found data notes and infeasibility reasons often left out (§8). Rules 5 and 6 were tightened after the eval
+below, which found data notes and infeasibility reasons often left out (§8). Rules 5 and 6 were tightened after the eval
+below, which found data notes and infeasibility reasons often left out (§8). Rules 5 and 6 were tightened after the eval
+below, which found data notes and infeasibility reasons often left out (§8).
 
 ## 5. Fact sheet (`facts.py`)
 
@@ -155,6 +162,21 @@ F15 All recommended retrofits · estimated carbon saving (tonnes): 1.9 t CO2e/ye
    "exactly N", "financial advice", "you should remortgage" fail, but "indicative and not guaranteed" passes.
 5. **Direction.** A number that is only ever an *increase* (e.g. a heat pump's extra electricity) fails when
    it is described as a saving.
+6. **Infeasible retrofits.** A sentence that names a retrofit the engine marked not possible (or rejected in
+   a what-if) together with "recommend…", "you should" or "plan includes", and no negation ("isn't
+   possible", "instead of"), fails; the retry tells the model to give the REASON instead.
+6. **Infeasible retrofits.** A sentence that names a retrofit the engine marked not possible (or rejected in
+   a what-if) together with "recommend…", "you should" or "plan includes", and no negation ("isn't
+   possible", "instead of"), fails; the retry tells the model to give the REASON instead.
+6. **Infeasible retrofits.** A sentence that names a retrofit the engine marked not possible (or rejected in
+   a what-if) together with "recommend…", "you should" or "plan includes", and no negation ("isn't
+   possible", "instead of"), fails; the retry tells the model to give the REASON instead.
+6. **Infeasible retrofits.** A sentence that names a retrofit the engine marked not possible (or rejected in
+   a what-if) together with "recommend…", "you should" or "plan includes", and no negation ("isn't
+   possible", "instead of"), fails; the retry tells the model to give the REASON instead.
+6. **Infeasible retrofits.** A sentence that names a retrofit the engine marked not possible (or rejected in
+   a what-if) together with "recommend…", "you should" or "plan includes", and no negation ("isn't
+   possible", "instead of"), fails; the retry tells the model to give the REASON instead.
 
 | Reply | Result |
 |---|---|
@@ -164,6 +186,16 @@ F15 All recommended retrofits · estimated carbon saving (tonnes): 1.9 t CO2e/ye
 | "Gas use drops to about 900 kWh/year." (fact: 870) | pass (hedged 2-significant-figure rounding) |
 | "That would save £400 a year on bills." | fail (no such figure) |
 | "This is indicative and not guaranteed." | pass |
+| "The recommended plan includes loft insulation." (flat under another flat) | fail (not possible) |
+| "Loft insulation isn't possible because another home is above." | pass |
+| "The recommended plan includes loft insulation." (flat under another flat) | fail (not possible) |
+| "Loft insulation isn't possible because another home is above." | pass |
+| "The recommended plan includes loft insulation." (flat under another flat) | fail (not possible) |
+| "Loft insulation isn't possible because another home is above." | pass |
+| "The recommended plan includes loft insulation." (flat under another flat) | fail (not possible) |
+| "Loft insulation isn't possible because another home is above." | pass |
+| "The recommended plan includes loft insulation." (flat under another flat) | fail (not possible) |
+| "Loft insulation isn't possible because another home is above." | pass |
 
 The templates go through the same checker in the tests. All 4 sections × 5 fixtures pass.
 
@@ -234,7 +266,7 @@ How to read it:
   match, so some misses are correct answers worded differently, but the gap is real.
 - **The one `must_not` violation** (S41): asked about loft insulation on a flat under another flat, the
   answer correctly said it isn't possible and kept every number right, but also wrote "the recommended plan
-  includes loft insulation", which it doesn't.
+  includes loft insulation", which it doesn't. The checker now rejects that sentence (§6 step 6).
 - **The LLM fallback hurts parsing slightly** (44/50 vs 46/50 rules only), so the rules-first design is right.
 
 Pipeline test with templates only (dev machine, no LLM, stub models; this shows the pipeline works, not

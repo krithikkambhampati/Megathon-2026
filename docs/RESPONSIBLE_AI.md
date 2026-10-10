@@ -16,15 +16,19 @@ or personal details. The unsupported-claim rate is **pending** the human annotat
   join sales to certificates in `data/interim/`. They are dropped before anything is written to
   `data/processed/`, and real EPC keys are replaced by synthetic property ids.
 - **Customers are synthetic.** Who owns which property is generated, never taken from real data.
-- **The app never asks for an address or a name.** It asks about the home's features and energy use only.
+- **The app never asks for an address.** The home assessment asks about the home's features and energy use
+  only; creating an account asks for a name, an email and a password, and nothing else.
 - **Only computed facts go to the language model.** The engine and the models run on one laptop. The
   language model is hosted on Groq: for each answer it receives the fact sheet (the home's computed results,
-  no identifiers) and the user's question. The key lives in `.env`. With `LLM_PROVIDER=ollama` and a local
+  no identifiers) and the user's question; Groq's own data-retention terms apply to those requests. The key
+  lives in `.env`. With `LLM_PROVIDER=ollama` and a local
   model nothing leaves the machine.
 - **What is stored about a user.** An account is an email, a name and a scrypt password hash in
   `data/app.sqlite` on the server, plus login sessions (only a hash of each session token is stored). The
   home details, report and chat a user opens are kept in their own browser (localStorage), not on the
   server. Analyses on the server are kept only in an in-memory cache that is cleared when the API restarts.
+  There is no self-service account deletion yet; an operator can delete a user's row, which also removes
+  their sessions.
 
 ## 2. Bias and coverage
 
@@ -65,7 +69,8 @@ Any language model will sometimes invent or round numbers, so it is never truste
     figures);
   - money claims the tool has no figure for (bill savings, £ value gains) fail;
   - "guarantee"-style promises and mortgage advice fail;
-  - an increase described as a saving (for example a heat pump's extra electricity) fails.
+  - an increase described as a saving (for example a heat pump's extra electricity) fails;
+  - recommending a retrofit the engine marked not possible for the home, or saying it is in the plan, fails.
 - A failed reply is **retried once** with the problems listed, then replaced by a **template answer** built
   from the same facts. The user never sees an unchecked number, and each answer shows whether it was
   verified or is a template answer.
@@ -74,12 +79,14 @@ Any language model will sometimes invent or round numbers, so it is never truste
 - The whole answer has a **25-second budget**; after that the template answer is used, so a slow model never
   blocks the app. The app works with the language model off.
 
-Measured effect (80 scenarios, earlier local model and stricter guardrails): numeric groundedness **84.3%** in the model's raw first drafts and **100%**
-in the answers shown, with **100%** of shown numbers matching a fact (targets ≥ 90%). The checker's most
-frequent catch was an electricity increase after a heat pump described as a saving. Still open: answers
-mention required data notes and reasons only 63.5% of the time (target 90%; the template always includes
-them), and one of 80 answers contained a wrong non-numeric statement. The human-annotated unsupported-claim
-rate (two independent annotators, target < 5%) is pending.
+Measured effect (80 scenarios, earlier local model and stricter guardrails): numeric groundedness **84.3%**
+in the model's raw first drafts and **100%** in the answers shown, with **100%** of shown numbers matching a
+fact (targets ≥ 90%). The checker's most frequent catch was an electricity increase after a heat pump
+described as a saving. Still open: answers mentioned required data notes and reasons only 63.5% of the time
+(target 90%; the template always includes them), and one of 80 answers wrongly said an impossible retrofit
+was in the plan. Since that run, the prompts ask for each relevant data note and reason, and the checker
+rejects that kind of answer. The human-annotated unsupported-claim rate (two independent annotators,
+target < 5%) is pending.
 Details: [LLM.md](LLM.md), `reports/llm_eval.md`.
 
 ## 5. Human oversight

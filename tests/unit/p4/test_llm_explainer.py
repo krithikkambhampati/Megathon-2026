@@ -138,8 +138,8 @@ def test_system_prompt_has_the_readme_rules_and_the_facts(p10001) -> None:
         "as long as you don't attach new numbers to them.",
         "If the user asks for a figure that isn't in FACTS, say this tool doesn't estimate it",
         'Savings are "estimated". Property value changes are "indicative" and not guaranteed or causal.',
-        "If DATA_NOTES list missing, assumed or conflicting data, mention the ones that affect your answer.",
-        "Don't recommend a retrofit marked infeasible. Explain its REASON instead.",
+        "If DATA_NOTES list missing, estimated, assumed or conflicting data, mention each one",
+        "Never recommend a retrofit marked infeasible or not possible, and never say it is in the plan.",
         "If electricity use goes up while gas goes down, say so explicitly.",
         "No personal financial or mortgage advice. Plain, warm English, at most 250 words, no tables.",
     ):

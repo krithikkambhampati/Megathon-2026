@@ -58,6 +58,17 @@ BANNED: dict[str, str] = {  # name → regex; skipped when a negation comes just
     "mortgage advice": r"\byou should (?:re)?mortgage\b",
 }
 _BANNED_RE = {k: re.compile(p, re.IGNORECASE) for k, p in BANNED.items()}
+# Recommending a retrofit the engine marked infeasible (prompt rule 6), e.g. "the recommended plan includes
+# loft insulation" for a flat under another flat. A sentence that negates or contrasts it passes.
+_RECOMMEND_CUE = re.compile(
+    r"\b(?:recommend\w*|you should|worth (?:doing|installing|it)|go for|plan includes|included in)\b",
+    re.IGNORECASE,
+)
+_NOT_RECOMMEND = re.compile(
+    r"\b(?:not|no|cannot|never|instead of|rather than|left out|ruled out|unsuitable|except)\b|n't\b",
+    re.IGNORECASE,
+)
+INFEASIBLE_SUFFIX = " (not possible for this home)"
 _NEGATION = re.compile(
     r"\b(?:not|no|never|isn't|aren't|can't|cannot|without|nor)\b[^.!?;]{0,20}$", re.IGNORECASE
 )
@@ -340,6 +351,22 @@ def banned_phrases(text: str) -> list[str]:
     return out
 
 
+def recommended_infeasible(text: str, sheet: FactSheet) -> list[str]:
+    """Infeasible or rejected retrofits on the sheet that `text` recommends or puts in the plan."""
+    recs = sheet.view.get("recommendations") or {}
+    names = [i["name"] for i in recs.get("infeasible", [])]
+    names += [r["name"] for r in sheet.view.get("rejected", []) if r.get("name")]
+    sentences = [s for s in _SENTENCE_SPLIT.split(text) if s.strip()]
+    return [
+        name
+        for name in dict.fromkeys(names)
+        if any(
+            name.lower() in s.lower() and _RECOMMEND_CUE.search(s) and not _NOT_RECOMMEND.search(s)
+            for s in sentences
+        )
+    ]
+
+
 def check(text: str, sheet: FactSheet, *, extra_allowed: list[Fact] | None = None) -> CheckReport:
     """Check one reply against the sheet it was written from. `attempts` / `fallback_used` are left
     0 / False for the caller (explainer / chat) to fill in."""
@@ -360,6 +387,7 @@ def check(text: str, sheet: FactSheet, *, extra_allowed: list[Fact] | None = Non
     for rx in _NEVER_CLAIMS:
         unsupported += [f"{mt.group(0).strip()} (no such figure)" for mt in rx.finditer(text)]
     banned = banned_phrases(text)
+    banned += [f"recommending {n}{INFEASIBLE_SUFFIX}" for n in recommended_infeasible(text, sheet)]
     return CheckReport(
         passed=not unsupported and not banned,
         numbers_found=found,
@@ -387,7 +415,18 @@ def feedback(report: CheckReport) -> str:
     ]
     if never:
         parts.append(f"There is no figure for this in FACTS: {'; '.join(never)}.")
-    if report.banned_phrases:
-        parts.append(f"Do not say: {', '.join(report.banned_phrases)}.")
+    infeasible = [
+        b.removeprefix("recommending ").removesuffix(INFEASIBLE_SUFFIX)
+        for b in report.banned_phrases
+        if b.endswith(INFEASIBLE_SUFFIX)
+    ]
+    if infeasible:
+        parts.append(
+            f"Not possible for this home: {', '.join(infeasible)}. Don't recommend it or say it is in "
+            "the plan; explain its REASON instead."
+        )
+    banned = [b for b in report.banned_phrases if not b.endswith(INFEASIBLE_SUFFIX)]
+    if banned:
+        parts.append(f"Do not say: {', '.join(banned)}.")
     parts.append("Use only FACTS, copied exactly as written.")
     return " ".join(parts)
