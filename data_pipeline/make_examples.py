@@ -162,8 +162,8 @@ def main() -> None:
             ),
         ),
         (
-            "Rating and usage disagree",
-            "Good rating (B/C) but metered intensity above the peer P90",
+            "Good rating, very high usage",
+            "Rated B/C, but uses more than 90% of similar homes (flagged as high use for its size)",
             pick(test, complete & test.energy_rating.isin(["B", "C"]) & (test.intensity > test.p90)),
         ),
         (

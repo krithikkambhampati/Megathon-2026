@@ -31,8 +31,8 @@
   },
   {
     "property_id": "P1011233",
-    "title": "Rating and usage disagree",
-    "why_interesting": "Good rating (B/C) but metered intensity above the peer P90",
+    "title": "Good rating, very high usage",
+    "why_interesting": "Rated B/C, but uses more than 90% of similar homes (flagged as high use for its size)",
     "synthetic": false
   },
   {
