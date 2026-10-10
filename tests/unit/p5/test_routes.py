@@ -10,7 +10,7 @@ from api.main import create_app
 from greenhome.contracts import CheckReport, HomeInput
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
-HOME_IDS = ["P10001", "P90002", "P90003", "P90004"]
+HOME_IDS = sorted(p.stem.removeprefix("home_input_") for p in FIXTURES.glob("home_input_*.json"))
 
 
 def _home(pid: str) -> dict:

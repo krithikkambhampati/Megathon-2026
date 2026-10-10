@@ -23,6 +23,7 @@ _FIXTURE_TEXT = {
     "P90002": ("Flat with unknown answers", "Several 'not sure' answers, so the score comes with a range"),
     "P90003": ("Almost no information", "Too little data: the app says 'insufficient' instead of guessing"),
     "P90004": ("Missing winter months", "Gaps in monthly readings, annualised with seasonal shares"),
+    "P90005": ("Off-gas home", "Oil or LPG heating: scored, but savings are out of scope"),
 }
 
 
