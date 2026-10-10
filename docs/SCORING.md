@@ -83,13 +83,14 @@ than 11. The effect is at most 0.25 score points (1 point × weight 0.25), only 
 
 | Bound | Value | Meaning |
 |---|---|---|
-| `i_best` | 50 kWh/m²/yr | intensity at or below which `s = 100` |
-| `i_worst` | 300 kWh/m²/yr | intensity at or above which `s = 0` |
+| `i_best` | 85 kWh/m²/yr | intensity at or below which `s = 100` |
+| `i_worst` | 230 kWh/m²/yr | intensity at or above which `s = 0` |
 
-**Basis:** the bounds are the train-split P5 and P95 of `purchased_kwh / floor_area_m2`, written by Part 1 to
-`config/generated/intensity_bounds.yaml`. **The current 50 / 300 are placeholders** until that file lands. The
-mapping is linear and non-increasing in `I`, so using less energy never lowers the score. Climate
-normalisation with `hdd_factor` is a stretch goal and is **not** applied in `score-v1`.
+**Basis:** the bounds are the train-split P5 and P95 of `purchased_kwh / floor_area_m2` (grid import + gas)
+over 34,856 training homes, written by Part 1's pipeline (`data_pipeline/build_dataset.py`) to
+`config/generated/intensity_bounds.yaml`. The span is 230 − 85 = 145 kWh/m², so each 1.45 kWh/m² of intensity
+is one sub-score point. The mapping is linear and non-increasing in `I`, so using less energy never lowers the
+score. Climate normalisation with `hdd_factor` is a stretch goal and is **not** applied in `score-v1`.
 
 ### 3.3 Insulation
 
@@ -159,10 +160,14 @@ heat than a solid wall. Once insulated, the construction no longer changes the s
    band step for this measure, worth 0.25 × (62 − 47) = 3.75 points for an E → D move, and never more than
    0.25 × 20 = 5.0 points (the largest adjacent gap, G → F).
 3. **Solar counted twice.** Renewables credits *having* generation. Intensity uses purchased energy, which PV
-   lowers by about 20–35% of electricity imports (catalogue `solar_pv` effect, placeholder). For P10001
-   (4,800 kWh electricity, 85 m²) that is 960–1,680 kWh, or 5.7–10.0% of purchased energy; intensity drops by
-   11.3–19.8 kWh/m², which adds 0.9–1.6 points via the intensity component (≤ ~2 points). The effect is
-   documented, small and deliberate.
+   lowers by the self-consumed share of its output. The stub energy model computes the displaced grid import
+   as `kWp(property type) × regional PV yield × mid self-consumption`, capped at grid import (catalogue
+   `kwp_by_property_type`, `self_consumption_frac_range` 0.30–0.50; PVGIS yield from `config/regions.yaml`).
+   For P10001 (semi-detached, East Midlands, 4,800 kWh electricity, 85 m²): 3.5 kWp × 979.6 kWh/kWp × 0.40 =
+   **1,371 kWh**, the engine's standalone `solar_pv` saving. That is 8.2% of purchased energy; intensity drops
+   by 16.1 kWh/m², which adds **2.2 points** via the intensity component (1.7–2.8 points across the 0.30–0.50
+   self-consumption range), on top of the 8.0 points from the renewables component. The effect is documented,
+   small and deliberate.
 4. **Monotonicity.** Each lookup is ordered by quality, and the intensity mapping is linear and
    non-increasing, so improving any single input or lowering purchased energy never lowers the score.
    `tests/unit/p2/test_score.py` checks this: each lookup is monotone in its documented order (for every wall
@@ -178,20 +183,20 @@ Semi-detached, 1950–1966, 85 m², rating E, 4,800 kWh electricity and 12,000 k
 | Component | Input | Sub-score | Weight | Contribution |
 |---|---|---|---|---|
 | Energy efficiency | E | 47 | 0.25 | 11.750 |
-| Intensity | (4,800 + 12,000) / 85 = 197.6 kWh/m² | 100 × (300 − 197.6) / 250 = 40.94 | 0.20 | 8.188 |
+| Intensity | (4,800 + 12,000) / 85 = 197.6 kWh/m² | 100 × (230 − 197.6) / 145 = 22.31 | 0.20 | 4.462 |
 | Insulation | loft low (35), cavity unfilled (20) → 0.4 × 35 + 0.6 × 20 | 26 | 0.15 | 3.900 |
 | Heating | gas_boiler_condensing | 65 | 0.15 | 9.750 |
 | Glazing | single | 0 | 0.10 | 0.000 |
 | Renewables | none | 0 | 0.10 | 0.000 |
 | Smart controls | programmer_thermostat | 50 | 0.05 | 2.500 |
-| **Total** | | | | **36.088 → 36, Poor** |
+| **Total** | | | | **32.362 → 32, Poor** |
 
 The problem statement shows 38 for this home as an illustration; it does not publish sub-score mappings.
-Our documented mappings give **36**, in the same class (Poor, 30–49). The difference comes from the mappings
-we had to define, chiefly intensity: each intensity sub-score point moves the total by 0.20. **This number
-will move when Part 1 writes the real P5/P95 intensity bounds.** The golden unit test reads the bounds from
-config, and asserts 36.088 only while the placeholders 50 / 300 are in place. All inputs are user-given, so
-the score range is 36–36.
+Our documented mappings give **32**, in the same class (Poor, 30–49). The difference comes from the mappings
+we had to define, chiefly intensity: 197.6 kWh/m² lies close to the train-split P95 (230), so the home gets
+only 22.31 of 100 intensity points, and each intensity sub-score point moves the total by 0.20. The golden
+unit test reads the bounds from config and recomputes the expected sub-scores, so it follows the bounds.
+All inputs are user-given, so the score range is 32–32.
 
 ## 6. Unknown answers and the score range
 
@@ -210,8 +215,8 @@ The minimum-information rule (≤ 3 unknown feature fields) keeps this small: at
 × 3 rating bands = 540 combinations.
 
 Example: P10001 with glazing unknown. The placeholder mode table imputes `double` (80), so the score is
-36.088 + 8.0 = 44.088 → **44**, and glazing can be anything from single (0) to triple (100), so the range is
-**36–46**.
+32.362 + 8.0 = 40.362 → **40** (Poor), and glazing can be anything from single (0, total 32.362) to triple
+(100, total 42.362), so the range is **32–42**.
 
 Energy itself is not enumerated. If energy comes from typical homes, the result carries
 `ENERGY_FROM_TYPICAL_HOMES` and the intensity component's provenance shows `imputed`.
@@ -257,10 +262,16 @@ uses seasonal shares per fuel (`config/regions.yaml`, national profile if the re
 than **15%** of the annual figure, the engine raises `CONFLICT_ANNUAL_VS_MONTHLY` and uses the monthly
 estimate when coverage ≥ 0.75, otherwise the annual figure.
 
-**Example** (placeholder gas shares). A home has gas readings for March to November only, totalling
-6,540 kWh. Coverage = 0.120 + 0.080 + 0.050 + 0.030 + 0.025 + 0.025 + 0.035 + 0.070 + 0.110 = **0.545**, so
-annual = 6,540 / 0.545 = **12,000 kWh** with a `LOW_COVERAGE_ANNUALISATION` warning. Mean × 12 would give
-6,540 / 9 × 12 = 8,720 kWh, 27% too low.
+**Example** (national gas shares, `config/regions.yaml: national.gas_monthly_share`). A home has gas
+readings for March to November only, totalling 7,170.6 kWh. Coverage is the sum of the March–November shares:
+0.12000 + 0.09615 + 0.06304 + 0.03729 + 0.02943 + 0.02991 + 0.04107 + 0.07103 + 0.10963 = **0.59755**, so
+annual = 7,170.6 / 0.59755 = **12,000 kWh** with a `LOW_COVERAGE_ANNUALISATION` warning. Mean × 12 would give
+7,170.6 / 9 × 12 = 9,560.8 kWh, 20% too low.
+
+The shares come from Part 1's `data_pipeline/build_regions.py`: 75% space heating weighted by monthly
+heating degree days (Hitchin formula, base 15.5 °C, Met Office HadUK-Grid 2016–2025) plus 25% hot water and
+cooking weighted by days × (55 °C − mains water temperature). Electricity shares come from the Low Carbon
+London smart-meter trial (UKPN, 2013).
 
 ## 9. Data quality flags and issues
 
@@ -288,8 +299,10 @@ annual = 6,540 / 0.545 = **12,000 kWh** with a `LOW_COVERAGE_ANNUALISATION` warn
 
 (2) Both values are kept and explained. Skipped when energy is imputed or the rating is not user-given.
 
-Peer percentiles come from `engine.yaml: peers_fallback` (placeholder, by floor-area band: <50, 50–90,
-90–130, 130–200, >200 m²) until Part 1 writes train-split percentiles by property type and floor-area band.
+Peer percentiles come from `config/generated/peer_percentiles.parquet` (train-split percentiles by property
+type and floor-area band) when it is present. Part 1's pipeline builds that file locally and it is not
+committed, so without it the engine falls back to `engine.yaml: peers_fallback` (placeholder, by floor-area
+band only: <50, 50–90, 90–130, 130–200, >200 m²).
 
 ### 9.2 Issues and the poor flag (`issues.py`)
 
@@ -428,10 +441,14 @@ ranks homes by this number.
 
 `ΔC (kg CO2e/yr) = Δelectricity_kWh × EF_electricity + Δgas_kWh × EF_gas`
 
-| Fuel | Factor (kg CO2e/kWh) | Basis | Status |
+| Fuel | Factor (kg CO2e/kWh) | Basis | Source |
 |---|---|---|---|
-| electricity | 0.207 | generation (scope 2), excludes T&D losses | placeholder |
-| gas | 0.183 | gross calorific value (matches metered kWh) | placeholder |
+| electricity | 0.13096 | UK grid electricity generated, scope 2 location-based; excludes T&D losses | DESNZ 2026 |
+| gas | 0.18231 | natural gas combustion, scope 1, gross calorific value (as billed); excludes WTT | DESNZ 2026 |
+
+Source: DESNZ *Greenhouse gas reporting: conversion factors 2026*, flat file v1.2 (`config/emission_factors.yaml`
+gives the DESNZ row IDs and URL). The T&D loss (0.01299) and well-to-tank (0.03021) factors are recorded in the
+file for sensitivity checks but are not added to the headline carbon numbers.
 
 The sign follows the saving: positive = emissions reduction. A heat pump's negative electricity term and
 positive gas term are both kept, so the net carbon is honest.
@@ -455,16 +472,26 @@ Values still marked `TODO_SOURCE` in config (they make the engine run; do not ci
 
 | File | Placeholder values |
 |---|---|
-| `config/generated/intensity_bounds.yaml` | `i_best` 50, `i_worst` 300 (to become train-split P5/P95) |
-| `config/emission_factors.yaml` | electricity 0.207 and gas 0.183 kg CO2e/kWh, year 2024 (to copy from DESNZ) |
-| `config/retrofit_catalogue.yaml` | all effect ranges, costs, lifetimes; heat-pump SCOP 2.4–3.4; £7,500 grant |
-| `config/regions.yaml` | `hdd_factor`, `pv_yield_kwh_per_kwp`, monthly shares (same in all regions) |
 | `config/imputation.yaml` | floor area by bedrooms, feature mode by age band and property type, typical-home energy |
-| `config/engine.yaml` | `peers_fallback` intensity percentiles (by floor-area band only) |
-| `config/global.yaml` | `as_of_date` "2025-06" |
+| `config/engine.yaml` | `peers_fallback` intensity percentiles (by floor-area band only; used when no peer parquet) |
+
+Now sourced (no longer placeholders): intensity bounds 85 / 230 (train-split P5/P95, 34,856 homes); emission
+factors (DESNZ 2026); the retrofit catalogue (each entry has a `source` and a `source_status` of verified,
+secondary or engineering; `engineering` entries are our documented assumptions); regional HDD factors,
+monthly gas and electricity shares and PVGIS yields (`config/regions.yaml`; the national block gets
+`hdd_factor` 1.0 and the mean regional PV yield and profile from the loader, `greenhome/config.py:
+_complete_national`); and `as_of_date` "2026-07" (`config/global.yaml`).
 
 Other limitations:
 
+- **Flat retrofit costs.** `cost_gbp` is a flat indicative range for a typical semi-detached home. The
+  catalogue's `cost_scales_with_floor_area` flag is deliberately **not** applied: no reference floor area is
+  defined and the range already spans typical homes. Costs for much smaller or larger homes are therefore
+  rougher than the range suggests.
+- **Stub models.** Until Part 3 ships trained models, savings come from the `stub-0` energy model: fixed
+  heating shares (70% of gas, 60% of electricity), catalogue effect midpoints for fabric, glazing and
+  controls, a fixed SCOP of 3.0 for the heat pump (not the catalogue's `scop_range`), and for solar PV
+  `kWp × regional yield × mid self-consumption`, capped at grid import. Stub numbers are illustrative.
 - **Off-gas homes** (`main_fuel = other`: oil, LPG, solid fuel, community heating) are scored, but savings
   are `out_of_scope`; the formulas cover electricity and mains gas only. Coverage is England and Wales.
 - The score range covers unknown feature fields and an imputed rating; it does not vary typical-home energy.
