@@ -1,0 +1,88 @@
+{
+  "property_id": "P1223173",
+  "customer_id": "C1177620",
+  "property_type": "flat",
+  "age_band": "1900_1929",
+  "floor_area_m2": 57.0,
+  "bedrooms": 1,
+  "region": "west_midlands",
+  "current_value_gbp": 165500.0,
+  "energy_rating": "F",
+  "roof_type": "dwelling_above",
+  "roof_insulation": null,
+  "wall_type": "solid",
+  "wall_insulation": "none",
+  "glazing": "partial_double",
+  "heating_system": "electric_storage",
+  "main_fuel": "electricity",
+  "renewables": "none",
+  "smart_controls": "none",
+  "listed_or_conservation": null,
+  "outdoor_space": null,
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": [
+      {
+        "month": "2025-07",
+        "electricity_kwh": 269.7,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-08",
+        "electricity_kwh": 280.0,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-09",
+        "electricity_kwh": 342.2,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-10",
+        "electricity_kwh": 507.6,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-11",
+        "electricity_kwh": 726.2,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-12",
+        "electricity_kwh": 865.6,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-01",
+        "electricity_kwh": 952.4,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-02",
+        "electricity_kwh": 807.5,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-03",
+        "electricity_kwh": 796.3,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-04",
+        "electricity_kwh": 640.4,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-05",
+        "electricity_kwh": 447.0,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-06",
+        "electricity_kwh": 302.8,
+        "gas_kwh": 0.0
+      }
+    ]
+  }
+}

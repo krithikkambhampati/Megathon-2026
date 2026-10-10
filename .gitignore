@@ -39,7 +39,6 @@ config/generated/*.parquet
 # compares homes with real peers instead of engine.yaml placeholders.
 !config/generated/peer_percentiles.parquet
 # Part 3:
-# retrain with the training/ scripts (docs/MODELS.md)
 # trained models (deliverable C) and held-out predictions (deliverable I) are committed compressed
 models/**/*.txt
 outputs/test_predictions/*.csv

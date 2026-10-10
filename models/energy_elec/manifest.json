@@ -1,0 +1,112 @@
+{
+  "name": "energy_elec",
+  "version": "202610101604",
+  "trained_at": "2026-10-10T16:04:16+00:00",
+  "model_files": [
+    "model.txt.gz"
+  ],
+  "seed": 42,
+  "lightgbm": "4.7.0",
+  "python": "3.13.11",
+  "data_manifest_created_at": "2026-10-10T14:35:00+00:00",
+  "metrics": {
+    "val": {
+      "model": {
+        "mae_saving_elec_kwh": 175.15433502140215,
+        "mae_saving_gas_kwh": 142.6997383319688,
+        "mae_saving_net_kwh": 251.51452185641566,
+        "mape_net_saving_pct": 5.75307868998237,
+        "mae_net_multi_retrofit_packages": 297.32109785003445,
+        "elec_increase_sign_accuracy_hp": 0.9992740936846151,
+        "mae_saving_net_ci95": [
+          245.97754297001015,
+          257.24873638636564
+        ]
+      },
+      "B1_catalogue_rule": {
+        "mae_saving_elec_kwh": 461.12440653189884,
+        "mae_saving_gas_kwh": 937.8719335082927,
+        "mae_saving_net_kwh": 1045.6725443557698,
+        "mape_net_saving_pct": 21.428571428571423,
+        "mae_net_multi_retrofit_packages": 1311.4044083998983,
+        "elec_increase_sign_accuracy_hp": 0.9944916520773731,
+        "mae_saving_net_ci95": null
+      },
+      "B2_mean_pct_by_type": {
+        "mae_saving_elec_kwh": 1286.582878690204,
+        "mae_saving_gas_kwh": 470.101254565434,
+        "mae_saving_net_kwh": 1666.6548331795316,
+        "mape_net_saving_pct": 34.90849446873606,
+        "mae_net_multi_retrofit_packages": 1920.485851021001,
+        "elec_increase_sign_accuracy_hp": 0.8812929672488151,
+        "mae_saving_net_ci95": null
+      },
+      "B3_additive_singles": {
+        "mae_saving_elec_kwh": 365.5508367755463,
+        "mae_saving_gas_kwh": 472.5274299665845,
+        "mae_saving_net_kwh": 387.0555640525597,
+        "mape_net_saving_pct": 7.945598227695608,
+        "mae_net_multi_retrofit_packages": 592.5769969845213,
+        "elec_increase_sign_accuracy_hp": 0.9992740936846151,
+        "mae_saving_net_ci95": null
+      }
+    },
+    "test": {
+      "model": {
+        "mae_saving_elec_kwh": 176.6817595413414,
+        "mae_saving_gas_kwh": 135.77447397827032,
+        "mae_saving_net_kwh": 246.90087744705536,
+        "mape_net_saving_pct": 5.824849388003835,
+        "mae_net_multi_retrofit_packages": 290.8900947612535,
+        "elec_increase_sign_accuracy_hp": 0.9994870041039672,
+        "mae_saving_net_ci95": [
+          241.7931687079708,
+          251.47099140461356
+        ]
+      },
+      "B1_catalogue_rule": {
+        "mae_saving_elec_kwh": 482.91772240091933,
+        "mae_saving_gas_kwh": 912.48980790782,
+        "mae_saving_net_kwh": 1034.118903688265,
+        "mape_net_saving_pct": 21.428571428571423,
+        "mae_net_multi_retrofit_packages": 1292.395883969381,
+        "elec_increase_sign_accuracy_hp": 0.9944852941176471,
+        "mae_saving_net_ci95": null
+      },
+      "B2_mean_pct_by_type": {
+        "mae_saving_elec_kwh": 1351.6719331692123,
+        "mae_saving_gas_kwh": 444.2034957305309,
+        "mae_saving_net_kwh": 1707.2934884599144,
+        "mape_net_saving_pct": 35.53123794879994,
+        "mae_net_multi_retrofit_packages": 1992.7043121310003,
+        "elec_increase_sign_accuracy_hp": 0.8718365253077975,
+        "mae_saving_net_ci95": null
+      },
+      "B3_additive_singles": {
+        "mae_saving_elec_kwh": 362.88484890230404,
+        "mae_saving_gas_kwh": 446.92996253119014,
+        "mae_saving_net_kwh": 374.8674364148826,
+        "mape_net_saving_pct": 7.980348481882819,
+        "mae_net_multi_retrofit_packages": 568.1971451976993,
+        "elec_increase_sign_accuracy_hp": 0.9995725034199726,
+        "mae_saving_net_ci95": null
+      }
+    },
+    "performance_gap": [
+      {
+        "retrofit": "loft_insulation",
+        "model_median_gas_saving_pct": 4.48,
+        "simulator_median_gas_saving_pct": 3.53,
+        "NEED_observed_gas_saving_pct": "2.6-2.8"
+      },
+      {
+        "retrofit": "cavity_wall_insulation",
+        "model_median_gas_saving_pct": 13.7,
+        "simulator_median_gas_saving_pct": 13.7,
+        "NEED_observed_gas_saving_pct": "8.4-9.2"
+      }
+    ]
+  },
+  "target": "elec_after / elec_before",
+  "inference": "pred * elec_before (0 if no elec baseline), clip >= 0"
+}

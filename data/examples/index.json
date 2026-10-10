@@ -1,0 +1,74 @@
+[
+  {
+    "property_id": "P10001",
+    "title": "PS2 example home (P10001)",
+    "why_interesting": "The brief's example: rating E, high use, no solar, poor insulation, gas boiler, single glazing",
+    "synthetic": true
+  },
+  {
+    "property_id": "P347548",
+    "title": "Typical poor gas home",
+    "why_interesting": "Rating E/F semi with old boiler and single glazing",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1014307",
+    "title": "Large but efficient detached",
+    "why_interesting": "Over 200 m2, rating B/C: big total use must not mean inefficient",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1024619",
+    "title": "Flat with a dwelling above",
+    "why_interesting": "No loft, so loft insulation and solar are infeasible",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1001332",
+    "title": "Missing winter meter readings",
+    "why_interesting": "Gaps over Dec-Feb: seasonal annualisation, not mean x 12",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1011233",
+    "title": "Rating and usage disagree",
+    "why_interesting": "Good rating (B/C) but metered intensity above the peer P90",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1033772",
+    "title": "Heat pump home",
+    "why_interesting": "Already electrified: heat pump infeasible, focus on fabric/solar",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1007007",
+    "title": "Home with solar PV",
+    "why_interesting": "Solar cuts grid imports, not demand",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1223173",
+    "title": "Electric storage heater flat",
+    "why_interesting": "Electric heating, no gas: per-fuel results differ",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1122209",
+    "title": "Solid-wall Victorian terrace",
+    "why_interesting": "Pre-1900 solid walls: solid wall insulation feasible but costly",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1002021",
+    "title": "Gas meter data missing",
+    "why_interesting": "Gas-heated, but the gas column is missing",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1000205_minimal",
+    "title": "Almost no information",
+    "why_interesting": "Only type and region known: app must say what it cannot estimate",
+    "synthetic": false
+  }
+]

@@ -1,0 +1,88 @@
+{
+  "property_id": "P1024619",
+  "customer_id": "C520304",
+  "property_type": "flat",
+  "age_band": "pre_1900",
+  "floor_area_m2": 48.0,
+  "bedrooms": 1,
+  "region": "south_east",
+  "current_value_gbp": 250300.0,
+  "energy_rating": "C",
+  "roof_type": "dwelling_above",
+  "roof_insulation": null,
+  "wall_type": "solid",
+  "wall_insulation": "none",
+  "glazing": "partial_double",
+  "heating_system": "gas_boiler_condensing",
+  "main_fuel": "mains_gas",
+  "renewables": "none",
+  "smart_controls": "programmer_thermostat_trvs",
+  "listed_or_conservation": null,
+  "outdoor_space": null,
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": [
+      {
+        "month": "2025-07",
+        "electricity_kwh": 92.5,
+        "gas_kwh": 142.0
+      },
+      {
+        "month": "2025-08",
+        "electricity_kwh": 95.1,
+        "gas_kwh": 143.6
+      },
+      {
+        "month": "2025-09",
+        "electricity_kwh": 99.3,
+        "gas_kwh": 189.0
+      },
+      {
+        "month": "2025-10",
+        "electricity_kwh": 105.5,
+        "gas_kwh": 350.2
+      },
+      {
+        "month": "2025-11",
+        "electricity_kwh": 114.5,
+        "gas_kwh": 605.1
+      },
+      {
+        "month": "2025-12",
+        "electricity_kwh": 116.1,
+        "gas_kwh": 715.4
+      },
+      {
+        "month": "2026-01",
+        "electricity_kwh": 129.4,
+        "gas_kwh": 803.1
+      },
+      {
+        "month": "2026-02",
+        "electricity_kwh": 107.3,
+        "gas_kwh": 666.4
+      },
+      {
+        "month": "2026-03",
+        "electricity_kwh": 124.8,
+        "gas_kwh": 641.9
+      },
+      {
+        "month": "2026-04",
+        "electricity_kwh": 100.1,
+        "gas_kwh": 498.0
+      },
+      {
+        "month": "2026-05",
+        "electricity_kwh": 90.2,
+        "gas_kwh": 311.7
+      },
+      {
+        "month": "2026-06",
+        "electricity_kwh": 93.0,
+        "gas_kwh": 172.2
+      }
+    ]
+  }
+}

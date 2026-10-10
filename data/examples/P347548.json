@@ -1,0 +1,88 @@
+{
+  "property_id": "P347548",
+  "customer_id": "C1296799",
+  "property_type": "semi_detached",
+  "age_band": "1930_1949",
+  "floor_area_m2": 68.0,
+  "bedrooms": 3,
+  "region": "yorkshire_humber",
+  "current_value_gbp": 183900.0,
+  "energy_rating": "E",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "full",
+  "wall_type": "cavity",
+  "wall_insulation": "full",
+  "glazing": "single",
+  "heating_system": "gas_boiler_old",
+  "main_fuel": "mains_gas",
+  "renewables": "none",
+  "smart_controls": "none",
+  "listed_or_conservation": null,
+  "outdoor_space": "yes",
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": [
+      {
+        "month": "2025-07",
+        "electricity_kwh": 152.2,
+        "gas_kwh": 263.7
+      },
+      {
+        "month": "2025-08",
+        "electricity_kwh": 145.9,
+        "gas_kwh": 282.0
+      },
+      {
+        "month": "2025-09",
+        "electricity_kwh": 161.7,
+        "gas_kwh": 363.8
+      },
+      {
+        "month": "2025-10",
+        "electricity_kwh": 175.3,
+        "gas_kwh": 662.0
+      },
+      {
+        "month": "2025-11",
+        "electricity_kwh": 182.8,
+        "gas_kwh": 984.9
+      },
+      {
+        "month": "2025-12",
+        "electricity_kwh": 196.6,
+        "gas_kwh": 1145.4
+      },
+      {
+        "month": "2026-01",
+        "electricity_kwh": 200.1,
+        "gas_kwh": 1265.8
+      },
+      {
+        "month": "2026-02",
+        "electricity_kwh": 170.3,
+        "gas_kwh": 1048.4
+      },
+      {
+        "month": "2026-03",
+        "electricity_kwh": 196.2,
+        "gas_kwh": 1062.4
+      },
+      {
+        "month": "2026-04",
+        "electricity_kwh": 152.2,
+        "gas_kwh": 835.8
+      },
+      {
+        "month": "2026-05",
+        "electricity_kwh": 168.9,
+        "gas_kwh": 568.8
+      },
+      {
+        "month": "2026-06",
+        "electricity_kwh": 148.0,
+        "gas_kwh": 348.7
+      }
+    ]
+  }
+}

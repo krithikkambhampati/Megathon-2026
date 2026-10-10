@@ -1,0 +1,88 @@
+{
+  "property_id": "P1007007",
+  "customer_id": "C43126",
+  "property_type": "bungalow",
+  "age_band": "1967_1982",
+  "floor_area_m2": 80.0,
+  "bedrooms": 2,
+  "region": "east_midlands",
+  "current_value_gbp": 54700.0,
+  "energy_rating": "C",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "full",
+  "wall_type": "cavity",
+  "wall_insulation": "full",
+  "glazing": "double",
+  "heating_system": "gas_boiler_condensing",
+  "main_fuel": "mains_gas",
+  "renewables": "solar_pv",
+  "smart_controls": "programmer_thermostat_trvs",
+  "listed_or_conservation": null,
+  "outdoor_space": "yes",
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": [
+      {
+        "month": "2025-07",
+        "electricity_kwh": 60.8,
+        "gas_kwh": 235.3
+      },
+      {
+        "month": "2025-08",
+        "electricity_kwh": 67.7,
+        "gas_kwh": 252.0
+      },
+      {
+        "month": "2025-09",
+        "electricity_kwh": 86.5,
+        "gas_kwh": 344.9
+      },
+      {
+        "month": "2025-10",
+        "electricity_kwh": 122.9,
+        "gas_kwh": 616.4
+      },
+      {
+        "month": "2025-11",
+        "electricity_kwh": 140.0,
+        "gas_kwh": 960.5
+      },
+      {
+        "month": "2025-12",
+        "electricity_kwh": 166.4,
+        "gas_kwh": 1131.6
+      },
+      {
+        "month": "2026-01",
+        "electricity_kwh": 173.2,
+        "gas_kwh": 1254.6
+      },
+      {
+        "month": "2026-02",
+        "electricity_kwh": 129.9,
+        "gas_kwh": 1077.6
+      },
+      {
+        "month": "2026-03",
+        "electricity_kwh": 124.0,
+        "gas_kwh": 966.8
+      },
+      {
+        "month": "2026-04",
+        "electricity_kwh": 83.5,
+        "gas_kwh": 828.7
+      },
+      {
+        "month": "2026-05",
+        "electricity_kwh": 67.1,
+        "gas_kwh": 509.7
+      },
+      {
+        "month": "2026-06",
+        "electricity_kwh": 68.1,
+        "gas_kwh": 301.4
+      }
+    ]
+  }
+}

@@ -63,7 +63,8 @@ def test_engine_not_ready(monkeypatch):
 
 
 # ---------- examples ----------
-def test_examples_list_falls_back_to_fixtures(fixture_client):
+def test_examples_list_falls_back_to_fixtures(fixture_client, monkeypatch, tmp_path):
+    monkeypatch.setattr("api.routes.examples._examples_dir", lambda: tmp_path)  # no P1 index
     items = fixture_client.get("/v1/examples").json()
     assert [i["property_id"] for i in items] == HOME_IDS
     assert all(i["title"] and i["why_interesting"] for i in items)

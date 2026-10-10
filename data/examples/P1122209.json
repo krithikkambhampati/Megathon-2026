@@ -1,0 +1,88 @@
+{
+  "property_id": "P1122209",
+  "customer_id": "C145204",
+  "property_type": "terraced",
+  "age_band": "pre_1900",
+  "floor_area_m2": 92.0,
+  "bedrooms": 3,
+  "region": "east_of_england",
+  "current_value_gbp": 204500.0,
+  "energy_rating": "E",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "none",
+  "wall_type": "solid",
+  "wall_insulation": "none",
+  "glazing": "double",
+  "heating_system": "gas_boiler_old",
+  "main_fuel": "mains_gas",
+  "renewables": "none",
+  "smart_controls": "programmer_thermostat_trvs",
+  "listed_or_conservation": null,
+  "outdoor_space": "yes",
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": [
+      {
+        "month": "2025-07",
+        "electricity_kwh": 199.1,
+        "gas_kwh": 285.3
+      },
+      {
+        "month": "2025-08",
+        "electricity_kwh": 200.2,
+        "gas_kwh": 288.0
+      },
+      {
+        "month": "2025-09",
+        "electricity_kwh": 197.1,
+        "gas_kwh": 392.9
+      },
+      {
+        "month": "2025-10",
+        "electricity_kwh": 213.5,
+        "gas_kwh": 732.4
+      },
+      {
+        "month": "2025-11",
+        "electricity_kwh": 248.8,
+        "gas_kwh": 1334.2
+      },
+      {
+        "month": "2025-12",
+        "electricity_kwh": 265.1,
+        "gas_kwh": 1683.8
+      },
+      {
+        "month": "2026-01",
+        "electricity_kwh": 271.2,
+        "gas_kwh": 1909.0
+      },
+      {
+        "month": "2026-02",
+        "electricity_kwh": 240.5,
+        "gas_kwh": 1439.0
+      },
+      {
+        "month": "2026-03",
+        "electricity_kwh": 258.9,
+        "gas_kwh": 1381.9
+      },
+      {
+        "month": "2026-04",
+        "electricity_kwh": 221.8,
+        "gas_kwh": 1106.7
+      },
+      {
+        "month": "2026-05",
+        "electricity_kwh": 209.9,
+        "gas_kwh": 683.1
+      },
+      {
+        "month": "2026-06",
+        "electricity_kwh": 197.0,
+        "gas_kwh": 390.2
+      }
+    ]
+  }
+}

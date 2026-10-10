@@ -1,0 +1,88 @@
+{
+  "property_id": "P1033772",
+  "customer_id": "C786409",
+  "property_type": "bungalow",
+  "age_band": "2007_onwards",
+  "floor_area_m2": 150.0,
+  "bedrooms": null,
+  "region": "south_west",
+  "current_value_gbp": 496600.0,
+  "energy_rating": "B",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "full",
+  "wall_type": null,
+  "wall_insulation": "full",
+  "glazing": "double",
+  "heating_system": "heat_pump",
+  "main_fuel": "electricity",
+  "renewables": null,
+  "smart_controls": "programmer_thermostat",
+  "listed_or_conservation": null,
+  "outdoor_space": "yes",
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": [
+      {
+        "month": "2025-07",
+        "electricity_kwh": 264.9,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-08",
+        "electricity_kwh": 262.2,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-09",
+        "electricity_kwh": 312.7,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-10",
+        "electricity_kwh": 414.9,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-11",
+        "electricity_kwh": 551.5,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2025-12",
+        "electricity_kwh": 663.6,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-01",
+        "electricity_kwh": 726.8,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-02",
+        "electricity_kwh": 633.8,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-03",
+        "electricity_kwh": 654.5,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-04",
+        "electricity_kwh": 539.6,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-05",
+        "electricity_kwh": 378.7,
+        "gas_kwh": 0.0
+      },
+      {
+        "month": "2026-06",
+        "electricity_kwh": 286.4,
+        "gas_kwh": 0.0
+      }
+    ]
+  }
+}

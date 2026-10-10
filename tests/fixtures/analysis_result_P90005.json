@@ -75,8 +75,8 @@
         "evidence": {
           "energy_rating": "F",
           "intensity_kwh_m2": 35.0,
-          "peer_p10": 95.0,
-          "peer_p90": 230.0
+          "peer_p10": 94.96483422886975,
+          "peer_p90": 199.69595394039024
         }
       },
       {
@@ -429,8 +429,8 @@
       "evidence": {
         "energy_rating": "F",
         "intensity_kwh_m2": 35.0,
-        "peer_p10": 95.0,
-        "peer_p90": 230.0
+        "peer_p10": 94.96483422886975,
+        "peer_p90": 199.69595394039024
       }
     },
     {
@@ -447,8 +447,8 @@
     "intensity_kwh_m2": 35.0,
     "property_type": "detached",
     "floor_area_band": "90_130",
-    "p50_kwh_m2": 150.0,
-    "p75_kwh_m2": 190.0,
-    "p90_kwh_m2": 230.0
+    "p50_kwh_m2": 143.12530085896805,
+    "p75_kwh_m2": 171.13129212143312,
+    "p90_kwh_m2": 199.69595394039024
   }
 }

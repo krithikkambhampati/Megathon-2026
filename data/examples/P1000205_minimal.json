@@ -1,0 +1,27 @@
+{
+  "property_id": null,
+  "customer_id": "C42653",
+  "property_type": "terraced",
+  "age_band": null,
+  "floor_area_m2": null,
+  "bedrooms": null,
+  "region": "east_midlands",
+  "current_value_gbp": null,
+  "energy_rating": null,
+  "roof_type": null,
+  "roof_insulation": null,
+  "wall_type": null,
+  "wall_insulation": null,
+  "glazing": null,
+  "heating_system": null,
+  "main_fuel": null,
+  "renewables": null,
+  "smart_controls": null,
+  "listed_or_conservation": null,
+  "outdoor_space": null,
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": null
+  }
+}

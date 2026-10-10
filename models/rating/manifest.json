@@ -1,0 +1,147 @@
+{
+  "name": "rating",
+  "version": "202610101459",
+  "trained_at": "2026-10-10T14:59:35+00:00",
+  "model_files": [
+    "model.txt.gz"
+  ],
+  "seed": 42,
+  "lightgbm": "4.7.0",
+  "python": "3.13.11",
+  "data_manifest_created_at": "2026-10-10T14:35:00+00:00",
+  "metrics": {
+    "val": {
+      "model": {
+        "n": 431993,
+        "mae": 4.67723356528171,
+        "rmse": 6.6049208685073495,
+        "r2": 0.7795017853802166,
+        "mae_ci95": [
+          4.660094097782449,
+          4.695291189846928
+        ],
+        "band_accuracy": 0.6668973802816249,
+        "within_one_band": 0.9866826545800511
+      },
+      "baseline_median_by_age_type": {
+        "n": 431993,
+        "mae": 7.996657353244149,
+        "rmse": 11.79367019046932,
+        "r2": 0.29697981139208585,
+        "mae_ci95": [
+          7.962895020767268,
+          8.037433068016982
+        ],
+        "band_accuracy": 0.5196102714627321,
+        "within_one_band": 0.9179431148189902
+      }
+    },
+    "test": {
+      "model": {
+        "n": 433945,
+        "mae": 4.6832213479171605,
+        "rmse": 6.6187969067811565,
+        "r2": 0.7781238102230319,
+        "mae_ci95": [
+          4.669816826173895,
+          4.700533623479759
+        ],
+        "band_accuracy": 0.6660060606758921,
+        "within_one_band": 0.9868900436691286
+      },
+      "baseline_median_by_age_type": {
+        "n": 433945,
+        "mae": 7.990049430227333,
+        "rmse": 11.781774036588843,
+        "r2": 0.296969823343016,
+        "mae_ci95": [
+          7.962634749200117,
+          8.023562583046921
+        ],
+        "band_accuracy": 0.5189367316134533,
+        "within_one_band": 0.9181278733480049
+      }
+    },
+    "delta_sap_check": [
+      {
+        "retrofit": "loft_insulation",
+        "homes": 95562,
+        "model_median_delta_sap": 2.492,
+        "model_share_negative": 0.001,
+        "real_repeat_epc_median_delta_sap": 7.0
+      },
+      {
+        "retrofit": "cavity_wall_insulation",
+        "homes": 34248,
+        "model_median_delta_sap": 6.137,
+        "model_share_negative": 0.0,
+        "real_repeat_epc_median_delta_sap": 8.0
+      },
+      {
+        "retrofit": "solid_wall_insulation",
+        "homes": 76069,
+        "model_median_delta_sap": 7.264,
+        "model_share_negative": 0.0,
+        "real_repeat_epc_median_delta_sap": 11.0
+      },
+      {
+        "retrofit": "double_glazing",
+        "homes": 27254,
+        "model_median_delta_sap": 3.49,
+        "model_share_negative": 0.0,
+        "real_repeat_epc_median_delta_sap": 6.0
+      },
+      {
+        "retrofit": "air_source_heat_pump",
+        "homes": 257279,
+        "model_median_delta_sap": 0.253,
+        "model_share_negative": 0.0,
+        "real_repeat_epc_median_delta_sap": 10.0
+      },
+      {
+        "retrofit": "solar_pv",
+        "homes": 164700,
+        "model_median_delta_sap": 8.116,
+        "model_share_negative": 0.001,
+        "real_repeat_epc_median_delta_sap": 8.0
+      },
+      {
+        "retrofit": "smart_thermostat",
+        "homes": 216385,
+        "model_median_delta_sap": 2.054,
+        "model_share_negative": 0.0,
+        "real_repeat_epc_median_delta_sap": 4.0
+      }
+    ]
+  },
+  "target": "sap_score",
+  "band_thresholds": {
+    "A": 92,
+    "B": 81,
+    "C": 69,
+    "D": 55,
+    "E": 39,
+    "F": 21,
+    "G": -1
+  },
+  "feature_importance_gain": {
+    "wall_insulation_ord": 0.2993,
+    "heating_ord": 0.274,
+    "age_ord": 0.127,
+    "roof_insulation_ord": 0.0944,
+    "property_type": 0.0532,
+    "smart_controls_ord": 0.0444,
+    "roof_exposed": 0.0289,
+    "floor_area_m2": 0.0156,
+    "renewables_ord": 0.0147,
+    "glazing_ord": 0.0147,
+    "bedrooms": 0.0108,
+    "region": 0.0081,
+    "wall_type": 0.0054,
+    "gas_connected": 0.0029,
+    "hdd_factor": 0.0022,
+    "roof_type": 0.0018,
+    "log_floor_area": 0.0017,
+    "pv_yield": 0.0007
+  }
+}

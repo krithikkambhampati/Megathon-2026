@@ -145,7 +145,7 @@
   "score": {
     "status": "ok",
     "score": 38,
-    "score_raw": 37.981322525265085,
+    "score_raw": 37.98132252526509,
     "score_class": "poor",
     "score_range": [
       38,
@@ -263,6 +263,24 @@
         "heating_system": "gas_boiler_old",
         "provenance": {
           "heating_system": "user"
+        }
+      }
+    },
+    {
+      "code": "HIGH_INTENSITY",
+      "severity": "medium",
+      "component": "consumption_intensity",
+      "message": "Energy use per m\u00b2 is higher than 75% of similar homes.",
+      "evidence": {
+        "intensity_kwh_m2": 182.2854116918281,
+        "peer_p75": 174.00564391957056,
+        "peer_p90": 200.6478658700094,
+        "property_type": "terraced",
+        "floor_area_m2": 78.0,
+        "provenance": {
+          "electricity_kwh": "user",
+          "gas_kwh": "user",
+          "floor_area_m2": "user"
         }
       }
     },
@@ -626,8 +644,8 @@
     "intensity_kwh_m2": 182.2854116918281,
     "property_type": "terraced",
     "floor_area_band": "50_90",
-    "p50_kwh_m2": 165.0,
-    "p75_kwh_m2": 205.0,
-    "p90_kwh_m2": 250.0
+    "p50_kwh_m2": 147.99241750109397,
+    "p75_kwh_m2": 174.00564391957056,
+    "p90_kwh_m2": 200.6478658700094
   }
 }

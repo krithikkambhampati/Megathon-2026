@@ -1,0 +1,75 @@
+{
+  "columns": [
+    "property_type",
+    "region",
+    "wall_type",
+    "roof_type",
+    "age_ord",
+    "floor_area_m2",
+    "log_floor_area",
+    "bedrooms",
+    "roof_insulation_ord",
+    "wall_insulation_ord",
+    "glazing_ord",
+    "smart_controls_ord",
+    "renewables_ord",
+    "roof_exposed",
+    "gas_connected",
+    "hdd_factor",
+    "pv_yield",
+    "heating_ord"
+  ],
+  "categorical": {
+    "property_type": [
+      "detached",
+      "semi_detached",
+      "terraced",
+      "flat",
+      "bungalow",
+      "maisonette"
+    ],
+    "region": [
+      "north_east",
+      "north_west",
+      "yorkshire_humber",
+      "east_midlands",
+      "west_midlands",
+      "east_of_england",
+      "london",
+      "south_east",
+      "south_west",
+      "wales"
+    ],
+    "wall_type": [
+      "cavity",
+      "solid",
+      "timber_or_system"
+    ],
+    "roof_type": [
+      "pitched_loft",
+      "flat_roof",
+      "room_in_roof",
+      "dwelling_above"
+    ]
+  },
+  "monotone_constraints": {
+    "property_type": 0,
+    "region": 0,
+    "wall_type": 0,
+    "roof_type": 0,
+    "age_ord": 0,
+    "floor_area_m2": 0,
+    "log_floor_area": 0,
+    "bedrooms": 0,
+    "roof_insulation_ord": 1,
+    "wall_insulation_ord": 1,
+    "glazing_ord": 1,
+    "smart_controls_ord": 1,
+    "renewables_ord": 1,
+    "roof_exposed": 0,
+    "gas_connected": 0,
+    "hdd_factor": 0,
+    "pv_yield": 0,
+    "heating_ord": 1
+  }
+}

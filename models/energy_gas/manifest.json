@@ -1,0 +1,17 @@
+{
+  "name": "energy_gas",
+  "version": "202610101604",
+  "trained_at": "2026-10-10T16:04:16+00:00",
+  "model_files": [
+    "model.txt.gz"
+  ],
+  "seed": 42,
+  "lightgbm": "4.7.0",
+  "python": "3.13.11",
+  "data_manifest_created_at": "2026-10-10T14:35:00+00:00",
+  "metrics": {
+    "see": "energy_elec"
+  },
+  "target": "gas_after / gas_before",
+  "inference": "pred * gas_before (0 if no gas baseline), clip >= 0"
+}

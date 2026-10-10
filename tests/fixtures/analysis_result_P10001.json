@@ -194,6 +194,24 @@
       }
     },
     {
+      "code": "HIGH_INTENSITY",
+      "severity": "medium",
+      "component": "consumption_intensity",
+      "message": "Energy use per m\u00b2 is higher than 75% of similar homes.",
+      "evidence": {
+        "intensity_kwh_m2": 197.64705882352942,
+        "peer_p75": 189.63987597308986,
+        "peer_p90": 222.49066314160982,
+        "property_type": "semi_detached",
+        "floor_area_m2": 85.0,
+        "provenance": {
+          "electricity_kwh": "user",
+          "gas_kwh": "user",
+          "floor_area_m2": "user"
+        }
+      }
+    },
+    {
       "code": "LOW_RATING",
       "severity": "medium",
       "component": "energy_efficiency",
@@ -567,8 +585,8 @@
     "intensity_kwh_m2": 197.64705882352942,
     "property_type": "semi_detached",
     "floor_area_band": "50_90",
-    "p50_kwh_m2": 165.0,
-    "p75_kwh_m2": 205.0,
-    "p90_kwh_m2": 250.0
+    "p50_kwh_m2": 157.88400070533797,
+    "p75_kwh_m2": 189.63987597308986,
+    "p90_kwh_m2": 222.49066314160982
   }
 }

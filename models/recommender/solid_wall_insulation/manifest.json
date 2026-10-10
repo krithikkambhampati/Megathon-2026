@@ -1,0 +1,54 @@
+{
+  "name": "recommender/solid_wall_insulation",
+  "version": "202610101555",
+  "trained_at": "2026-10-10T15:55:49+00:00",
+  "model_files": [
+    "model.txt.gz"
+  ],
+  "seed": 42,
+  "lightgbm": "4.7.0",
+  "python": "3.13.11",
+  "data_manifest_created_at": "2026-10-10T14:35:00+00:00",
+  "metrics": {
+    "threshold_val_maxF1": 0.5299999999999999,
+    "positive_rate_test": 0.9650078311309097,
+    "roc_auc": 0.755275788127653,
+    "pr_auc": 0.9864541158495244,
+    "precision": 0.9658980726025778,
+    "recall": 0.9993312182430614,
+    "f1": 0.9823302574298702,
+    "baseline_recommend_all_feasible": {
+      "precision": 0.9650078311309097,
+      "recall": 1.0,
+      "f1": 0.9821923514427159
+    },
+    "baseline_popularity_by_type": {
+      "roc_auc": 0.6235215591532468,
+      "pr_auc": 0.9741967377841186
+    }
+  },
+  "target": "assessor_recommended (EPC recommendations)",
+  "trained_on": "rule-feasible certificates",
+  "feature_importance_gain": {
+    "floor_area_m2": 0.1883,
+    "age_ord": 0.1399,
+    "rating_ord": 0.1104,
+    "property_type": 0.1014,
+    "region": 0.0872,
+    "smart_controls_ord": 0.0587,
+    "roof_insulation_ord": 0.0516,
+    "glazing_ord": 0.0515,
+    "roof_type": 0.0338,
+    "heating_system": 0.0321,
+    "pv_yield": 0.0249,
+    "hdd_factor": 0.0249,
+    "bedrooms": 0.0237,
+    "main_fuel": 0.0234,
+    "log_floor_area": 0.0216,
+    "gas_connected": 0.0114,
+    "roof_exposed": 0.0077,
+    "wall_insulation_ord": 0.0048,
+    "renewables_ord": 0.0026,
+    "wall_type": 0.0
+  }
+}
