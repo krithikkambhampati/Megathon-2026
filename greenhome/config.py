@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from greenhome.contracts import (
     CONTRACT_VERSION,
@@ -31,11 +31,19 @@ from greenhome.contracts import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FLOOR_AREA_BANDS: tuple[str, ...] = ("lt50", "50_90", "90_130", "130_200", "gt200")
-_SHARE_TOL = 1e-6
+_SHARE_TOL = 1e-3  # P1 writes shares to 5 dp, so sums can be off by ~1e-5
 
 
 class _Cfg(BaseModel):
+    """P2-owned config: unknown keys are errors, so typos fail loudly."""
+
     model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class _P1Cfg(BaseModel):
+    """P1-generated config: extra keys are documentation/provenance (source_status, desnz_id, …) → ignored."""
+
+    model_config = ConfigDict(extra="ignore", frozen=True)
 
 
 # ---------- global.yaml ----------
@@ -123,7 +131,7 @@ class ScoreCfg(_Cfg):
         return self
 
 
-class IntensityBounds(_Cfg):
+class IntensityBounds(_P1Cfg):
     i_best: float
     i_worst: float
 
@@ -170,19 +178,35 @@ class EngineCfg(_Cfg):
 
 
 # ---------- retrofit_catalogue.yaml ----------
-class Prerequisite(_Cfg):
+class Prerequisite(_P1Cfg):
     insulation_sub_score_min: float
     or_in_package_any: list[Retrofit] = []
 
 
-class RetrofitSpec(_Cfg):
-    model_config = ConfigDict(extra="forbid", frozen=True, use_enum_values=True)
+# Which HomeInput field an `effect_range_frac` table is keyed by (P1's catalogue leaves it implicit).
+_STATE_FIELD = {
+    "loft_insulation": "roof_insulation",
+    "cavity_wall_insulation": "wall_insulation",
+    "solid_wall_insulation": "wall_insulation",
+    "double_glazing": "glazing",
+    "smart_thermostat": "smart_controls",
+    "solar_pv": "renewables",
+}
+
+
+class RetrofitSpec(_P1Cfg):
+    model_config = ConfigDict(extra="ignore", frozen=True, use_enum_values=True)
     retrofit: Retrofit
     stage: str
-    applies_to_end_use: str
+    # space_heating | heat_supply | grid_import (P1); README §7.4 called it applies_to_end_use
+    applies_to: str = Field(validation_alias=AliasChoices("applies_to", "applies_to_end_use"))
     state_field: str | None = None
     effect_range_frac: dict[str, tuple[float, float]] | None = None
     scop_range: tuple[float, float] | None = None
+    kwp_by_property_type: dict[str, float] | None = None  # solar_pv
+    self_consumption_frac_range: tuple[float, float] | None = None  # solar_pv
+    # Flat indicative range for a typical semi. P1's `cost_scales_with_floor_area` is not applied: no
+    # reference floor area is defined and the range already spans typical homes (see SCORING.md).
     cost_gbp: tuple[float, float]
     grant_gbp: float = 0.0
     lifetime_years: int
@@ -190,6 +214,13 @@ class RetrofitSpec(_Cfg):
     soft_after: list[Retrofit] = []
     source: str
     notes: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _default_state_field(cls, data: Any) -> Any:
+        if isinstance(data, dict) and data.get("state_field") is None:
+            data = {**data, "state_field": _STATE_FIELD.get(data.get("retrofit"))}
+        return data
 
     @property
     def cost_mid_gbp(self) -> float:
@@ -204,7 +235,7 @@ class RetrofitSpec(_Cfg):
 
 
 # ---------- emission_factors.yaml ----------
-class EmissionFactor(_Cfg):
+class EmissionFactor(_P1Cfg):
     fuel: Literal["electricity", "gas"]
     kg_co2e_per_kwh: float = Field(gt=0)
     source: str
@@ -214,7 +245,7 @@ class EmissionFactor(_Cfg):
 
 
 # ---------- regions.yaml ----------
-class RegionCfg(_Cfg):
+class RegionCfg(_P1Cfg):
     hdd_factor: float = Field(gt=0)
     pv_yield_kwh_per_kwp: float = Field(gt=0)
     gas_monthly_share: tuple[float, ...]
@@ -230,9 +261,8 @@ class RegionCfg(_Cfg):
         return self
 
 
-class RegionsFile(_Cfg):
-    model_config = ConfigDict(extra="ignore", frozen=True)  # allows YAML anchor blocks like `_shares`
-    national: RegionCfg
+class RegionsFile(_P1Cfg):
+    national: dict[str, Any]  # P1 omits fields that only make sense per region; completed in Config
     regions: dict[str, RegionCfg]
     local_authority_to_region: dict[str, str] = {}
 
@@ -270,8 +300,9 @@ class Config:
         efs = [EmissionFactor.model_validate(x) for x in _load(root / "emission_factors.yaml")]
         self.emission_factors: dict[str, EmissionFactor] = {e.fuel: e for e in efs}
         regions = RegionsFile.model_validate(_load(root / "regions.yaml"))
-        self.national = regions.national
         self.regions: dict[str, RegionCfg] = regions.regions
+        national = _complete_national(regions.national, list(self.regions.values()))
+        self.national = RegionCfg.model_validate(national)
         if set(self.engine.sap_bands) != {r.value for r in EnergyRating}:
             raise ValueError("engine.yaml sap_bands must cover bands A–G")
 
@@ -345,6 +376,19 @@ class Config:
     @property
     def examples_dir(self) -> Path:
         return REPO_ROOT / self.global_.paths.examples
+
+
+def _complete_national(national: dict[str, Any], regions: list[RegionCfg]) -> dict[str, Any]:
+    """Fill national fields P1 does not write: hdd_factor is 1.0 by definition (regional factors are relative
+    to the national mean); PV yield and monthly profile are the mean over regions."""
+    n = len(regions)
+    pv_share = [sum(r.pv_monthly_share[m] for r in regions) / n for m in range(12)]
+    return {
+        "hdd_factor": 1.0,
+        "pv_yield_kwh_per_kwp": sum(r.pv_yield_kwh_per_kwp for r in regions) / n,
+        "pv_monthly_share": pv_share,
+        **national,
+    }
 
 
 def _load(path: Path) -> Any:

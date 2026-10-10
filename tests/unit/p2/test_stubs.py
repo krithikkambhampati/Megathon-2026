@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from conftest import home_input, make_clean
 
+from greenhome.config import get_config
 from greenhome.contracts import Retrofit
 from greenhome.ml.protocols import EnergyModel, RatingModel, RecommenderModel, ValueModel
 from greenhome.ml.stubs import (
@@ -60,12 +61,17 @@ def test_heat_pump_no_effect_when_already_installed():
 def test_solar_changes_only_electricity():
     base, out = _after(make_clean(), (), {SOLAR})
     assert out.gas_kwh == base.gas_kwh
-    assert out.electricity_kwh == pytest.approx(4800 * (1 - 0.275))
+    cfg = get_config()
+    spec = cfg.catalogue[SOLAR]
+    generation = spec.kwp_by_property_type["semi_detached"] * cfg.region("east_midlands").pv_yield_kwh_per_kwp
+    self_used = generation * sum(spec.self_consumption_frac_range) / 2
+    assert out.electricity_kwh == pytest.approx(4800 - min(self_used, 4800))
 
 
 def test_loft_effect_on_gas_heating():
-    (out,) = _after(make_clean(), {LOFT})  # P10001 roof_insulation low → 10–15%
-    assert out.gas_kwh == pytest.approx(12000 - 0.7 * 12000 * 0.125)
+    (out,) = _after(make_clean(), {LOFT})  # P10001 roof_insulation low
+    effect = get_config().catalogue[LOFT].effect_mid_frac("low")
+    assert out.gas_kwh == pytest.approx(12000 - 0.7 * 12000 * effect)
     assert out.electricity_kwh == 4800.0
 
 

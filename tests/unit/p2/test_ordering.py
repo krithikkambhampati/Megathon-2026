@@ -87,12 +87,20 @@ def test_prerequisites_met():
 
 
 # ---------- rate_suitability ----------
+def _net_cost(r):
+    spec = get_config().catalogue[r]
+    return spec.cost_mid_gbp - spec.grant_gbp
+
+
 def test_u_formula():
     w = get_config().score.suitability.priority_weights["balanced"]
-    # loft: net cost 1000, cost_eff 1000/£1k; cavity: net cost 2000, cost_eff 1000/£1k → both norm 1
     out = rate_suitability([_cand(LOFT, 1000.0), _cand(CAVITY, 2000.0)], home_input(), {LOFT, CAVITY})
-    assert out[LOFT][0] == pytest.approx(w["assessor"] * 0.5 + w["saving_share"] * 0.5 + w["cost_eff"])
-    assert out[CAVITY][0] == pytest.approx(w["assessor"] * 0.5 + w["saving_share"] + w["cost_eff"])
+    eff = {LOFT: 1000.0 / _net_cost(LOFT), CAVITY: 2000.0 / _net_cost(CAVITY)}  # kWh per £ (scale cancels)
+    top = max(eff.values())
+    assert out[LOFT][0] == pytest.approx(
+        w["assessor"] * 0.5 + w["saving_share"] * 0.5 + w["cost_eff"] * eff[LOFT] / top)
+    assert out[CAVITY][0] == pytest.approx(
+        w["assessor"] * 0.5 + w["saving_share"] + w["cost_eff"] * eff[CAVITY] / top)
 
 
 def test_levels_from_thresholds():
@@ -163,7 +171,9 @@ def test_suitability_deterministic():
 
 # ---------- budget_filter ----------
 def test_budget_filter_greedy_skips_and_continues():
-    # net costs: HP 11000−7500 = 3500, solar 6500, loft 1000, cavity 2000
-    assert budget_filter([HP, SOLAR, LOFT, CAVITY], 4500.0) == ([HP, LOFT], [SOLAR, CAVITY])
+    hp, solar, loft = _net_cost(HP), _net_cost(SOLAR), _net_cost(LOFT)
+    assert solar > hp > loft  # true for the catalogue; the budget below relies on it
+    budget = hp + loft  # fits HP, not solar, then the cheaper loft still fits
+    assert budget_filter([HP, SOLAR, LOFT], budget) == ([HP, LOFT], [SOLAR])
     assert budget_filter([HP, SOLAR, LOFT, CAVITY], 0.0) == ([], [HP, SOLAR, LOFT, CAVITY])
-    assert budget_filter([LOFT, CAVITY], 3000.0) == ([LOFT, CAVITY], [])
+    assert budget_filter([LOFT, CAVITY], _net_cost(LOFT) + _net_cost(CAVITY)) == ([LOFT, CAVITY], [])

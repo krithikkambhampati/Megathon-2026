@@ -1,7 +1,7 @@
 # Global settings [P2]. Every script reads seed and as_of_date from here.
 contract_version: "1.0.0"   # must equal greenhome.contracts.CONTRACT_VERSION
 seed: 42
-as_of_date: "2025-06"       # TODO_SOURCE (P1): last month of the downloaded UK HPI data
+as_of_date: "2026-07"       # last month of the UK HPI download (P1 config/data_pipeline.yaml: as_of_month)
 models: stub                # stub | real  (real → greenhome.ml.registry.load_models, P3)
 paths:
   data_processed: data/processed
