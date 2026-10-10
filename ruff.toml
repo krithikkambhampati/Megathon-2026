@@ -1,0 +1,6 @@
+target-version = "py311"
+line-length = 110
+extend-exclude = ["data", "models", "outputs"]
+
+[lint]
+select = ["E", "F", "I", "B", "UP"]
