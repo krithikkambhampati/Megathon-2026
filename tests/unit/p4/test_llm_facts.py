@@ -147,3 +147,22 @@ def test_score_sheet_has_floor_area_and_peer_use_with_shared_formatters(results)
 def test_notes_use_field_labels(results) -> None:
     notes = data_notes(results["P90002"].flags)
     assert any("loft insulation, outdoor space for a heat pump" in n for n in notes)
+
+
+def test_custom_scenario_is_not_called_the_recommended_plan() -> None:
+    """A what-if result (e.g. solar only) must not be explained as "all the recommended retrofits"."""
+    from greenhome.contracts import HomeInput
+    from greenhome.core.orchestrator import Engine
+    from greenhome.llm.explainer import explain
+
+    home = HomeInput.model_validate_json(
+        (Path(__file__).resolve().parents[2] / "fixtures" / "home_input_P10001.json").read_text()
+    )
+    engine = Engine.from_config()
+    custom = engine.run_scenario(home, Scenario(name="custom", mode="custom", retrofits=["solar_pv"]))
+    for section in ("savings", "score"):
+        text, _ = explain(custom, section, None)
+        assert "all the recommended retrofits" not in text, section
+    assert "retrofits in this scenario" in explain(custom, "savings", None)[0]
+    plan_text, _ = explain(engine.analyse(home), "savings", None)
+    assert "all the recommended retrofits" in plan_text

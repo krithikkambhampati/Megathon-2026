@@ -5,7 +5,7 @@ Savings are only modelled for homes heated by mains gas or electricity, so we ca
 We don't have enough information to estimate savings for this home yet. Knowing the heating system and a year of electricity and gas use would let us estimate them.
 {% else %}
 {% set s = v.saving %}
-If you did all the recommended retrofits ({{ v.retrofits | join(", ") }}), these are the estimated yearly changes:
+If you did {% if v.custom %}the retrofits in this scenario{% else %}all the recommended retrofits{% endif %} ({{ v.retrofits | join(", ") }}), these are the estimated yearly changes:
 {% if s.gas_kwh %}
 - Gas: {{ s.gas_kwh }}{% if s.gas_kwh_increase %} (gas use goes up){% else %} saved{% endif %}.
 {% endif %}

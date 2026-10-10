@@ -18,7 +18,7 @@ The main problem areas are: {{ v.issues[:3] | join("; ") }}.
 {% endif %}
 {% if v.after %}
 
-If you did all the recommended retrofits, the estimated score would be {{ v.after.score }} ({{ v.after.class }}).
+If you did {% if v.custom %}the retrofits in this scenario{% else %}all the recommended retrofits{% endif %}, the estimated score would be {{ v.after.score }} ({{ v.after.class }}).
 {% endif %}
 {% endif %}
 {% include "_notes.j2" %}

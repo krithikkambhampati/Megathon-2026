@@ -275,6 +275,7 @@ def _score(b: _Builder, r: AnalysisResult) -> dict:
         )
         for n, i in enumerate(r.issues)
     ]
+    v["custom"] = r.scenario.mode != "recommended"  # a what-if scenario, not the recommended plan
     if r.score_after is not None and r.score_after.status == "ok":
         v["after"] = {
             "score": b.num(
@@ -282,7 +283,9 @@ def _score(b: _Builder, r: AnalysisResult) -> dict:
                 r.score_after.score,
                 fmt.fmt_score,
                 "score",
-                "Score after all recommended retrofits",
+                "Score after the retrofits in this scenario"
+                if v["custom"]
+                else "Score after all recommended retrofits",
             ),
             "class": b.text(
                 "score_after.score_class",
@@ -370,7 +373,11 @@ def _recommendations(b: _Builder, r: AnalysisResult, focus: list[str], only: lis
 
 def _savings(b: _Builder, r: AnalysisResult) -> dict:
     s = r.savings
-    v: dict[str, Any] = {"status": s.status, "retrofits": [label("Retrofit", x) for x in s.retrofits]}
+    v: dict[str, Any] = {
+        "status": s.status,
+        "retrofits": [label("Retrofit", x) for x in s.retrofits],
+        "custom": r.scenario.mode != "recommended",  # a what-if scenario, not the recommended plan
+    }
     if s.status != "ok":
         return v
     words = {
@@ -378,7 +385,8 @@ def _savings(b: _Builder, r: AnalysisResult) -> dict:
         "gas_kwh": "gas",
         "purchased_kwh": "total bought (electricity + gas)",
     }
-    for part, when in (("baseline", "today"), ("after", "after the recommended retrofits")):
+    after_when = "after the retrofits in this scenario" if v["custom"] else "after the recommended retrofits"
+    for part, when in (("baseline", "today"), ("after", after_when)):
         e = getattr(s, part)
         if e is not None:
             v[part] = {
