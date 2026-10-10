@@ -2,7 +2,7 @@
 contract_version: "1.1.0"   # must equal greenhome.contracts.CONTRACT_VERSION
 seed: 42
 as_of_date: "2026-07"       # last month of the UK HPI download (P1 config/data_pipeline.yaml: as_of_month)
-models: stub                # stub | real  (real → greenhome.ml.registry.load_models, P3)
+models: real                # stub | real  (real → greenhome.ml.registry.load_models, P3; stub = no trained models needed)
 paths:
   data_processed: data/processed
   models: models

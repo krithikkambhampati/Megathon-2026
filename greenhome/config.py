@@ -8,6 +8,7 @@ Usage:
     cfg.peers("flat", 62.0)["p90"]
 
 `GREENHOME_CONFIG_DIR` overrides the config directory (tests use it for alternative configs).
+`GREENHOME_MODELS` (stub | real) overrides global.yaml `models` (the test suite runs on stubs).
 """
 
 from __future__ import annotations
@@ -337,7 +338,9 @@ class Config:
 
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.global_ = GlobalCfg.model_validate(_load(root / "global.yaml"))
+        global_ = _load(root / "global.yaml")
+        global_["models"] = os.environ.get("GREENHOME_MODELS", global_["models"])
+        self.global_ = GlobalCfg.model_validate(global_)
         self.score = ScoreCfg.model_validate(_load(root / "score.yaml"))
         self.engine = EngineCfg.model_validate(_load(root / "engine.yaml"))
         self.imputation = ImputationTables.model_validate(_load(root / "generated" / "imputation.yaml"))

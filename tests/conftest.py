@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,9 @@ from greenhome.contracts import FEATURE_FIELDS, AnnualEnergy, CleanHome, HomeInp
 
 # Keep `from conftest import …` working even if tests/ becomes a package (tests/__init__.py).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+# Tests pin the deterministic stub models; the real-model checks load greenhome.ml.registry explicitly.
+os.environ.setdefault("GREENHOME_MODELS", "stub")
 
 # The PS example home (README P1.10, P2.4 worked example).
 P10001: dict[str, Any] = {
