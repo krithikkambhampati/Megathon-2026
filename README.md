@@ -368,7 +368,6 @@ Ownership is in brackets. Only the owner edits a file without asking; others ope
 │   ├── core/
 │   │   ├── validate.py               [P2]  validation, conflicts, imputation hooks
 │   │   ├── annualise.py              [P2]
-│   │   ├── features.py               [P2]  build_model_features() SHARED KERNEL
 │   │   ├── transitions.py            [P2]  apply_retrofits() SHARED KERNEL
 │   │   ├── score.py                  [P2]
 │   │   ├── issues.py                 [P2]
@@ -378,6 +377,7 @@ Ownership is in brackets. Only the owner edits a file without asking; others ope
 │   │   ├── value.py                  [P2]  range assembly from M3 outputs
 │   │   └── orchestrator.py           [P2]  analyse(), run_scenario(), portfolio()
 │   ├── ml/
+│   │   ├── features.py               [P3]  home_features() + per-model *_features() SHARED KERNEL
 │   │   ├── protocols.py              [P2]  model interfaces (§7.6)
 │   │   ├── stubs.py                  [P2]  stub models (work before P3 delivers)
 │   │   ├── registry.py               [P3]  load artefacts, verify manifests
@@ -441,7 +441,7 @@ Ownership is in brackets. Only the owner edits a file without asking; others ope
 | IDs | `property_id` = `"P"` + 5+ digits (`P10001`). `customer_id` = `"C"` + 5+ digits. Real EPC keys (LMK_KEY, UPRN) **never** leave `data/interim`. |
 | Dates | ISO 8601 strings (`2024-01`, `2024-01-31`). Months are `YYYY-MM`. |
 | Randomness | Every script reads `seed` from `config/global.yaml`. `numpy.random.default_rng(seed)`. LightGBM `seed`, `deterministic=True`. |
-| Feature building | **Only** `greenhome.core.features.build_model_features()` builds model inputs, in training *and* inference. Nobody hand-builds features. |
+| Feature building | **Only** `greenhome.ml.features` (`home_features()` and the per-model `rating_/energy_/recommender_/value_features()`) builds model inputs, in training *and* inference. Nobody hand-builds features. (Moved from P2's `core/features.py` to P3's module by team decision.) |
 | State changes from retrofits | **Only** `greenhome.core.transitions.apply_retrofits()` changes a home's features after retrofits. The simulator, training and orchestrator all use it. |
 | Config | No magic numbers in code. Every threshold, factor or table goes in `config/*.yaml` and is read via `greenhome.config`. |
 
@@ -1152,7 +1152,9 @@ Steps, in order:
 | `OUT_OF_SCOPE_FUEL` | main_fuel = other | warning |
 | `INSUFFICIENT_INFO_SCORE` / `_SAVINGS` / `_VALUE` | P2.5 | warning |
 
-### P2.3 Feature kernel (`core/features.py`) and transitions (`core/transitions.py`)
+### P2.3 Feature kernel and transitions (`core/transitions.py`)
+> **Changed by team decision:** the feature kernel now lives in P3's `greenhome/ml/features.py` (see §7.1); P2's
+> `core/features.py` was removed. The original design is kept below for reference.
 - `build_model_features(homes: list[CleanHome], packages: list[frozenset[Retrofit]] | None) -> pd.DataFrame`
   - Ordinal encodings for quality-ordered enums (the order of the §7.4 score tables). Categorical dtype for
     property_type, region, wall_type, roof_type, heating_system.
@@ -1299,7 +1301,7 @@ IT4 carbon equals the formula. IT5 heat-pump-only scenario on a gas home → ele
 gas saving > 0. IT6 an infeasible custom retrofit appears in `rejected` and not in `savings.retrofits`.
 IT7 the missing-winter-months home has annual gas > naive mean × 12. IT8 the no-info home returns
 `insufficient` statuses with no numbers. IT9 `analysis_id` is stable across runs. IT10 the loaded model
-`features.json` equals the `build_model_features` columns. IT11 no `sim_hidden` column appears in any
+`features.json` matches the columns `greenhome.ml.features` builds. IT11 no `sim_hidden` column appears in any
 `features.json`. IT12 `AnalysisResult.model_dump_json()` contains no `NaN`.
 
 > ### ⚠️ Part 2 integration hazards
@@ -1316,7 +1318,7 @@ IT7 the missing-winter-months home has annual gas > naive mean × 12. IT8 the no
 
 ## PART 3: ML Models
 **Owner profile:** the ML person. **Language:** Python 3.11 (LightGBM, scikit-learn, statsmodels, pandas).
-**Consumes:** P1 processed data + splits (v0 at H+6, v1 at H+14), P2's `build_model_features` and
+**Consumes:** P1 processed data + splits (v0 at H+6, v1 at H+14), `greenhome.ml.features` (P3's own) and P2's
 `apply_retrofits` (H+5).
 **Produces:** `models/*`, `greenhome/ml/{registry,energy,rating,recommender,value}.py`,
 `training/*`, `outputs/test_predictions/*`, `reports/evaluation.md`, `docs/MODELS.md`.
@@ -1329,7 +1331,7 @@ IT7 the missing-winter-months home has annual gas > naive mean × 12. IT8 the no
 - Every model has a **simple baseline** evaluated identically. Every metric gets a bootstrap 95% CI over
   properties (1,000 resamples).
 - Save `features.json` (ordered list, categorical levels, monotone constraints) + `manifest.json`.
-- Inference wrappers implement the §7.6 Protocols **exactly** and call `build_model_features`.
+- Inference wrappers implement the §7.6 Protocols **exactly** and build inputs only with `greenhome.ml.features`.
 
 ### P3.1 M4: Rating model (SAP points), on **real** EPC data (start first; the data is real and simple)
 - Data: `epc_certificates_model.parquet` (train-split properties, all certificates).
@@ -1343,7 +1345,7 @@ IT7 the missing-winter-months home has annual gas > naive mean × 12. IT8 the no
 - STRETCH: compare model ΔSAP for each measure against the repeat-EPC observed ΔSAP (P1.5).
 
 ### P3.2 M1: Energy model (per fuel), on simulator labels with hidden factors
-- Data: `labels/energy_scenarios.parquet` joined to properties via `build_model_features(home_before, package)`
+- Data: `labels/energy_scenarios.parquet` joined to properties via `greenhome.ml.features` (home features + package flags)
   (the package flags are features).
 - Two LightGBM regressors (electricity, gas). Target for fuel f:
   `y_f = E_f,after / E_purchased,before`, so predictions scale with the home's actual baseline. Inference:
@@ -1409,7 +1411,7 @@ IT7 the missing-winter-months home has annual gas > naive mean × 12. IT8 the no
 - [ ] Wrappers pass P2's integration tests IT1 and IT10 on real models.
 
 > ### ⚠️ Part 3 integration hazards
-> 1. **Train/serve skew:** only `build_model_features`. If you need a new feature, add it there via PR to P2.
+> 1. **Train/serve skew:** only `greenhome.ml.features`. A new feature goes there, used by training and inference alike.
 >    Never add it in a notebook.
 > 2. **Hidden factors** are forbidden as features. IT11 enforces this.
 > 3. **Normalised targets:** the wrapper multiplies by the user's baseline. Don't return a normalised value to P2.
@@ -1644,7 +1646,7 @@ flowchart TD
 | D1 | P2 → all | contracts, enums, score.yaml, protocols | `greenhome/contracts.py` etc. | H+2 | n/a (blocking) |
 | D2 | P2 → P4, P5 | AnalysisResult fixtures (3 homes) | `tests/fixtures/*.json` | H+3 | n/a |
 | D3 | P1 → P2 | catalogue, emission factors, regions | `config/*.yaml` | H+4 (placeholders), H+12 (sourced) | P2 placeholder values marked `TODO_SOURCE` |
-| D4 | P2 → P1, P3 | `build_model_features`, `apply_retrofits` | `greenhome/core/*.py` | H+5 | P3 trains on a temporary feature fn, swaps it before H+18 |
+| D4 | P2 → P1, P3 | `apply_retrofits` (features: P3's `greenhome/ml/features.py`) | `greenhome/core/*.py` | H+5 | P3 trains on a temporary feature fn, swaps it before H+18 |
 | D5 | P1 → P3 | data v0 (5k rows, all files, schema-exact) | `data/processed/` | H+6 | P3 generates a random frame from §7.5 |
 | D6 | P2 → P1, P3 | `feasible_set` | `core/feasibility.py` | H+8 | P1 uses its own temporary copy |
 | D7 | P2 → P5 | Engine on stubs | python API §7.7 | H+8 | UI on fixtures |
@@ -1672,7 +1674,7 @@ flowchart TD
 |---|---|
 | Enum spelled differently ("Semi-detached" vs "semi_detached") | §7.2 + Pydantic `extra=forbid` + P1 schema test |
 | Missing data treated as 0 | §7.1 + IT7/IT8 |
-| Train/serve feature skew | single `build_model_features` + IT10 |
+| Train/serve feature skew | single `greenhome.ml.features` + IT10 |
 | Hidden simulator factors leaking into features | separate file + IT11 |
 | Sign confusion on savings (UI shows heat pump electricity as a "saving") | §7.1 + IT5 + format.py "increase" wording |
 | kg vs tonnes, % vs fraction | suffix rules + format.py |

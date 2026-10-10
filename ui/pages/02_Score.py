@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import api_client
-from components.common import class_chip, flags_with, insufficient, points, require_analysis
+from components.common import class_chip, flags_with, insufficient, require_analysis
 from greenhome import format as F
 from labels import CLASS_COLOUR, SCORE_COMPONENT, label
 
@@ -84,9 +84,9 @@ fig.add_bar(
     x=[c["contribution"] for c in comps],
     orientation="h",
     marker_color="#0d6a50",
-    text=[f"{points(c['contribution'])} of {c['weight']:.0%}" for c in comps],
+    text=[f"{F.fmt_points(c['contribution'])} of {c['weight']:.0%}" for c in comps],
     textposition="outside",
-    customdata=[points(c["sub_score"]) for c in comps],
+    customdata=[F.fmt_points(c["sub_score"]) for c in comps],
     hovertemplate="%{y}<br>sub-score %{customdata}<extra></extra>",
     showlegend=False,
 )
@@ -98,7 +98,7 @@ fig.update_layout(
     yaxis=dict(automargin=True),
 )
 st.plotly_chart(fig, width="stretch")
-st.caption(f"Contributions add up to {points(s['score_raw'])}, rounded to {F.fmt_score(s['score'])}.")
+st.caption(f"Contributions add up to {F.fmt_points(s['score_raw'])}, rounded to {F.fmt_score(s['score'])}.")
 
 after = result.get("score_after")
 if after and after.get("score") is not None:

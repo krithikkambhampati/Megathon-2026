@@ -1,7 +1,8 @@
 import plotly.graph_objects as go
 import streamlit as st
 
-from components.common import per_m2, require_analysis
+from components.common import require_analysis
+from greenhome import format as F
 from labels import ISSUE_TEXT, SEVERITY_ORDER, label
 
 result = require_analysis()
@@ -63,14 +64,14 @@ with right:
                 x=v,
                 line_width=1,
                 line_color="gray",
-                annotation_text=f"{name}<br>{per_m2(v)}",
+                annotation_text=f"{name}<br>{F.fmt_intensity(v)}",
                 annotation_position="bottom",
             )
         fig.add_vline(
             x=p["intensity_kwh_m2"],
             line_width=3,
             line_color="#16201c",
-            annotation_text=f"you {per_m2(p['intensity_kwh_m2'])}",
+            annotation_text=f"you {F.fmt_intensity(p['intensity_kwh_m2'])}",
             annotation_position="top",
         )
         fig.update_layout(

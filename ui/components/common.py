@@ -60,16 +60,6 @@ def saving_md(x: float | None, kg: bool = False) -> str:
     return f":red[**{text}**]" if x is not None and F.round_half_up(x, 10) < 0 else text
 
 
-def points(x: float | None) -> str:
-    """Score contributions and sub-scores, 1 dp. TODO(P2): replace with a format.py helper when added."""
-    return F.UNKNOWN if x is None else f"{F.round_half_up(x, 0.1):.1f}"
-
-
-def per_m2(x: float | None) -> str:
-    """Energy use per m² (whole kWh). TODO(P2): replace with a format.py helper when added."""
-    return F.UNKNOWN if x is None else f"{F.round_half_up(x, 1):,.0f}"
-
-
 def flags_with(result: dict, *codes: str) -> list[dict]:
     return [f for f in result.get("flags", []) if f["code"] in codes]
 

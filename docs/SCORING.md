@@ -300,9 +300,9 @@ London smart-meter trial (UKPN, 2013).
 (2) Both values are kept and explained. Skipped when energy is imputed or the rating is not user-given.
 
 Peer percentiles come from `config/generated/peer_percentiles.parquet` (train-split percentiles by property
-type and floor-area band) when it is present. Part 1's pipeline builds that file locally and it is not
-committed, so without it the engine falls back to `engine.yaml: peers_fallback` (placeholder, by floor-area
-band only: <50, 50–90, 90–130, 130–200, >200 m²).
+type and floor-area band ≤50, 50–90, 90–130, 130–200, >200 m², upper edge inclusive). Part 1 commits that
+file (`.gitignore` exempts it); if it is missing the engine falls back to `engine.yaml: peers_fallback`
+(placeholder, by floor-area band only).
 
 ### 9.2 Issues and the poor flag (`issues.py`)
 
@@ -472,8 +472,13 @@ Values still marked `TODO_SOURCE` in config (they make the engine run; do not ci
 
 | File | Placeholder values |
 |---|---|
-| `config/imputation.yaml` | floor area by bedrooms, feature mode by age band and property type, typical-home energy |
 | `config/engine.yaml` | `peers_fallback` intensity percentiles (by floor-area band only; used when no peer parquet) |
+
+"Not sure" answers are filled from Part 1's `config/generated/imputation.yaml` (train split only): median floor
+area by property type × bedrooms (unknown type → home-weighted mean over types); the most common feature value
+for the age band × property type cell (either unknown → the value covering the most homes across matching
+cells); typical energy from NEED 2024 medians for gas homes and calibrated synthetic medians by heating system
+for electrically heated homes (nearest floor-area band when a band has fewer than 30 homes).
 
 Now sourced (no longer placeholders): intensity bounds 85 / 230 (train-split P5/P95, 34,856 homes); emission
 factors (DESNZ 2026); the retrofit catalogue (each entry has a `source` and a `source_status` of verified,

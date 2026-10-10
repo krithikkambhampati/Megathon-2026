@@ -2,7 +2,8 @@
 
 Order: annualise → MISSING_FIELD and CONFLICT_ROOF_VS_TYPE → impute (floor area, score feature fields,
 main_fuel, typical-home energy) → intensity → conflict and outlier rules → rating (one batched
-RatingModel call) → sap_estimate. Thresholds and tables come from engine.yaml and imputation.yaml.
+RatingModel call) → sap_estimate. Thresholds come from engine.yaml; imputation tables from P1's
+config/generated/imputation.yaml (train split only).
 
 Provenance covers every FEATURE_FIELDS name plus "electricity_kwh" and "gas_kwh":
 - value supplied by the user (energy: annual figure or monthly readings) → "user";
@@ -79,13 +80,11 @@ def validate_and_clean(home: HomeInput, rating_model: RatingModel | None = None)
 
     # --- imputation ---
     if h.floor_area_m2 is None and h.bedrooms is not None:
-        table = imp.floor_area_m2.get(h.property_type or "_default", imp.floor_area_m2["_default"])
-        fill("floor_area_m2", table[min(h.bedrooms, len(table) - 1)], "median_by_property_type_and_bedrooms")
+        area = imp.floor_area(h.property_type, h.bedrooms)
+        if area is not None:
+            fill("floor_area_m2", area, "median_by_property_type_and_bedrooms")
 
-    fm = imp.feature_mode
-    mode = dict(fm.default)
-    mode |= fm.by_age_band.get(h.age_band, {})
-    mode |= fm.by_property_type.get(h.property_type, {})
+    mode = imp.feature_mode(h.age_band, h.property_type)
     for field in v.score_feature_fields:
         if getattr(h, field) is None and field in mode:
             fill(field, mode[field], "mode_by_age_band_and_property_type")
@@ -96,10 +95,12 @@ def validate_and_clean(home: HomeInput, rating_model: RatingModel | None = None)
 
     e_prov = {f: "user" if getattr(energy, f) is not None else "assumed" for f in _ENERGY_FIELDS}
     missing = [f for f in _ENERGY_FIELDS if getattr(energy, f) is None]
-    if missing and h.main_fuel in imp.typical_energy_kwh and h.floor_area_m2 is not None:
-        band = cfg.floor_area_band(h.floor_area_m2)
-        typical = imp.typical_energy_kwh[h.main_fuel][band]
-        update: dict[str, Any] = {f: typical[f] for f in missing}
+    typical = None
+    if missing and h.floor_area_m2 is not None:
+        typical = imp.typical_energy(h.main_fuel, h.heating_system, h.floor_area_m2)
+    if typical is not None:
+        values, band = typical
+        update: dict[str, Any] = {f: values[f] for f in missing}
         elec = update.get("electricity_kwh", energy.electricity_kwh)
         gas = update.get("gas_kwh", energy.gas_kwh)
         energy = energy.model_copy(update={**update, "purchased_kwh": elec + gas, "source": "imputed"})

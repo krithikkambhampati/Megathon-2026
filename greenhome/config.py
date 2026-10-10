@@ -31,6 +31,13 @@ from greenhome.contracts import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FLOOR_AREA_BANDS: tuple[str, ...] = ("lt50", "50_90", "90_130", "130_200", "gt200")
+# P1's peer_percentiles.parquet labels the same bands differently.
+_P1_PEER_BANDS = {"<50": "lt50", "50-90": "50_90", "90-130": "90_130", "130-200": "130_200", ">200": "gt200"}
+# NEED floor-area bands used by P1's typical-energy table (upper edge inclusive, as NEED's "50 or less").
+_ENERGY_BANDS: tuple[tuple[float, str], ...] = (
+    (50, "<50"), (100, "50-100"), (150, "100-150"), (200, "150-200"),
+)
+_ENERGY_BAND_ORDER = ("<50", "50-100", "100-150", "150-200", ">200")
 _SHARE_TOL = 1e-3  # P1 writes shares to 5 dp, so sums can be off by ~1e-5
 
 
@@ -267,17 +274,61 @@ class RegionsFile(_P1Cfg):
     local_authority_to_region: dict[str, str] = {}
 
 
-# ---------- imputation.yaml ----------
-class FeatureModeCfg(_Cfg):
-    default: dict[str, str] = Field(alias="_default")
-    by_age_band: dict[AgeBand, dict[str, str]] = {}
-    by_property_type: dict[str, dict[str, str]] = {}
+# ---------- generated/imputation.yaml (P1, train split only) ----------
+class EnergyTypical(_P1Cfg):
+    gas_homes_need_median_kwh_by_floor_area: dict[Literal["gas", "electricity"], dict[str, float]]
+    # heating_system → NEED band → {median_kwh, n}
+    electric_heated_homes_synthetic_median_electricity_kwh: dict[str, dict[str, dict[str, float]]]
 
 
-class ImputationCfg(_Cfg):
-    floor_area_m2: dict[str, list[float]]
-    feature_mode: FeatureModeCfg
-    typical_energy_kwh: dict[str, dict[str, dict[Literal["electricity_kwh", "gas_kwh"], float]]]
+class ImputationTables(_P1Cfg):
+    """Lookups for "not sure" answers. Every table is P1's; these methods only choose the row."""
+
+    floor_area_by_type_bedrooms: dict[str, dict[str, dict[str, float]]]  # type → "1".."5+" → {median_m2, n}
+    feature_mode_by_age_type: dict[str, dict[str, dict[str, Any]]]  # age → type → {n, field: {value, share}}
+    energy_typical: EnergyTypical
+
+    def floor_area(self, property_type: str | None, bedrooms: int) -> float | None:
+        """Median floor area for (type, bedrooms); unknown type → n-weighted mean over types."""
+        key = "5+" if bedrooms >= 5 else str(max(bedrooms, 1))
+        table = self.floor_area_by_type_bedrooms
+        rows = [table[property_type][key]] if property_type in table and key in table[property_type] else [
+            t[key] for t in table.values() if key in t
+        ]
+        n = sum(r["n"] for r in rows)
+        return sum(r["median_m2"] * r["n"] for r in rows) / n if n else None
+
+    def feature_mode(self, age_band: str | None, property_type: str | None) -> dict[str, str]:
+        """Most common value per field for the (age, type) cell; when either is unknown (or the cell is
+        missing), the value covering the most homes across the matching cells (votes = n × share)."""
+        cells = [
+            cell for age, by_type in self.feature_mode_by_age_type.items() for pt, cell in by_type.items()
+            if (age_band is None or age == age_band) and (property_type is None or pt == property_type)
+        ] or [cell for by_type in self.feature_mode_by_age_type.values() for cell in by_type.values()]
+        votes: dict[str, dict[str, float]] = {}
+        for cell in cells:
+            for field, mode in cell.items():
+                if isinstance(mode, dict):
+                    tally = votes.setdefault(field, {})
+                    tally[mode["value"]] = tally.get(mode["value"], 0.0) + cell["n"] * mode["share"]
+        return {f: max(v, key=lambda k: (v[k], k)) for f, v in votes.items()}
+
+    def typical_energy(
+        self, main_fuel: str | None, heating_system: str | None, floor_area_m2: float
+    ) -> tuple[dict[str, float], str] | None:
+        """({electricity_kwh, gas_kwh}, NEED band) for a typical similar home, or None (off-gas / unknown)."""
+        band = next((label for edge, label in _ENERGY_BANDS if floor_area_m2 <= edge), _ENERGY_BAND_ORDER[-1])
+        et = self.energy_typical
+        if main_fuel == "mains_gas":
+            g = et.gas_homes_need_median_kwh_by_floor_area
+            return {"electricity_kwh": g["electricity"][band], "gas_kwh": g["gas"][band]}, band
+        table = et.electric_heated_homes_synthetic_median_electricity_kwh.get(heating_system or "")
+        if main_fuel != "electricity" or not table:
+            return None
+        # Sparse bands (P1 keeps n ≥ 30 only) fall back to the nearest band that exists.
+        i = _ENERGY_BAND_ORDER.index(band)
+        nearest = min(table, key=lambda b: abs(_ENERGY_BAND_ORDER.index(b) - i))
+        return {"electricity_kwh": table[nearest]["median_kwh"], "gas_kwh": 0.0}, nearest
 
 
 # ---------- root ----------
@@ -289,7 +340,7 @@ class Config:
         self.global_ = GlobalCfg.model_validate(_load(root / "global.yaml"))
         self.score = ScoreCfg.model_validate(_load(root / "score.yaml"))
         self.engine = EngineCfg.model_validate(_load(root / "engine.yaml"))
-        self.imputation = ImputationCfg.model_validate(_load(root / "imputation.yaml"))
+        self.imputation = ImputationTables.model_validate(_load(root / "generated" / "imputation.yaml"))
         self.intensity_bounds = IntensityBounds.model_validate(
             _load(self._resolve(self.score.intensity_bounds_file))
         )
@@ -316,17 +367,17 @@ class Config:
         return self.regions.get(region, self.national) if region else self.national
 
     def floor_area_band(self, floor_area_m2: float) -> str:
-        """lt50 · 50_90 · 90_130 · 130_200 · gt200 (lower edge inclusive)."""
+        """lt50 · 50_90 · 90_130 · 130_200 · gt200 (upper edge inclusive, matching P1's pd.cut bands)."""
         for edge, band in zip(self.engine.floor_area_band_edges, FLOOR_AREA_BANDS, strict=False):
-            if floor_area_m2 < edge:
+            if floor_area_m2 <= edge:
                 return band
         return FLOOR_AREA_BANDS[-1]
 
     def peers(self, property_type: str | None, floor_area_m2: float) -> dict[str, float]:
         """Peer intensity percentiles {p10, p50, p75, p90} for (property_type, floor-area band).
 
-        Reads P1's train-split `config/generated/peer_percentiles.parquet` when it exists.
-        # ponytail: placeholder table keyed by area band only until P1 delivers the parquet (D10).
+        Reads P1's train-split `config/generated/peer_percentiles.parquet` when it exists (P1 commits it);
+        otherwise the placeholder `engine.yaml: peers_fallback`, keyed by area band only.
         """
         band = self.floor_area_band(floor_area_m2)
         row = self._peer_table.get((property_type, band)) if property_type else None
@@ -341,10 +392,11 @@ class Config:
 
         df = pd.read_parquet(path)
         cols = [c for c in ("p10", "p50", "p75", "p90") if c in df.columns]
-        return {
-            (str(r["property_type"]), str(r["floor_area_band"])): {c: float(r[c]) for c in cols}
-            for _, r in df.iterrows()
-        }
+        table = {}
+        for _, r in df.iterrows():
+            band = str(r["floor_area_band"])
+            table[(str(r["property_type"]), _P1_PEER_BANDS.get(band, band))] = {c: float(r[c]) for c in cols}
+        return table
 
     def quality_order(self, field: str) -> list[str]:
         """Enum values of a quality-ordered field, worst → best (used for ordinals and monotonicity).
