@@ -1,9 +1,12 @@
-// App shell: loads labels, then renders the top bar, the current route and the footer.
+// App shell: loads labels and the session, then renders the login screen or the top bar, the current route
+// and the footer.
 import { html, ReactDOM, useEffect, useState } from "./lib.js";
-import { api } from "./api.js";
+import { api, setUnauthorizedHandler } from "./api.js";
 import { setLabels } from "./labels.js";
 import { useRoute, href } from "./router.js";
-import { LinkButton, Notice } from "./ui.js";
+import { restoreSession, logout, signedOut, useStore } from "./store.js";
+import { Button, LinkButton, Notice } from "./ui.js";
+import { AuthScreen } from "./screens/auth.js";
 import { CatalogueScreen } from "./screens/catalogue.js";
 import { HomeScreen } from "./screens/home.js";
 import { ReportScreen } from "./screens/report.js";
@@ -19,12 +22,19 @@ function Brand() {
     </span>Green Home Score</a>`;
 }
 
+function Account() {
+  const user = useStore((s) => s.user);
+  if (!user) return null;
+  return html`<div class="account"><span class="account-name" title=${user.email}>${user.name}</span>
+    <${Button} variant="ghost" size="sm" onClick=${logout}>Log out<//></div>`;
+}
+
 function TopBar({ path }) {
   const section = path === "/" || path.startsWith("/home") || path.startsWith("/report") ? "/" : path;
   return html`<header class="topbar"><div class="container topbar-inner">
     <${Brand} />
     <nav class="nav" aria-label="Main">${NAV.map(([to, text]) => html`<a key=${to} href=${href(to)} aria-current=${section === to ? "page" : undefined}>${text}</a>`)}</nav>
-    <div class="topbar-cta"><${LinkButton} href="#/home/new" variant="secondary" size="sm">Assess your home<//></div>
+    <div class="topbar-cta row gap-3"><${LinkButton} href="#/home/new" variant="secondary" size="sm">Assess your home<//><${Account} /></div>
   </div></header>`;
 }
 
@@ -47,6 +57,8 @@ function Route({ route }) {
 
 function App() {
   const route = useRoute();
+  const user = useStore((s) => s.user);
+  if (!user) return html`<main id="main"><${AuthScreen} /></main><${Footer} />`;
   return html`<${TopBar} path=${route.path} /><main id="main"><${Route} route=${route} /></main><${Footer} />`;
 }
 
@@ -55,6 +67,7 @@ function BootError({ message }) {
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-api.labels()
-  .then((data) => { setLabels(data); root.render(html`<${App} />`); })
+setUnauthorizedHandler(signedOut);  // a session that ends mid-use goes back to the login screen
+Promise.all([api.labels(), restoreSession()])
+  .then(([data]) => { setLabels(data); root.render(html`<${App} />`); })
   .catch((err) => root.render(html`<${BootError} message=${err.message} />`));

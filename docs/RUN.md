@@ -48,6 +48,15 @@ Every `make` target reads `.env` when it exists.
 | `make llm-bench` | Compares the candidate models on this machine (JSON adherence, checker pass rate, latency, GPU fit) | `reports/llm_bench_<host>.md` |
 | `make eval` | Model sizes, the ML evaluation report, then the LLM evaluation and annotation pack | `reports/` |
 
+## 2b. Accounts (web app)
+
+The web app at http://localhost:8000 asks you to log in or create an account (email + password). Accounts
+and login sessions live in one SQLite file, `data/app.sqlite` (gitignored, created on first run; set
+`GREENHOME_DB` to move it). Passwords are scrypt-hashed; a session is an httpOnly cookie that lasts 30 days
+and survives API restarts. Each account's open home, report and chat are kept in the browser per account.
+The `/v1` data API stays open by default because the Streamlit UI has no login; set
+`GREENHOME_REQUIRE_AUTH=1` to require a session there too. Behind HTTPS, set `GREENHOME_COOKIE_SECURE=1`.
+
 ## 3. Rebuilding the data and models (optional)
 
 | Step | Command | Time | Notes |

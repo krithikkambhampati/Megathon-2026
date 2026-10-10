@@ -1,6 +1,7 @@
 """FastAPI app. Run with `make api` (uvicorn api.main:app --port 8000)."""
 
 import logging
+import os
 import threading
 import time
 import uuid
@@ -10,13 +11,15 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
+from api.auth import SESSION_COOKIE, AuthStore
 from api.cache import ResultCache
 from api.catalogue import Catalogue
 from api.deps import build_engine, build_llm, engine_info
-from api.errors import register_error_handlers
+from api.errors import error_response, register_error_handlers
 from api.json import NaNSafeJSONResponse
 from api.routes import (
     analyse,
+    auth,
     catalogue,
     chat,
     diff,
@@ -58,6 +61,7 @@ async def lifespan(app: FastAPI):
     app.state.llm = build_llm()  # None until P4 ships / if the LLM is down
     app.state.cache = ResultCache(maxsize=512)
     app.state.catalogue = Catalogue()
+    app.state.auth.purge_expired()
     if (
         app.state.engine is not None
     ):  # analyse the catalogue homes in the background so the first page is instant
@@ -74,6 +78,23 @@ def create_app(web: bool = True) -> FastAPI:
         default_response_class=NaNSafeJSONResponse,
     )
     register_error_handlers(app)
+    # Opened here (not in lifespan) so it exists before the first request, also without a lifespan.
+    app.state.auth = AuthStore()
+    require_auth = os.environ.get("GREENHOME_REQUIRE_AUTH", "0") == "1"
+
+    @app.middleware("http")
+    async def auth_gate(request: Request, call_next):
+        """GREENHOME_REQUIRE_AUTH=1: every /v1 route except auth, health and labels needs a session.
+        Off by default so the Streamlit UI (which has no login) keeps working."""
+        path = request.url.path
+        if (
+            require_auth
+            and path.startswith("/v1/")
+            and not path.startswith(("/v1/auth/", "/v1/health", "/v1/labels"))
+            and app.state.auth.user_for_token(request.cookies.get(SESSION_COOKIE)) is None
+        ):
+            return error_response(401, "not_logged_in", "Please log in.")
+        return await call_next(request)
 
     @app.middleware("http")
     async def timing(request: Request, call_next):
@@ -86,7 +107,8 @@ def create_app(web: bool = True) -> FastAPI:
         response.headers["X-Request-Id"] = request.state.request_id
         return response
 
-    for module in (health, labels, examples, catalogue, analyse, diff, explain, chat, methodology, portfolio):
+    routes = (auth, health, labels, examples, catalogue, analyse, diff, explain, chat, methodology, portfolio)
+    for module in routes:
         app.include_router(module.router, prefix="/v1")
     # The web app (web/): served at "/", after the API so /v1 and /docs keep priority.
     if web and WEB_DIR.exists():

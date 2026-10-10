@@ -1,9 +1,11 @@
 // App state and actions. Screens read with useStore(selector) and call the exported actions.
-// Persisted to sessionStorage (best effort) so a refresh keeps the current home and report.
+// Persisted per account to localStorage (best effort), so the current home, report and chat are still
+// there after a refresh, a closed tab or a new login.
 import { useSyncExternalStore } from "./lib.js";
 import { api } from "./api.js";
 
 const KEY = "ghs.v1";
+const storageKey = (user) => `${KEY}.user.${user.id}`;
 const blankHome = () => ({
   property_id: null, customer_id: null, property_type: null, age_band: null, floor_area_m2: null, bedrooms: null,
   region: null, current_value_gbp: null, energy_rating: null, roof_type: null, roof_insulation: null, wall_type: null,
@@ -11,6 +13,7 @@ const blankHome = () => ({
   listed_or_conservation: null, outdoor_space: null, energy: {},
 });
 const initial = () => ({
+  user: null,
   sessionId: (crypto.randomUUID?.() || String(Math.random()).slice(2)),
   homeId: null, homeName: null, home: null, original: null,
   analysis: null, analysing: false, analyseError: null,
@@ -19,24 +22,42 @@ const initial = () => ({
 });
 
 let state = initial();
-try {
-  const saved = JSON.parse(sessionStorage.getItem(KEY) || "null");
-  if (saved && saved.home) state = { ...state, ...saved, analysing: false, scenarioBusy: false, chatBusy: false };
-} catch { /* private mode etc: start fresh */ }
 
 const listeners = new Set();
 function set(patch) {
   state = { ...state, ...(typeof patch === "function" ? patch(state) : patch) };
   listeners.forEach((l) => l());
+  if (!state.user) return;
   try {
     const { sessionId, homeId, homeName, home, original, analysis, scenario, scenarioAnalysis, scenarioDiff, chat } = state;
-    sessionStorage.setItem(KEY, JSON.stringify({ sessionId, homeId, homeName, home, original, analysis, scenario, scenarioAnalysis, scenarioDiff, chat }));
+    localStorage.setItem(storageKey(state.user), JSON.stringify({ sessionId, homeId, homeName, home, original, analysis, scenario, scenarioAnalysis, scenarioDiff, chat }));
   } catch { /* storage full or blocked: in-memory only */ }
 }
 export const getState = () => state;
 export function useStore(selector = (s) => s) {
   return useSyncExternalStore((cb) => { listeners.add(cb); return () => listeners.delete(cb); }, () => selector(state));
 }
+
+// ---------- account ----------
+function signedIn(user) {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(storageKey(user)) || "null"); } catch { /* private mode etc */ }
+  state = { ...initial(), ...(saved && saved.home ? saved : {}), user };
+  set({});
+  return user;
+}
+/** On boot: the logged-in user from the session cookie, or null. */
+export async function restoreSession() {
+  try { return signedIn(await api.me()); } catch (err) { if (err.status === 401) return null; throw err; }
+}
+export const login = async (email, password) => signedIn(await api.login(email, password));
+export const signup = async (name, email, password) => signedIn(await api.signup(name, email, password));
+export async function logout() {
+  try { await api.logout(); } catch { /* the cookie is cleared server-side when reachable; drop it here anyway */ }
+  signedOut();
+}
+/** Local sign-out (also when the API says the session ended). Saved work stays for the next login. */
+export function signedOut() { state = initial(); listeners.forEach((l) => l()); }
 
 // ---------- home ----------
 export async function openCatalogueHome(id, name) {

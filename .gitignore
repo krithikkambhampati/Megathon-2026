@@ -9,6 +9,8 @@ data/interim/*
 
 # customer memory DB (local only)
 data/memory.sqlite
+# accounts + login sessions (api/auth.py)
+data/app.sqlite*
 
 # python
 __pycache__/
