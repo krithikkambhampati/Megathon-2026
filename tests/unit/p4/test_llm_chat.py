@@ -87,6 +87,15 @@ def test_template_only_intents_keep_the_current_scenario(engine, home, base, mes
     assert r.check.fallback_used and r.check.attempts == 0 and r.check.passed
 
 
+def test_general_message_goes_to_the_llm_and_is_still_checked(engine, home, base) -> None:
+    llm = ScriptedClient(["Good draught-proofing helps any home feel warmer. Ask me why your score is low!"])
+    r = _ask(engine, home, base, "what is the weather", llm=llm)
+    assert r.intent == "out_of_scope" and "draught-proofing" in r.answer and not r.check.fallback_used
+    bad = ScriptedClient(["It is 19 degrees.", "Still 19 degrees."])  # invented number twice → template
+    r = _ask(engine, home, base, "what is the weather", llm=bad)
+    assert r.check.fallback_used and "I can only help with this home" in r.answer
+
+
 def test_unparseable_whatif_asks_a_question(engine, home, base) -> None:
     r = _ask(engine, home, base, "What if my budget was £8,000?")
     assert r.intent == "unclear" and "budget" in r.answer.lower() and r.result is None

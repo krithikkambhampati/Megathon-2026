@@ -3,8 +3,9 @@
 check() runs on every LLM reply, and in tests on every template answer, so the user never sees an
 unchecked number. Steps: extract numeric mentions → normalise to (|value|, unit class) → match against the
 allowed set (display numbers of the sheet's facts, numbers in anything else the model saw, a few
-context-bound structural numbers) within a tolerance → £ claims we never make → banned phrases (negation-
-aware) → direction (an "increase" described as a saving).
+context-bound structural numbers) within a tolerance; a hedged "about 4,000 kWh" may round a fact to 1–2
+significant figures → £ claims we never make → banned phrases (negation-aware) → direction (an "increase"
+described as a saving).
 """
 
 from __future__ import annotations
@@ -41,6 +42,11 @@ _CLASS_STEP: dict[str, float] = {
     "year": 0,
 }
 _REL_TOL = 0.005
+_HEDGE = re.compile(
+    r"\b(?:about|around|roughly|approximately|approx\.?|nearly|almost|close to|just over|just under|"
+    r"over|under|more than|less than|some)\s*$|~\s*$",
+    re.IGNORECASE,
+)
 
 BANNED: dict[str, str] = {  # name → regex; skipped when a negation comes just before
     "guarantee": r"\bguarantee[ds]?\b",
@@ -260,13 +266,28 @@ def _structural(m: Mention, text: str) -> bool:
     return m.unit == "plain" and m.value == 12 and bool(_MONTHS_AFTER.match(after))
 
 
-def _matches(m: Mention, allowed: list[_Allowed]) -> list[_Allowed]:
+def _hedged(m: Mention, text: str) -> bool:
+    return bool(_HEDGE.search(text[max(0, m.span[0] - 20) : m.span[0]]))
+
+
+def _round_sig(x: float, sig: int) -> float:
+    return float(f"{x:.{sig}g}") if x else 0.0
+
+
+def _matches(m: Mention, allowed: list[_Allowed], approx: bool = False) -> list[_Allowed]:
+    """Exact (within display tolerance), or with `approx` the fact rounded to 1 or 2 significant figures
+    ("about 4,000 kWh" for 3,990 kWh), never a nearby number that only looks precise."""
     hits = []
     for a in allowed:
         if not _compatible(m.unit, a.unit):
             continue
-        tol = 0.0 if m.unit == "year" else max(a.tol, _REL_TOL * a.value)
-        if abs(m.value - a.value) <= tol + 1e-9:
+        if m.unit == "year":  # years match exactly, never approximately
+            if not approx and m.value == a.value:
+                hits.append(a)
+        elif approx:
+            if any(abs(m.value - _round_sig(a.value, n)) <= 1e-9 * max(1, a.value) for n in (1, 2)):
+                hits.append(a)
+        elif abs(m.value - a.value) <= max(a.tol, _REL_TOL * a.value) + 1e-9:
             hits.append(a)
     return hits
 
@@ -327,7 +348,7 @@ def check(text: str, sheet: FactSheet, *, extra_allowed: list[Fact] | None = Non
     unsupported: list[str] = []
     for m in extract_numbers(text):
         found.append(m.raw)
-        hits = _matches(m, allowed)
+        hits = _matches(m, allowed) or (_hedged(m, text) and _matches(m, allowed, approx=True))
         if not hits:
             if not _structural(m, text):
                 unsupported.append(m.raw)

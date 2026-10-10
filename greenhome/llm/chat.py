@@ -210,6 +210,23 @@ def _memory(req, llm, base, deadline, s) -> ChatResponse:
     return _reply(req, base, "memory", text, report, memory=events)
 
 
+def _general(req, llm, base, deadline, s, r, traces) -> ChatResponse:
+    """Out-of-scope / unclear: the LLM answers (or redirects) from the score sheet; the canned template is
+    only the fallback (no LLM, no time, failed check)."""
+    template = "out_of_scope.j2" if r.intent == "out_of_scope" else "unclear.j2"
+    trace = answer_sheet(
+        build_fact_sheet(base, r.section, focus=r.focus),
+        llm,
+        task=render("general.j2", question=req.message),
+        user_message=req.message,
+        deadline=deadline,
+        settings=s,
+        template=template,
+    )
+    _keep(traces, trace)
+    return _reply(req, base, r.intent, trace.text, trace.check)
+
+
 def chat(
     req: ChatRequest,
     engine,
@@ -234,10 +251,7 @@ def chat(
             return _explain(req, engine, llm, ctx, base, deadline, s, r, traces)
         if r.intent == "memory":
             return _memory(req, llm, base, deadline, s)
-        text, report = _template_reply(
-            base, "out_of_scope.j2" if r.intent == "out_of_scope" else "unclear.j2"
-        )
-        return _reply(req, base, r.intent, text, report)
+        return _general(req, llm, base, deadline, s, r, traces)
     except Exception:
         log.exception("chat failed; returning the safe reply")
         report = CheckReport(

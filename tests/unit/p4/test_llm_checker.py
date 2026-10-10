@@ -67,6 +67,8 @@ SAVINGS_CASES = [
     ("Electricity use falls by 1,240 kWh.", False),  # direction
     ("You'd save around 12,500 kWh of gas.", False),  # invented
     ("Gas use drops from 12,000 kWh/year to 870 kWh/year.", True),
+    ("Gas use drops to about 900 kWh/year.", True),  # 870 rounded to 2 significant figures
+    ("Gas use drops to about 850 kWh/year.", False),  # near, but not a rounding
     ("That is roughly 11,100 kWh of gas.", True),  # within 0.5 %
     ("Improvement potential is 58.8%.", True),
     ("Improvement potential is about 59%.", True),
@@ -125,6 +127,9 @@ SCORE_CASES = [
     ("Poor covers scores from 30.", True),
     ("Your score is 38.", False),
     ("After all recommended retrofits it could reach 89.", True),
+    ("Your score is about 30.", True),  # hedged: 32 rounded to 1 significant figure
+    ("Your score is 31.", False),  # unhedged: must be copied
+    ("Your score is about 34.", False),  # hedged but not a rounding of any fact
 ]
 
 

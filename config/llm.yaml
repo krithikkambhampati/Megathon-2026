@@ -49,11 +49,11 @@ min_retry_s: 7                    # p95 of one LLM attempt (llm_bench, demo lapt
 connect_timeout_s: 5              # reachability check (TLS to a hosted endpoint)
 warmup_timeout_s: 30              # first request (an Ollama cold load can need ~120)
 
-# Max tokens per prompt (~170 words ≈ 230–260 visible tokens). On reasoning models (gpt-oss) the hidden
+# Max tokens per prompt (~250 words ≈ 330–380 visible tokens). On reasoning models (gpt-oss) the hidden
 # reasoning counts too, so the caps leave room for it; a reply cut at the cap is never shown.
 max_tokens:
-  explain: 700
-  whatif_answer: 700
+  explain: 900
+  whatif_answer: 900
   whatif_parse: 400
   memory_parse: 400
   router: 256

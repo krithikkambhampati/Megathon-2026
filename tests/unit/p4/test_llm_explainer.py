@@ -132,14 +132,16 @@ def test_system_prompt_has_the_readme_rules_and_the_facts(p10001) -> None:
     sheet = build_fact_sheet(p10001, "savings")
     prompt = system_prompt(sheet, "Explain.")
     for rule in (
-        'Use ONLY numbers that appear in FACTS, copied exactly as their "display" text.',
-        "Never calculate, add, subtract, convert, round or estimate a number yourself.",
-        "If the user asks for something not in FACTS, say it isn't available from this tool.",
+        "Numbers about this home (scores, kWh, carbon, £, %) must come from FACTS, copied as their "
+        '"display" text.',
+        "Don't calculate new figures yourself.",
+        "as long as you don't attach new numbers to them.",
+        "If the user asks for a figure that isn't in FACTS, say this tool doesn't estimate it",
         'Savings are "estimated". Property value changes are "indicative" and not guaranteed or causal.',
         "If DATA_NOTES list missing, assumed or conflicting data, mention the ones that affect your answer.",
-        "Never recommend a retrofit marked infeasible. Explain its REASON instead.",
+        "Don't recommend a retrofit marked infeasible. Explain its REASON instead.",
         "If electricity use goes up while gas goes down, say so explicitly.",
-        "No financial or mortgage advice. Plain English, at most 170 words, no tables.",
+        "No personal financial or mortgage advice. Plain, warm English, at most 250 words, no tables.",
     ):
         assert rule in prompt
     assert "1,240 kWh/year increase" in prompt and "1243.54" not in prompt
