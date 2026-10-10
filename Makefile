@@ -14,11 +14,13 @@ setup:
 	uv sync
 	mkdir -p data/raw data/interim data/processed data/examples models outputs reports
 
+# EPC certificates are a manual download (GOV.UK One Login): see data_pipeline/download/README.md
 data-raw:
-	$(call run_mod,data_pipeline.download.verify,,P1)
+	$(call run_mod,data_pipeline.download.download_public,,P1)
+	$(call run_mod,data_pipeline.download.ons_lad_region,,P1)
 
 data:
-	$(call run_mod,data_pipeline.build_all,,P1)
+	$(call run_mod,data_pipeline.run_all,,P1)
 
 train:
 	$(call run_mod,training.train_all,,P3)
