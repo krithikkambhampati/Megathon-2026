@@ -133,3 +133,15 @@ def test_build_facts_covers_all_sections_with_unique_ids(results) -> None:
     assert len({f.id for f in facts}) == len(facts)
     keys = {f.key.split(".")[0] for f in facts}
     assert {"score", "recommendations", "savings", "carbon", "value"} <= keys
+
+
+def test_score_sheet_has_floor_area_and_peer_use_with_shared_formatters(results) -> None:
+    sheet = build_fact_sheet(results["P10001"], "score")
+    assert sheet.get("home.floor_area_m2").display == "85 m²"
+    assert sheet.get("peer.intensity_kwh_m2").display == "198 kWh/m²/year"
+    assert sheet.get("peer.p50_kwh_m2").display == "165 kWh/m²/year"
+
+
+def test_notes_use_field_labels(results) -> None:
+    notes = data_notes(results["P90002"].flags)
+    assert any("loft insulation, outdoor space for a heat pump" in n for n in notes)

@@ -27,6 +27,7 @@ _FACT_UNIT: dict[str, tuple[str, float]] = {
     "pp": ("pct", 0.1),
     "score": ("score", 1),
     "points": ("score", 0.1),
+    "m2": ("plain", 1),
     "sap": ("score", 1),
     "count": ("score", 1),
 }

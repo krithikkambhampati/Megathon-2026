@@ -8,6 +8,10 @@ The score is a fixed weighted sum of seven parts, so you can see exactly where p
 {% for c in v.components %}
 - {{ c.name }}, weight {{ c.weight }}: {{ c.sub_score }} out of 100, adding {{ c.contribution }} points{% if c.range %}, could be {{ c.range }}{% endif %}{% if c.provenance %} ({{ c.provenance | lower }}){% endif %}.
 {% endfor %}
+{% if v.peer %}
+
+Your home uses {{ v.peer.intensity }}{% if v.area %} over {{ v.area }}{% endif %}; similar homes typically use {{ v.peer.p50 }}.
+{% endif %}
 {% if v.issues %}
 
 The main problem areas are: {{ v.issues[:3] | join("; ") }}.

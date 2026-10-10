@@ -22,7 +22,15 @@ from greenhome import format as fmt
 from greenhome.config import get_config
 from greenhome.contracts import AnalysisResult, DataFlag, FuelSaving, ResultDiff, RetrofitRecommendation
 from greenhome.core.diff import diff_results
-from greenhome.llm._labels import LABELS, SCORE_COMPONENT, flag_text, issue_text, label, reason_text
+from greenhome.llm._labels import (
+    LABELS,
+    SCORE_COMPONENT,
+    field_label,
+    flag_text,
+    issue_text,
+    label,
+    reason_text,
+)
 
 SheetSection = Literal["score", "recommendations", "savings", "value", "whatif", "memory"]
 FactUnit = Literal[
@@ -36,6 +44,7 @@ FactUnit = Literal[
     "pp",
     "score",
     "points",
+    "m2",
     "sap",
     "count",
     "rating",
@@ -159,7 +168,7 @@ def data_notes(flags: list[DataFlag]) -> list[str]:
             continue
         seen.add((f.code, f.field))
         if f.code in _ESTIMATED:
-            name = (f.field or "").replace("_m2", "").replace("_", " ")
+            name = field_label(f.field).lower() if f.field else ""
             if name and name not in estimated:
                 estimated.append(name)
         else:
@@ -230,7 +239,17 @@ def _score(b: _Builder, r: AnalysisResult) -> dict:
                     f"{name} · possible sub-score range",
                 )
             v["components"].append(comp)
-    if r.peer is not None and hasattr(fmt, "fmt_intensity"):  # ponytail: shown once P2 adds fmt_intensity
+    area = r.home.home.floor_area_m2
+    if s.status == "ok" and area is not None:
+        guessed = r.home.provenance.get("floor_area_m2") in ("imputed", "assumed")
+        v["area"] = b.num(
+            "home.floor_area_m2",
+            area,
+            fmt.fmt_area,
+            "m2",
+            "Floor area" + (" (estimated, not given)" if guessed else ""),
+        )
+    if s.status == "ok" and r.peer is not None:
         v["peer"] = {
             "intensity": b.num(
                 "peer.intensity_kwh_m2",

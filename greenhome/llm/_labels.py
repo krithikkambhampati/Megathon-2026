@@ -4,7 +4,16 @@ same thing. Small helpers on top; no wording lives here.
 
 from __future__ import annotations
 
-from greenhome.labels import FLAG_TEXT, ISSUE_TEXT, LABELS, NOT_SURE, REASON_TEXT, SCORE_COMPONENT, label
+from greenhome.labels import (
+    FIELD_LABEL,
+    FLAG_TEXT,
+    ISSUE_TEXT,
+    LABELS,
+    NOT_SURE,
+    REASON_TEXT,
+    SCORE_COMPONENT,
+    label,
+)
 
 __all__ = [
     "FLAG_TEXT",
@@ -15,9 +24,15 @@ __all__ = [
     "SCORE_COMPONENT",
     "label",
     "flag_text",
+    "field_label",
+    "FIELD_LABEL",
     "issue_text",
     "reason_text",
 ]
+
+
+def field_label(field: str) -> str:
+    return FIELD_LABEL.get(field, field.replace("_", " "))
 
 
 def reason_text(code: str) -> str:
