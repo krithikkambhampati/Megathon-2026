@@ -27,6 +27,9 @@ class LLMError(Exception):
     """The LLM could not give an answer: unreachable, HTTP error, malformed reply."""
 
 
+TRUNCATED = "reply cut off at max_tokens"
+
+
 class LLMTimeout(LLMError):
     """The call ran past its timeout (including mid-stream)."""
 
@@ -165,7 +168,7 @@ class OllamaClient(_StreamingClient):
         usage = {}
         if done:
             if obj.get("done_reason") == "length":
-                raise LLMError("reply cut off at max_tokens")
+                raise LLMError(TRUNCATED)
             load_ns = obj.get("load_duration")
             usage = {
                 "prompt_tokens": obj.get("prompt_eval_count"),
@@ -197,12 +200,17 @@ class OllamaClient(_StreamingClient):
         """Load the model into memory: a 1-token request with the SAME options as real calls (a different
         num_ctx would make Ollama reload) and keep_alive. Returns seconds taken."""
         start = time.monotonic()
-        self.generate(
-            "",
-            [{"role": "user", "content": "hi"}],
-            max_tokens=self.settings.tokens("warmup", 1),
-            timeout_s=self.settings.warmup_timeout_s,
-        )
+        try:
+            self.generate(
+                "",
+                [{"role": "user", "content": "hi"}],
+                max_tokens=self.settings.tokens("warmup", 1),
+                timeout_s=self.settings.warmup_timeout_s,
+            )
+        except LLMError as e:
+            # A 1-token reply is meant to stop at max_tokens: the model is loaded, which is all we want.
+            if TRUNCATED not in str(e):
+                raise
         return time.monotonic() - start
 
     def gpu_fraction(self) -> float | None:
@@ -279,7 +287,7 @@ class OpenAICompatClient(_StreamingClient):
             }
         choices = obj.get("choices") or [{}]
         if choices[0].get("finish_reason") == "length":
-            raise LLMError("reply cut off at max_tokens")
+            raise LLMError(TRUNCATED)
         return (choices[0].get("delta") or {}).get("content") or "", False, usage
 
     def ping(self, timeout_s: float = 2) -> bool:
@@ -298,12 +306,17 @@ class OpenAICompatClient(_StreamingClient):
 
     def warm_up(self) -> float:
         start = time.monotonic()
-        self.generate(
-            "",
-            [{"role": "user", "content": "hi"}],
-            max_tokens=self.settings.tokens("warmup", 1),
-            timeout_s=self.settings.warmup_timeout_s,
-        )
+        try:
+            self.generate(
+                "",
+                [{"role": "user", "content": "hi"}],
+                max_tokens=self.settings.tokens("warmup", 1),
+                timeout_s=self.settings.warmup_timeout_s,
+            )
+        except LLMError as e:
+            # A 1-token reply is meant to stop at max_tokens: the model is loaded, which is all we want.
+            if TRUNCATED not in str(e):
+                raise
         return time.monotonic() - start
 
 

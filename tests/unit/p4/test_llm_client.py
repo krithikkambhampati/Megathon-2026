@@ -253,3 +253,19 @@ def test_make_client_never_raises(monkeypatch) -> None:
 
     monkeypatch.setattr(client_mod, "get_llm_settings", boom)
     assert make_client() is None
+
+
+def test_warm_up_accepts_its_own_one_token_cut_off() -> None:
+    """Warm-up asks for 1 token, so Ollama always answers done_reason=length. That's success, not an error
+    (before this, every `make llm-bench` run failed with "warm-up failed: reply cut off at max_tokens")."""
+    cut = b'{"message": {"content": "H"}, "done": true, "done_reason": "length"}\n'
+    c = OllamaClient(_settings(), _http(lambda r: httpx.Response(200, content=cut)))
+    assert c.warm_up() >= 0
+
+
+def test_warm_up_still_raises_real_errors() -> None:
+    c = OllamaClient(
+        _settings(), _http(lambda r: httpx.Response(200, content=b'{"error": "model not found"}\n'))
+    )
+    with pytest.raises(LLMError):
+        c.warm_up()
