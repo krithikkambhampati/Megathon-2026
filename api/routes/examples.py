@@ -19,11 +19,11 @@ router = APIRouter()
 
 _ID = re.compile(r"^P\d{5,}$")
 _FIXTURE_TEXT = {
-    "P10001": ("PS example home", "Rating E semi, single glazing, unfilled cavity (score 36, Poor)"),
+    "P10001": ("PS example home", "Rating E semi with single glazing and an unfilled cavity"),
     "P90002": ("Flat with unknown answers", "Several 'not sure' answers, so the score comes with a range"),
     "P90003": ("Almost no information", "Too little data: the app says 'insufficient' instead of guessing"),
     "P90004": ("Missing winter months", "Gaps in monthly readings, annualised with seasonal shares"),
-    "P90005": ("Off-gas home", "Oil or LPG heating: scored, but savings are out of scope"),
+    "P90005": ("Off-gas home", "Oil, LPG or solid-fuel boiler: scored, but savings are out of scope"),
 }
 
 
