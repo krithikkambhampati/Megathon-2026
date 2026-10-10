@@ -1,4 +1,4 @@
-"""What-if screen: scenario toggles, diff table, explanation and chat (AppTest, API faked with the real engine)."""
+"""What-if screen: toggles, diff table, explanation and chat (AppTest; API faked with the real engine)."""
 
 import json
 import sys
@@ -52,23 +52,49 @@ def fake_api(monkeypatch):
 
     def explain(analysis_id, section):
         calls["explain"].append((analysis_id, section))
-        return {"text": "Solar panels cut your grid electricity.",
-                "check": {"passed": True, "numbers_found": ["1"], "unsupported": [], "banned_phrases": [],
-                          "attempts": 1, "fallback_used": True}}
+        return {
+            "text": "Solar panels cut your grid electricity.",
+            "check": {
+                "passed": True,
+                "numbers_found": ["1"],
+                "unsupported": [],
+                "banned_phrases": [],
+                "attempts": 1,
+                "fallback_used": True,
+            },
+        }
 
     def chat(req):
         calls["chat"].append(req)
         h = HomeInput.model_validate(req["home"])
         base = ENGINE.analyse(h)
         res = ENGINE.run_scenario(h, Scenario(name="custom", mode="custom", retrofits=["solar_pv"]))
-        check = {"passed": True, "numbers_found": ["43", "89"], "unsupported": [], "banned_phrases": [],
-                 "attempts": 1, "fallback_used": False}
-        return {"answer": "With solar panels only, the score after the works is 43.", "intent": "whatif",
-                "scenario": dump(res.scenario), "result": dump(res), "base_result_id": base.analysis_id,
-                "check": check, "memory_proposal": None, "diff": dump(diff_results(base, res))}
+        check = {
+            "passed": True,
+            "numbers_found": ["43", "89"],
+            "unsupported": [],
+            "banned_phrases": [],
+            "attempts": 1,
+            "fallback_used": False,
+        }
+        return {
+            "answer": "With solar panels only, the score after the works is 43.",
+            "intent": "whatif",
+            "scenario": dump(res.scenario),
+            "result": dump(res),
+            "base_result_id": base.analysis_id,
+            "check": check,
+            "memory_proposal": None,
+            "diff": dump(diff_results(base, res)),
+        }
 
-    for name, fn in [("analyse", analyse), ("scenario", scenario), ("diff", diff), ("explain", explain),
-                     ("chat", chat)]:
+    for name, fn in [
+        ("analyse", analyse),
+        ("scenario", scenario),
+        ("diff", diff),
+        ("explain", explain),
+        ("chat", chat),
+    ]:
         monkeypatch.setattr(api_client, name, fn)
     monkeypatch.setattr(api_client, "BASE_URL", "http://127.0.0.1:9")
     st.cache_data.clear()
@@ -92,7 +118,9 @@ def button(at: AppTest, label: str):
 
 
 def text(at: AppTest) -> str:
-    return "\n".join([m.value for m in at.markdown] + [c.value for c in at.caption] + [w.value for w in at.warning])
+    return "\n".join(
+        [m.value for m in at.markdown] + [c.value for c in at.caption] + [w.value for w in at.warning]
+    )
 
 
 def test_toggles_start_at_the_recommended_plan(fake_api):
