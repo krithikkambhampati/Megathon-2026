@@ -1,0 +1,8 @@
+retrofit,homes,model_median_delta_sap,model_share_negative,real_repeat_epc_median_delta_sap
+loft_insulation,95562,2.492,0.001,7.0
+cavity_wall_insulation,34248,6.137,0.0,8.0
+solid_wall_insulation,76069,7.264,0.0,11.0
+double_glazing,27254,3.49,0.0,6.0
+air_source_heat_pump,257279,0.253,0.0,10.0
+solar_pv,164700,8.116,0.001,8.0
+smart_thermostat,216385,2.054,0.0,4.0

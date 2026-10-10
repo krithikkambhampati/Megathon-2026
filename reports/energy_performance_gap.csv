@@ -1,0 +1,3 @@
+retrofit,model_median_gas_saving_pct,simulator_median_gas_saving_pct,NEED_observed_gas_saving_pct
+loft_insulation,4.3,3.5,2.6-2.8
+cavity_wall_insulation,14.1,13.7,8.4-9.2
