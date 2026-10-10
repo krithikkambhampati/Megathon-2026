@@ -11,6 +11,19 @@
 
 ---
 
+## Quick start
+
+```bash
+pip install --user uv                     # once
+make setup                                # Python 3.11 + pinned packages
+make api                                  # API on :8000 (trained models are in the repo)
+make ui                                   # dashboard on :8501 → Your home → load an example → Analyse
+```
+
+Full instructions (language model, rebuilding data and models, demo checks, troubleshooting):
+[`docs/RUN.md`](docs/RUN.md). Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Responsible AI:
+[`docs/RESPONSIBLE_AI.md`](docs/RESPONSIBLE_AI.md).
+
 ## Table of contents
 0. [How to use this document](#0-how-to-use-this-document)
 1. [The problem on one page](#1-the-problem-on-one-page)
