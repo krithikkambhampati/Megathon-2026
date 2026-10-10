@@ -30,7 +30,7 @@ st.table(
             health["contract_version"],
             mode.get(health["models_mode"], health["models_mode"]),
             ", ".join(f"{k} {v}" for k, v in health["model_versions"].items()) or "—",
-            "local language model, checked" if health["llm_ok"] else "template answers (language model off)",
+            "hosted language model, checked" if health["llm_ok"] else "template answers (language model off)",
         ],
     }
 )

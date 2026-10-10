@@ -8,7 +8,7 @@
     {"model": "Value", "metric": "Median absolute error of price", "value": "15.7%", "baseline": "18.5% (region × type £/m²)", "source": "reports/evaluation.md §M3"}
   ],
   "llm": {
-    "model": "qwen2.5:7b-instruct-q4_K_M (local, RTX 4050 6 GB)",
+    "model": "gpt-oss-120b (open-weight, hosted on Groq)",
     "scenarios": 80,
     "rows": [
       {"metric": "Numbers grounded in facts, answer shown", "value": "100%", "target": "≥ 90%"},

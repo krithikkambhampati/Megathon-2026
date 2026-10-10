@@ -3,8 +3,8 @@
 How the Green Home Score & Retrofit Engine handles privacy, bias, explainability, hallucination, human
 oversight and data limitations (Problem Statement 2, deliverable H). Details are in the linked documents.
 
-LLM results come from `reports/llm_eval.md` (80 test scenarios on the demo laptop, model
-`qwen2.5:7b-instruct-q4_K_M`). The unsupported-claim rate is **pending** the human annotation of 40 answers.
+LLM results come from `reports/llm_eval.md` (80 test scenarios). The app uses the open-weight
+`gpt-oss-120b` hosted on Groq; only the fact sheet of computed numbers is sent, never an address or personal details. The unsupported-claim rate is **pending** the human annotation of 40 answers.
 
 ## 1. Privacy
 
