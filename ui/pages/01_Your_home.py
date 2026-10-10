@@ -15,7 +15,9 @@ except api_client.APIError as err:
     items = []
     st.warning(f"Couldn't load example homes: {err.message}")
 if items:
-    titles = {i["property_id"]: f"{i['title']} ({i['property_id']})" for i in items}
+    titles = {
+        i["property_id"]: f"{i['title']}{' · synthetic demo' if i.get('synthetic') else ''}" for i in items
+    }
     c1, c2 = st.columns([4, 1], vertical_alignment="bottom")
     choice = c1.selectbox(
         "Start from an example home",

@@ -17,7 +17,7 @@ from greenhome.contracts import HomeInput
 
 router = APIRouter()
 
-_ID = re.compile(r"^P\d{5,}$")
+_ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")  # file-name safe (no "/" or ".."), allows P1000205_minimal
 _FIXTURE_TEXT = {
     "P10001": ("PS example home", "Rating E semi with single glazing and an unfilled cavity"),
     "P90002": ("Flat with unknown answers", "Several 'not sure' answers, so the score comes with a range"),
@@ -41,7 +41,7 @@ def list_examples() -> list[ExampleIndexItem]:
         pid = path.stem.removeprefix("home_input_")
         title, why = _FIXTURE_TEXT.get(pid, (f"Test home {pid}", "P2 test fixture"))
         why = f"{why} [test fixture]"
-        items.append(ExampleIndexItem(property_id=pid, title=title, why_interesting=why))
+        items.append(ExampleIndexItem(property_id=pid, title=title, why_interesting=why, synthetic=True))
     return items
 
 

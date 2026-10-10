@@ -308,3 +308,24 @@ def test_health_llm_ping(fixture_client, llm, expected):
     body = fixture_client.get("/v1/health").json()
     assert body["llm_ok"] is expected
     assert body["status"] == "degraded"  # fixture models are never "ok"
+
+
+def test_p1_example_index_loads_and_every_home_is_valid(fixture_client):
+    """Reads the committed data/examples/index.json (P1), not a stand-in."""
+    items = fixture_client.get("/v1/examples")
+    assert items.status_code == 200, items.text
+    items = items.json()
+    from api.routes.examples import _examples_dir
+
+    if not (_examples_dir() / "index.json").exists():
+        pytest.skip("no P1 demo homes on this machine")
+    assert items and any(i["synthetic"] for i in items)
+    for i in items:
+        r = fixture_client.get(f"/v1/examples/{i['property_id']}")
+        assert r.status_code == 200, (i["property_id"], r.text)
+        HomeInput.model_validate(r.json())
+
+
+@pytest.mark.parametrize("bad", ["..", "a/b", "P1.json", "x" * 65])
+def test_example_ids_cannot_escape_the_folder(fixture_client, bad):
+    assert fixture_client.get(f"/v1/examples/{bad}").status_code == 404

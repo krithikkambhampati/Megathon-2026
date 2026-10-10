@@ -37,6 +37,7 @@ class ExampleIndexItem(Strict):
     property_id: str
     title: str
     why_interesting: str
+    synthetic: bool = False  # P1 marks made-up homes (e.g. the brief's P10001) so the UI can say so
 
 
 class HealthResponse(Strict):
