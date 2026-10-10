@@ -45,7 +45,8 @@ NOTHING = re.compile(
 OP_ONLY = re.compile(r"\b(?:only|just|solely)\b", re.IGNORECASE)
 OP_REMOVE = re.compile(
     r"\b(?:without|except|skip(?:ping|ped)?|exclud\w*|drop(?:ping|ped)?|minus|leave\s+out|"
-    r"leaving\s+out|no|not|remove|removing|but\s+not)\b",
+    r"leaving\s+out|no|not|remove|removing|but\s+not|apart\s+from|other\s+than|aside\s+from|"
+    r"(?:everything|all|the\s+lot|the\s+full\s+package)\s+but)\b",
     re.IGNORECASE,
 )
 OP_ADD = re.compile(

@@ -111,3 +111,29 @@ def test_bad_llm_json_asks_to_clarify(reply) -> None:
         settings=SETTINGS,
     )
     assert res.scenario is None and res.clarify
+
+
+FULL = [
+    "loft_insulation",
+    "cavity_wall_insulation",
+    "double_glazing",
+    "smart_thermostat",
+    "air_source_heat_pump",
+    "solar_pv",
+]
+
+
+@pytest.mark.parametrize(
+    "message,removed",
+    [
+        ("everything except the heat pump", "air_source_heat_pump"),  # P5 live test
+        ("everything but solar", "solar_pv"),
+        ("all of them except loft", "loft_insulation"),
+        ("everything apart from solar panels", "solar_pv"),
+        ("everything other than the windows", "double_glazing"),
+        ("the lot minus the heat pump", "air_source_heat_pump"),
+    ],
+)
+def test_everything_except_x_is_the_recommended_plan_minus_x(message, removed) -> None:
+    res = parse_whatif(message, _home("P10001"), _base("P10001"))
+    assert res.scenario.mode == "custom" and res.scenario.retrofits == [r for r in FULL if r != removed]
