@@ -1,30 +1,74 @@
-"""P5-local request/response models (roadmap §5.1).
+"""P5-local request/response models (roadmap §5.1). Shared types come from greenhome.contracts (P2)."""
 
-Models that wrap shared contract types (AnalyseRequest, ExplainResponse, MemoryResponse, ...) are added once
-greenhome/contracts.py exists. Until then `_Strict` stands in for contracts.Strict.
-"""
+from typing import Any, Literal
 
-from typing import Literal
+from greenhome.contracts import CheckReport, CustomerContext, HomeInput, MemoryEvent, Scenario, Strict
 
-from pydantic import BaseModel, ConfigDict
+Section = Literal["score", "recommendations", "savings", "value"]
 
 
-class _Strict(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+class AnalyseRequest(Strict):
+    home: HomeInput
+    customer_id: str | None = None
 
 
-class HealthResponse(_Strict):
-    status: Literal["ok", "degraded"]  # degraded = no engine, stub models or LLM down
+class ScenarioRequest(Strict):
+    home: HomeInput
+    scenario: Scenario
+    customer_id: str | None = None
+
+
+class ExplainRequest(Strict):
+    analysis_id: str
+    section: Section
+
+
+class ExplainResponse(Strict):
+    text: str
+    check: CheckReport
+
+
+class DiffRequest(Strict):
+    base_analysis_id: str
+    new_analysis_id: str
+
+
+class ExampleIndexItem(Strict):
+    property_id: str
+    title: str
+    why_interesting: str
+
+
+class HealthResponse(Strict):
+    status: Literal["ok", "degraded"]  # degraded = no engine, stub/fixture models or LLM down
     contract_version: str
     model_versions: dict[str, str]
-    models_mode: Literal["stub", "real", "fixture", "none"]  # none = engine not wired yet
+    models_mode: Literal["stub", "real", "fixture", "none"]  # none = engine failed to load
     llm_ok: bool
 
 
-class ErrorBody(_Strict):
+class MethodologyResponse(Strict):
+    contract_version: str
+    score_method_version: str
+    weights: dict[str, float]
+    classes: list[dict[str, Any]]
+    sub_score_tables: dict[str, Any]
+    intensity_bounds: dict[str, float]
+    retrofit_catalogue: list[dict[str, Any]]
+    emission_factors: list[dict[str, Any]]
+    model_versions: dict[str, str]
+
+
+class MemoryResponse(Strict):
+    customer_id: str
+    events: list[MemoryEvent]
+    context: CustomerContext
+
+
+class ErrorBody(Strict):
     code: str
     message: str
 
 
-class ErrorResponse(_Strict):
+class ErrorResponse(Strict):
     error: ErrorBody

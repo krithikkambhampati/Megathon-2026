@@ -7,9 +7,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 
+from api.cache import ResultCache
+from api.deps import build_engine, build_llm, engine_info
 from api.errors import register_error_handlers
 from api.json import NaNSafeJSONResponse
-from api.routes import health
+from api.routes import analyse, diff, examples, explain, health, methodology
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("greenhome.api")
@@ -18,8 +20,10 @@ log = logging.getLogger("greenhome.api")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Loaded ONCE here, never per request (README P5 hazard 4).
-    app.state.engine = None  # P5-08: Engine.from_config() or FixtureEngine (GREENHOME_ENGINE_MODE)
-    app.state.llm = None  # P5-08: greenhome.llm.client.make_client()
+    app.state.engine = build_engine()  # Engine.from_config() or FixtureEngine (GREENHOME_ENGINE_MODE)
+    app.state.llm = build_llm()  # None until P4 ships / if the LLM is down
+    app.state.cache = ResultCache(maxsize=512)
+    log.info("engine: %s · llm: %s", engine_info(app.state.engine)[0], "on" if app.state.llm else "off")
     yield
 
 
@@ -43,7 +47,8 @@ def create_app() -> FastAPI:
         response.headers["X-Request-Id"] = request.state.request_id
         return response
 
-    app.include_router(health.router, prefix="/v1")
+    for module in (health, examples, analyse, diff, explain, methodology):
+        app.include_router(module.router, prefix="/v1")
     return app
 
 

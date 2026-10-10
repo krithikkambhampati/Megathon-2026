@@ -4,6 +4,7 @@ import logging
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from api.json import NaNSafeJSONResponse
@@ -25,21 +26,27 @@ def error_response(status_code: int, code: str, message: str) -> NaNSafeJSONResp
     return NaNSafeJSONResponse(status_code=status_code, content={"error": {"code": code, "message": message}})
 
 
+def _first_error(errors: list) -> str:
+    if not errors:
+        return "invalid request"
+    first = errors[0]
+    loc = ".".join(str(p) for p in first.get("loc", ()))
+    return f"{loc}: {first.get('msg', 'invalid')}" if loc else str(first.get("msg", "invalid"))
+
+
 def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(APIError)
     async def _api_error(request: Request, exc: APIError):
         return error_response(exc.status_code, exc.code, exc.message)
 
     @app.exception_handler(RequestValidationError)
-    async def _validation_error(request: Request, exc: RequestValidationError):
-        errors = exc.errors()
-        if errors:
-            first = errors[0]
-            loc = ".".join(str(p) for p in first.get("loc", ()))
-            message = f"{loc}: {first.get('msg', 'invalid')}"
-        else:
-            message = "invalid request"
-        return error_response(422, "validation_error", message)
+    async def _request_validation_error(request: Request, exc: RequestValidationError):
+        return error_response(422, "validation_error", _first_error(exc.errors()))
+
+    @app.exception_handler(ValidationError)
+    async def _validation_error(request: Request, exc: ValidationError):
+        # e.g. the engine re-validating a scenario override that isn't a valid HomeInput value
+        return error_response(422, "validation_error", _first_error(exc.errors()))
 
     @app.exception_handler(StarletteHTTPException)
     async def _http_error(request: Request, exc: StarletteHTTPException):

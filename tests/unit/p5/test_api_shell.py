@@ -47,7 +47,7 @@ def test_health_shape(client):
     body = r.json()
     assert set(body) == {"status", "contract_version", "model_versions", "models_mode", "llm_ok"}
     assert body["status"] == "degraded"
-    assert body["models_mode"] == "none"
+    assert body["models_mode"] in ("stub", "fixture")
     assert body["llm_ok"] is False
 
 
