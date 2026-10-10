@@ -1,0 +1,20 @@
+{% set v = view.score %}
+{% if v.status != "ok" %}
+We can't give this home a Green Home Score yet, because there isn't enough information about it. Adding the energy rating or a year of energy use, and the main features of the home, would let us score it.
+{% else %}
+Your home's Green Home Score is {{ v.score }} out of 100, which puts it in the {{ v.class }} class{% if v.range %}. Because some answers are unknown, the score could be anywhere in {{ v.range }}{% endif %}. Score classes: {{ v.bands }}.
+
+The score is a fixed weighted sum of seven parts, so you can see exactly where points are won and lost:
+{% for c in v.components %}
+- {{ c.name }}, weight {{ c.weight }}: {{ c.sub_score }} out of 100, adding {{ c.contribution }} points{% if c.range %}, could be {{ c.range }}{% endif %}{% if c.provenance %} ({{ c.provenance | lower }}){% endif %}.
+{% endfor %}
+{% if v.issues %}
+
+The main problem areas are: {{ v.issues[:3] | join("; ") }}.
+{% endif %}
+{% if v.after %}
+
+If you did all the recommended retrofits, the estimated score would be {{ v.after.score }} ({{ v.after.class }}).
+{% endif %}
+{% endif %}
+{% include "_notes.j2" %}

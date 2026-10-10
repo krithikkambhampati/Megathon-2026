@@ -1,0 +1,33 @@
+{% set v = view.savings %}
+{% if v.status == "out_of_scope" %}
+Savings are only modelled for homes heated by mains gas or electricity, so we can't estimate energy or carbon savings for this home. The score and the recommendations still apply.
+{% elif v.status != "ok" %}
+We don't have enough information to estimate savings for this home yet. Knowing the heating system and a year of electricity and gas use would let us estimate them.
+{% else %}
+{% set s = v.saving %}
+If you did all the recommended retrofits ({{ v.retrofits | join(", ") }}), these are the estimated yearly changes:
+{% if s.gas_kwh %}
+- Gas: {{ s.gas_kwh }}{% if s.gas_kwh_increase %} (gas use goes up){% else %} saved{% endif %}.
+{% endif %}
+{% if s.electricity_kwh %}
+- Electricity: {{ s.electricity_kwh }}{% if s.electricity_kwh_increase %} (electricity use goes up){% else %} saved{% endif %}.
+{% endif %}
+{% if s.net_kwh %}
+- Net energy (electricity + gas): {{ s.net_kwh }}{% if s.net_kwh_increase %} (total use goes up){% else %} saved{% endif %}.
+{% endif %}
+{% if s.electricity_kwh_increase and s.gas_kwh and not s.gas_kwh_increase %}
+
+Electricity use goes up while gas use goes down: a heat pump moves heating from gas to electricity, but uses much less energy overall.
+{% endif %}
+{% if v.improvement %}
+
+Improvement potential: {{ v.improvement }} of the energy you buy today.
+{% endif %}
+{% if v.carbon %}
+
+Estimated carbon change: {{ v.carbon.total }}{% if v.carbon.tonnes %} ({{ v.carbon.tonnes }}){% endif %}{% if v.carbon.increase %} (emissions go up){% else %} saved{% endif %} (emission factors: {{ v.carbon.source }}).
+{% endif %}
+
+These are estimates from our models, not guarantees.
+{% endif %}
+{% include "_notes.j2" %}
