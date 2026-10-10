@@ -1,0 +1,24 @@
+{
+  "note": "Headline results for the dashboard's About screen. Each row names the report it is copied from; held-out test split unless stated.",
+  "models": [
+    {"model": "Rating (SAP points)", "metric": "Mean absolute error", "value": "4.7 SAP points", "baseline": "8.0 (median by age × type)", "source": "reports/evaluation.md §M4"},
+    {"model": "Energy after retrofits", "metric": "Mean absolute error of net saving", "value": "249 kWh/year", "baseline": "415 (best baseline: additive singles)", "source": "reports/evaluation.md §M1"},
+    {"model": "Recommender", "metric": "Which homes need loft insulation (ROC AUC)", "value": "0.84", "baseline": "0.56 (popularity by type)", "source": "reports/evaluation.md §M2"},
+    {"model": "Recommender", "metric": "Order of measures vs assessor (NDCG@3)", "value": "0.86", "baseline": "0.87 (popularity by type wins)", "source": "reports/evaluation.md §M2"},
+    {"model": "Value", "metric": "Median absolute error of price", "value": "15.7%", "baseline": "18.5% (region × type £/m²)", "source": "reports/evaluation.md §M3"}
+  ],
+  "llm": {
+    "model": "qwen2.5:7b-instruct-q4_K_M (local, RTX 4050 6 GB)",
+    "scenarios": 80,
+    "rows": [
+      {"metric": "Numbers grounded in facts, answer shown", "value": "100%", "target": "≥ 90%"},
+      {"metric": "Numbers grounded in facts, raw first draft", "value": "84.3%", "target": "—"},
+      {"metric": "Numbers matching the right fact", "value": "100%", "target": "≥ 90%"},
+      {"metric": "Required points mentioned", "value": "63.5%", "target": "≥ 90%"},
+      {"metric": "Answers breaking a never-say rule", "value": "1 of 80", "target": "0"},
+      {"metric": "Unsupported claims (human annotation)", "value": "pending", "target": "< 5%"},
+      {"metric": "Answer time, median / p95", "value": "3.3 s / 12.9 s", "target": "≤ 25 s"}
+    ],
+    "source": "reports/llm_eval.md, reports/llm_bench_cachyos-x8664.md"
+  }
+}

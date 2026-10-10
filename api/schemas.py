@@ -58,6 +58,7 @@ class MethodologyResponse(Strict):
     retrofit_catalogue: list[dict[str, Any]]
     emission_factors: list[dict[str, Any]]
     model_versions: dict[str, str]
+    results: dict[str, Any] | None = None  # reports/results_summary.json (headline evaluation results)
 
 
 class MemoryResponse(Strict):

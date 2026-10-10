@@ -91,6 +91,29 @@ for ef in m["emission_factors"]:
         f"per kWh · {ef['source']}"
     )
 
+res = m.get("results")
+if res:
+    st.subheader("Evaluation results")
+    st.markdown("**Models** (held-out test homes, compared with a simple baseline)")
+    st.table(
+        {
+            "Model": [r["model"] for r in res["models"]],
+            "Measure": [r["metric"] for r in res["models"]],
+            "Result": [r["value"] for r in res["models"]],
+            "Baseline": [r["baseline"] for r in res["models"]],
+        }
+    )
+    llm = res["llm"]
+    st.markdown(f"**Explanations** ({llm['scenarios']} test questions, {llm['model']})")
+    st.table(
+        {
+            "Measure": [r["metric"] for r in llm["rows"]],
+            "Result": [r["value"] for r in llm["rows"]],
+            "Target": [r["target"] for r in llm["rows"]],
+        }
+    )
+    st.caption(f"Sources: reports/evaluation.md, {llm['source']}.")
+
 st.subheader("Limitations")
 st.markdown(
     "- Savings are estimates for electricity and mains gas only; oil, LPG and solid-fuel homes get a score "

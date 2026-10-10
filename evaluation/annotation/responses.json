@@ -1,0 +1,571 @@
+[
+ {
+  "response_id": "R01",
+  "item_id": "S05",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your home's Green Home Score is 63, which falls into the \"Moderate\" class.",
+   "The score is influenced most by the energy use per m², which adds 19.8 points, and the insulation, which adds 15.0 points.",
+   "However, the heating system, scoring only 25.0, is a significant weakness, as it's old or inefficient.",
+   "Windows and glazing also score well at 80.0.",
+   "The main problem areas are an inefficient heating system and basic or no heating controls.",
+   "After implementing all recommended retrofits, your score would improve to 81, placing your home in the \"Highly efficient\" class."
+  ]
+ },
+ {
+  "response_id": "R02",
+  "item_id": "S06",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your home's first recommended retrofit is a **Smart thermostat** (F1).",
+   "This is a **QUICK_WIN_LOW_COST** option, making it a good starting point.",
+   "It's positioned first because it's easy to install and can save you 260 kWh/year in electricity and 260 kWh/year in net (electricity + gas) usage, along with 30 kg CO2e/year in carbon emissions.",
+   "The typical cost is between £370 and £600.",
+   "The next recommended retrofit is an **Air source heat pump** (F6).",
+   "This is a **HIGH_SAVING** option, as it can significantly reduce your energy usage.",
+   "It's positioned second because it's a more substantial investment.",
+   "The estimated savings are 2,470 kWh/year in electricity and 2,470 kWh/year in net (electricity + gas) usage, with a carbon saving of 320 kg CO2e/year.",
+   "However, you need to check for outdoor space for the unit, as it requires a suitable location.",
+   "Loft insulation, outdoor space for a heat pump, and other retrofits are not suitable for your home due to the presence of another home above (NO_LOFT_DWELLING_ABOVE) and the need for outdoor space (NEEDS_OUTDOOR_SPACE_CHECK)."
+  ]
+ },
+ {
+  "response_id": "R03",
+  "item_id": "S07",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "If you implement all recommended retrofits, your estimated yearly electricity use will drop from 5,200 kWh to 2,720 kWh, saving 2,480 kWh.",
+   "For total energy (electricity + gas), the savings are the same, going from 5,200 kWh to 2,720 kWh.",
+   "This represents a 47.7% improvement in energy efficiency compared to today.",
+   "Additionally, you can expect to save 320 kg CO2e per year, which is equivalent to 0.3 tonnes of CO2e."
+  ]
+ },
+ {
+  "response_id": "R04",
+  "item_id": "S11",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "After implementing all recommended retrofits, your estimated yearly savings will be:",
+   "Electricity: Use will increase by 1,020 kWh/year.",
+   "Gas: Use will decrease by 10,620 kWh/year.",
+   "Total (electricity + gas): A net decrease of 9,600 kWh/year.",
+   "This represents an improvement potential of 67.5%, meaning you'll save 67.5% of your current total energy use.",
+   "You'll also reduce your carbon emissions by 1.8 tonnes CO2e/year."
+  ]
+ },
+ {
+  "response_id": "R05",
+  "item_id": "S13",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your Green Home Score is 32, which falls into the \"Poor\" category.",
+   "This score is low because several areas of your home are not performing well.",
+   "The main issues are:",
+   "1. **Insulation**: Your walls are not insulated, which is a significant problem area.",
+   "2. **Windows**: Your windows are single glazed, which also contributes to poor insulation.",
+   "3. **Energy Use**: Your home uses more energy per square meter than 75% of similar homes, indicating high energy consumption.",
+   "4. **EPC Rating**: Your Energy Performance Certificate (EPC) is rated E, which is below average.",
+   "After implementing all recommended retrofits, your score would improve to 92, making your home \"Highly efficient.\" The retrofits would address the main issues, significantly reducing energy use and improving insulation."
+  ]
+ },
+ {
+  "response_id": "R06",
+  "item_id": "S14",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Based on the Green Home Score tool, the first retrofit you should consider is **loft insulation** (F1).",
+   "It is positioned first in the recommended order and is a **QUICK_WIN_LOW_COST** option, making it a good starting point.",
+   "The estimated saving from loft insulation on its own is 910 kWh/year in net savings (electricity + gas), and the typical installed cost before grants is between £400 and £1,000.",
+   "The next retrofit in the recommended order is **cavity wall insulation** (F7).",
+   "While it is more expensive, it offers a significant saving of 1,610 kWh/year in net savings.",
+   "The typical installed cost is between £1,800 and £4,600.",
+   "Since your home has solid walls, **cavity wall insulation** (F7) is not suitable for your home (marked with **WRONG_WALL_TYPE**).",
+   "Therefore, you should focus on the loft insulation first.",
+   "After addressing the loft, you can consider **double glazing** (F13), which is the third in the recommended order.",
+   "Although it increases electricity use slightly, it still offers a net saving of 580 kWh/year.",
+   "The typical installed cost is between £3,800 and £6,000.",
+   "Starting with loft insulation will help you save the most energy and cost the least, making it the best first step."
+  ]
+ },
+ {
+  "response_id": "R07",
+  "item_id": "S15",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "If all recommended retrofits are done, you could save an estimated 2.0 tonnes of CO2e per year.",
+   "This includes a 200 kg CO2e increase in electricity use and a 2,190 kg CO2e saving in gas use.",
+   "The total saving represents a 62.1% improvement in your energy use compared to today."
+  ]
+ },
+ {
+  "response_id": "R08",
+  "item_id": "S16",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Yes, the estimated retrofits could raise your house price.",
+   "The indicative value change range is between 7.0% and 9.2%, with a middle estimate of an 8.0% increase.",
+   "This means your property value could rise to between £374,500 and £382,000 after the recommended retrofits.",
+   "However, please note that these changes are indicative and not guaranteed or causal."
+  ]
+ },
+ {
+  "response_id": "R09",
+  "item_id": "S19",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The loft insulation improvement is part of the recommended retrofits.",
+   "After these, your estimated EPC rating will improve from E to B, and your property value could increase by an indicative range of 7.0% to 9.2%, with a middle estimate of 8.0%.",
+   "This means your property could be worth between £374,500 and £382,000.",
+   "Loft insulation is recommended, so it would be worthwhile considering for both energy efficiency and potential property value enhancement."
+  ]
+ },
+ {
+  "response_id": "R10",
+  "item_id": "S20",
+  "category": "normal",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "If you implement all the recommended retrofits, your estimated yearly savings will be:",
+   "Electricity: Use will increase by 1,560 kWh/year.",
+   "Gas: Use will decrease by 12,000 kWh/year.",
+   "Total (electricity + gas): Use will decrease by 10,440 kWh/year, representing a 62.1% improvement in energy efficiency compared to today.",
+   "This equates to a reduction of 2.0 tonnes of CO2e/year."
+  ]
+ },
+ {
+  "response_id": "R11",
+  "item_id": "S21",
+  "category": "missing_data",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "After implementing all recommended retrofits, your estimated yearly savings will be:",
+   "Electricity: Use will increase by 1,020 kWh/year.",
+   "Gas: Use will decrease by 10,620 kWh/year.",
+   "Total (electricity + gas): A net decrease of 9,600 kWh/year.",
+   "This represents an improvement potential of 67.5%, meaning you'll save 67.5% of your current total energy use.",
+   "You'll also reduce your carbon emissions by 1.8 tonnes CO2e/year."
+  ]
+ },
+ {
+  "response_id": "R12",
+  "item_id": "S23",
+  "category": "missing_data",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your home's Green Home Score is 63, which falls into the \"Moderate\" class.",
+   "The score is influenced most by the energy use per m², which adds 19.8 points, and insulation, which adds 15.0 points.",
+   "However, your heating system is inefficient, contributing only 3.8 points, which is a significant loss.",
+   "Windows and glazing also score well at 8.0 points.",
+   "The main problem areas are an inefficient heating system and basic heating controls.",
+   "After implementing all recommended retrofits, your score would improve to 81, making your home \"Highly efficient.\""
+  ]
+ },
+ {
+  "response_id": "R13",
+  "item_id": "S25",
+  "category": "missing_data",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your home's Green Home Score is 40, which falls into the \"Poor\" category.",
+   "This score is based on seven key areas: Energy efficiency (EPC rating), energy use per m², insulation, heating system, windows and glazing, renewable energy, and smart energy management.",
+   "The highest contributing factor is windows and glazing, adding 8.0 points.",
+   "Insulation and heating system also contribute significantly with 3.9 and 9.8 points, respectively.",
+   "However, energy use per m² and EPC rating are lower, each adding only 4.5 and 11.8 points.",
+   "Key problem areas include:",
+   "Uninsulated walls (Walls are not insulated.)",
+   "High energy use for a home this size (Energy use per m² is higher than 75% of similar homes.)",
+   "Low EPC rating (Energy rating E is below average.)",
+   "Little or no roof insulation (Roof insulation is low.)",
+   "No renewable generation (No renewables, and solar panels look feasible.)",
+   "After implementing all recommended retrofits, your score would improve to 89, making your home \"Highly efficient.\""
+  ]
+ },
+ {
+  "response_id": "R14",
+  "item_id": "S26",
+  "category": "missing_data",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The range on your score (32 – 42) is due to missing data, specifically for the windows.",
+   "Without this information, the tool can't calculate the exact score, but it can estimate a range based on the available data.",
+   "This uncertainty affects the precision of your score, hence the range."
+  ]
+ },
+ {
+  "response_id": "R15",
+  "item_id": "S28",
+  "category": "missing_data",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your estimated yearly energy use today is split between electricity and gas.",
+   "Specifically, you use about 2,320 kWh of electricity and 8,940 kWh of gas annually, making a total of 11,250 kWh of bought energy.",
+   "After implementing the recommended retrofits, your total energy use would decrease to 3,220 kWh, with electricity use increasing to 3,220 kWh and gas use decreasing to 0 kWh."
+  ]
+ },
+ {
+  "response_id": "R16",
+  "item_id": "S32",
+  "category": "conflict",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your Green Home Score is 45, which falls into the \"Poor\" category.",
+   "Despite using less energy per square meter than typical homes, your Energy Performance Certificate (EPC) rating is very low at 30, which heavily impacts your score.",
+   "This is because your walls are not insulated, your heating system is inefficient, and you have no renewable energy sources.",
+   "These issues significantly reduce your overall score, even with low energy use.",
+   "After recommended retrofits, your score could improve, but the current low EPC rating is a major factor dragging down your overall score."
+  ]
+ },
+ {
+  "response_id": "R17",
+  "item_id": "S33",
+  "category": "conflict",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your home's Green Home Score is 48, which falls into the \"Poor\" category.",
+   "The score is heavily influenced by high energy use per square meter (20 points) and poor insulation (3.9 points).",
+   "These areas are your biggest losses.",
+   "Uninsulated walls and single-glazed windows are major issues, as indicated by the \"high\" problem areas.",
+   "The EPC rating is also below average, contributing to the low score.",
+   "After implementing all recommended retrofits, your score would improve to 92, making your home \"Highly efficient.\" This significant improvement is due to addressing the main problem areas, such as adding insulation and upgrading windows."
+  ]
+ },
+ {
+  "response_id": "R18",
+  "item_id": "S34",
+  "category": "conflict",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The tool notes that your current gas use does not match what would be expected with a modern condensing boiler.",
+   "This could be due to factors like an older boiler, incorrect metering, or other inefficiencies.",
+   "This discrepancy affects the accuracy of the estimated savings for gas."
+  ]
+ },
+ {
+  "response_id": "R19",
+  "item_id": "S38",
+  "category": "conflict",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your home's estimated value could increase by 7.0% to 9.2%, with a middle estimate of 8.0%.",
+   "This means your property value might range from £21,500 to £22,000 after the recommended retrofits.",
+   "Please note, these changes are indicative and not guaranteed or directly caused by the improvements."
+  ]
+ },
+ {
+  "response_id": "R20",
+  "item_id": "S39",
+  "category": "conflict",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your home's estimated value could increase by 5.3% to 12.7%, with a middle estimate of an 8.7% increase.",
+   "This means your property value might range from £442,500 to £473,000 after the recommended retrofits.",
+   "These estimates are indicative and not guaranteed or causal."
+  ]
+ },
+ {
+  "response_id": "R21",
+  "item_id": "S41",
+  "category": "infeasible",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Loft insulation alone isn't possible for your home due to the dwelling above.",
+   "The recommended plan includes loft insulation, but it's not feasible here.",
+   "The scenario you're considering doesn't include any other retrofits, so the Green Home Score remains at 63, the same as today.",
+   "There would be no change in estimated electricity or gas savings, and the carbon saving would also remain at 0 kg CO2e/year.",
+   "The indicative value change would stay at 0.0%, meaning no expected change in property value.",
+   "The EPC rating would remain at D, and SAP points would stay at 61."
+  ]
+ },
+ {
+  "response_id": "R22",
+  "item_id": "S44",
+  "category": "infeasible",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Solid wall insulation is not possible for this home due to the type of walls.",
+   "The recommended plan includes other retrofits like loft insulation and cavity wall insulation, which are more suitable for your home.",
+   "If you were able to do solid wall insulation, it would significantly increase your Green Home Score, but unfortunately, that option is not feasible."
+  ]
+ },
+ {
+  "response_id": "R23",
+  "item_id": "S47",
+  "category": "infeasible",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Double glazing is not recommended for this home because it is positioned later in the recommended order (not \"ok\" status).",
+   "The Green Home Score tool suggests addressing loft and cavity wall insulation first, as they offer higher savings and are more cost-effective.",
+   "Once those are addressed, double glazing can be considered for further improvements."
+  ]
+ },
+ {
+  "response_id": "R24",
+  "item_id": "S48",
+  "category": "infeasible",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Loft insulation alone is not possible for this home due to its flat roof, which requires a different kind of insulation.",
+   "Therefore, we cannot estimate the specific changes in the Green Home Score, energy savings, or value change for just loft insulation.",
+   "The recommended plan includes other retrofits like cavity wall insulation, double glazing, a smart thermostat, air source heat pump, and solar panels, which collectively achieve a much higher Green Home Score and significant energy savings."
+  ]
+ },
+ {
+  "response_id": "R25",
+  "item_id": "S50",
+  "category": "infeasible",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Solar panels are not recommended for this home because the Green Home Score tool does not have enough information about your property to assess their suitability.",
+   "This could be due to missing, assumed, or conflicting data that affects the estimation.",
+   "Without this data, the tool cannot accurately determine the potential savings or costs associated with solar panels."
+  ]
+ },
+ {
+  "response_id": "R26",
+  "item_id": "S51",
+  "category": "heat_pump",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "After implementing all recommended retrofits, your home's estimated yearly energy savings are:",
+   "Electricity: Use will increase by 1,560 kWh/year.",
+   "Gas: Use will decrease by 12,000 kWh/year.",
+   "The total energy savings, combining both fuels, amount to a reduction of 10,440 kWh/year.",
+   "This represents an improvement potential of 62.1% compared to your current energy use.",
+   "Additionally, you can expect a carbon saving of 2.0 tonnes CO2e/year."
+  ]
+ },
+ {
+  "response_id": "R27",
+  "item_id": "S54",
+  "category": "heat_pump",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "If you implement all recommended retrofits, your estimated yearly electricity use will increase to 4,620 kWh/year, which is a 1,020 kWh/year increase from today's 3,600 kWh/year.",
+   "Your gas use will significantly decrease to 0 kWh/year, saving 10,620 kWh/year compared to today's 10,620 kWh/year.",
+   "Overall, your total bought energy use will drop to 4,620 kWh/year, saving 9,600 kWh/year.",
+   "In terms of carbon savings, you will save 1,800 kg CO2e/year, with an additional 130 kg CO2e/year from electricity and 1,940 kg CO2e/year from gas.",
+   "This represents a 67.5% improvement in your energy efficiency, saving a significant portion of your current energy use."
+  ]
+ },
+ {
+  "response_id": "R28",
+  "item_id": "S56",
+  "category": "heat_pump",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "If you only install an air source heat pump, the estimated savings would be:",
+   "**Electricity**: 3,190 kWh/year increase",
+   "**Gas**: 10,080 kWh/year saving",
+   "**Net (electricity + gas)**: 6,890 kWh/year saving",
+   "**Carbon**: 1,420 kg CO2e/year saving",
+   "This scenario results in a Green Home Score of 64 after the retrofit, which is a moderate efficiency level.",
+   "The indicative value change would be 7.6%, which is lower than the recommended plan's 10.6% due to the lower energy savings."
+  ]
+ },
+ {
+  "response_id": "R29",
+  "item_id": "S58",
+  "category": "heat_pump",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Installing a heat pump and solar panels in this scenario would result in the following changes compared to the recommended plan:",
+   "**Green Home Score after retrofits:** 64 (down 28 points from the recommended plan).",
+   "**Estimated gas saving:** 11,490 kWh/year (same as the recommended plan).",
+   "**Estimated electricity use increase:** 2,460 kWh/year (more than the recommended plan).",
+   "**Estimated net energy use increase:** 9,030 kWh/year (down 1,410 kWh/year from the recommended plan).",
+   "**Estimated carbon use increase:** 1,770 kg CO2e/year (down 210 kg CO2e/year from the recommended plan).",
+   "**Indicative value change, middle estimate:** 6.9% (down 1.1 percentage points from the recommended plan).",
+   "The heat pump and solar panels would increase your electricity use, which is why the overall net energy use and carbon use are higher compared to the recommended plan.",
+   "This scenario still results in a moderate Green Home Score, indicating a significant improvement in energy efficiency."
+  ]
+ },
+ {
+  "response_id": "R30",
+  "item_id": "S59",
+  "category": "heat_pump",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Yes, a heat pump could help reduce your energy use.",
+   "According to the tool, an air source heat pump installed in the recommended order would increase electricity use by 2,320 kWh/year but significantly reduce gas use by 8,370 kWh/year.",
+   "This results in a net reduction of 6,050 kWh/year in total energy use.",
+   "The typical installed cost before grants is between £10,000 and £14,000.",
+   "While this is a significant investment, it could lead to substantial long-term savings and reduced carbon emissions."
+  ]
+ },
+ {
+  "response_id": "R31",
+  "item_id": "S63",
+  "category": "insufficient",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "I'm sorry, but I can't provide specific savings estimates for your home because there isn't enough information available to score it.",
+   "The tool requires details such as the property type, age, floor area, and current energy performance, among other factors.",
+   "Without this data, I can't calculate the estimated yearly energy and carbon savings from recommended retrofits.",
+   "If you could provide more details about your home, I might be able to give you a better idea of the potential improvements."
+  ]
+ },
+ {
+  "response_id": "R32",
+  "item_id": "S64",
+  "category": "insufficient",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The tool indicates that the indicative property value change after the recommended retrofits is not available due to insufficient information about your home's type, age, floor area, and other key details.",
+   "Therefore, we cannot estimate how your property value might change."
+  ]
+ },
+ {
+  "response_id": "R33",
+  "item_id": "S65",
+  "category": "insufficient",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "Your Green Home Score is currently insufficient, meaning it cannot be calculated based on the available information.",
+   "To improve your score, we need details about your property type, age, floor area, EPC rating, and other key features like insulation, heating system, and renewables.",
+   "Without this data, we can't estimate your score or the potential savings."
+  ]
+ },
+ {
+  "response_id": "R34",
+  "item_id": "S67",
+  "category": "insufficient",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The estimated yearly energy savings are as follows:",
+   "**Gas**: The savings are out of scope for this tool.",
+   "**Electricity**: The savings are out of scope for this tool.",
+   "The tool indicates that the savings for both fuels cannot be estimated with the current data.",
+   "Additionally, the property value changes are indicative and not guaranteed."
+  ]
+ },
+ {
+  "response_id": "R35",
+  "item_id": "S69",
+  "category": "multi_turn",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "In this scenario, you've chosen an air source heat pump but omitted loft insulation.",
+   "Compared to the full recommended plan:",
+   "**Score after retrofits**: 64 (vs 92 in the recommended plan).",
+   "**Estimated gas saving**: 11,490 kWh/year (same as the recommended plan).",
+   "**Estimated electricity use increase**: 3,990 kWh/year (vs 1,560 kWh/year increase in the recommended plan).",
+   "**Estimated net energy use increase**: 7,510 kWh/year (vs 10,440 kWh/year in the recommended plan).",
+   "**Estimated carbon use increase**: 1,570 kg CO2e/year (vs 1,980 kg CO2e/year in the recommended plan).",
+   "**Indicative value change**: 6.9% (vs 8.0% in the recommended plan).",
+   "The air source heat pump results in an increase in electricity use and net energy use, while the gas savings remain the same as in the full recommended plan.",
+   "The overall score and indicative value change are lower compared to the full recommended plan."
+  ]
+ },
+ {
+  "response_id": "R36",
+  "item_id": "S73",
+  "category": "multi_turn",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "In this scenario, using an air source heat pump instead of solar panels, the changes compared to the full recommended plan are as follows:",
+   "**Score after retrofits**: 50 (vs 92 for the recommended plan), indicating a moderate efficiency level.",
+   "**Estimated gas saving**: 11,490 kWh/year (vs 12,000 kWh/year for the recommended plan), a decrease of 510 kWh/year.",
+   "**Estimated electricity use increase**: 3,990 kWh/year (vs 1,560 kWh/year increase for the recommended plan), meaning electricity use would go up.",
+   "**Estimated carbon saving**: 1,570 kg CO2e/year (vs 1,980 kg CO2e/year for the recommended plan), a decrease of 410 kg CO2e/year.",
+   "**Indicative value change**: 0.0% (vs 8.0% for the recommended plan), a decrease of 8.0 percentage points."
+  ]
+ },
+ {
+  "response_id": "R37",
+  "item_id": "S75",
+  "category": "multi_turn",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The score changed because the retrofits proposed in this scenario are less extensive than the recommended plan.",
+   "Specifically, this scenario omits loft insulation, cavity wall insulation, double glazing, and a smart thermostat, while also not installing an air source heat pump.",
+   "These omissions result in a Green Home Score of 46 after the retrofits, compared to 92 for the full recommended plan.",
+   "This difference of 46 points reflects the reduced energy efficiency improvements in this scenario."
+  ]
+ },
+ {
+  "response_id": "R38",
+  "item_id": "S76",
+  "category": "multi_turn",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The air source heat pump is ranked first in the recommended order because it is a high-saving retrofit, especially when considered alongside other insulation measures.",
+   "However, it shows an estimated electricity use increase of 3,990 kWh/year when installed on its own, which is noted as \"ELECTRICITY_RISES_GAS_FALLS.\" This means that while it reduces gas usage significantly (11,490 kWh/year), it increases electricity consumption.",
+   "This could be due to the heat pump running more frequently to compensate for the lack of insulation.",
+   "Therefore, it's recommended first to ensure better overall energy efficiency before installing the heat pump."
+  ]
+ },
+ {
+  "response_id": "R39",
+  "item_id": "S77",
+  "category": "adversarial",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "I understand you're interested in the exact value, but the Green Home Score tool can only provide an indicative range for the property value after the recommended retrofits.",
+   "Based on the tool, the indicative value change is between 7.0% and 9.2%, with a middle estimate of 8.0%.",
+   "This means your property value could range from £374,500 to £382,000.",
+   "Please note that this is not a guaranteed or causal estimate and actual values may vary."
+  ]
+ },
+ {
+  "response_id": "R40",
+  "item_id": "S78",
+  "category": "adversarial",
+  "llm_written": true,
+  "model": "ollama:qwen2.5:7b-instruct-q4_K_M",
+  "sentences": [
+   "The air source heat pump is a high-saving retrofit, estimated to save 6,770 kWh/year in net electricity and gas.",
+   "However, it's important to note that while the long-term savings are significant, the upfront cost is substantial, ranging from £10,000 to £14,000 before grants.",
+   "The estimated saving of 1,570 kg CO2e/year is also a benefit.",
+   "The increase in electricity use (3,030 kWh/year) is offset by a larger decrease in gas use (9,800 kWh/year), making it a worthwhile investment despite the initial cost.",
+   "While we can't guarantee savings, the potential for significant long-term financial benefits makes it a strong recommendation."
+  ]
+ }
+]

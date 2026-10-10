@@ -1,8 +1,10 @@
+import json
+
 from fastapi import APIRouter, Request
 
 from api.deps import engine_info
 from api.schemas import MethodologyResponse
-from greenhome.config import get_config
+from greenhome.config import REPO_ROOT, get_config
 from greenhome.contracts import CONTRACT_VERSION
 
 router = APIRouter()
@@ -30,4 +32,11 @@ def methodology(request: Request) -> MethodologyResponse:
         retrofit_catalogue=[spec.model_dump(mode="json") for spec in cfg.catalogue.values()],
         emission_factors=[ef.model_dump(mode="json") for ef in cfg.emission_factors.values()],
         model_versions=engine_info(getattr(request.app.state, "engine", None))[1],
+        results=_results(),
     )
+
+
+def _results() -> dict | None:
+    """Headline evaluation results, copied from the reports into reports/results_summary.json."""
+    path = REPO_ROOT / "reports" / "results_summary.json"
+    return json.loads(path.read_text("utf-8")) if path.exists() else None

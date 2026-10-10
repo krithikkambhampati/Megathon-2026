@@ -3,8 +3,8 @@
 How the Green Home Score & Retrofit Engine handles privacy, bias, explainability, hallucination, human
 oversight and data limitations (Problem Statement 2, deliverable H). Details are in the linked documents.
 
-Values marked **[from llm_eval]** are filled in from `reports/llm_eval.md` after the benchmark and evaluation
-run on the demo laptop.
+LLM results come from `reports/llm_eval.md` (80 test scenarios on the demo laptop, model
+`qwen2.5:7b-instruct-q4_K_M`). The unsupported-claim rate is **pending** the human annotation of 40 answers.
 
 ## 1. Privacy
 
@@ -67,9 +67,12 @@ A local language model will sometimes invent or round numbers, so it is never tr
 - The whole answer has a **25-second budget**; after that the template answer is used, so a slow model never
   blocks the app. The app works with the language model off.
 
-Measured effect: numeric groundedness **[from llm_eval]** before vs **[from llm_eval]** after the checker;
-human-annotated unsupported claim rate **[from llm_eval]** (two independent annotators, Cohen's κ
-**[from llm_eval]**). Targets: groundedness ≥ 90%, factual accuracy ≥ 90%, unsupported claims < 5%.
+Measured effect (80 scenarios): numeric groundedness **84.3%** in the model's raw first drafts and **100%**
+in the answers shown, with **100%** of shown numbers matching a fact (targets ≥ 90%). The checker's most
+frequent catch was an electricity increase after a heat pump described as a saving. Still open: answers
+mention required data notes and reasons only 63.5% of the time (target 90%; the template always includes
+them), and one of 80 answers contained a wrong non-numeric statement. The human-annotated unsupported-claim
+rate (two independent annotators, target < 5%) is pending.
 Details: [LLM.md](LLM.md), `reports/llm_eval.md`.
 
 ## 5. Human oversight

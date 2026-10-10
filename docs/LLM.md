@@ -39,14 +39,14 @@ flowchart LR
 | Item | Value |
 |---|---|
 | Runtime | Ollama ≥ 0.5 (JSON-schema structured output), local; any OpenAI-compatible endpoint as a fallback (README L5) |
-| Model | **TODO_BENCH**: pinned in `config/llm.yaml` after `make llm-bench` on the demo laptop (RTX 4050 6 GB, 16 GB RAM) |
+| Model | **`qwen2.5:7b-instruct-q4_K_M`**, pinned in `config/llm.yaml` from `make llm-bench` on the demo laptop (RTX 4050 6 GB, 16 GB RAM): fully on GPU, p95 answer 6.7 s, 81% first-attempt checker pass, 100% JSON (`reports/llm_bench_cachyos-x8664.md`) |
 | Candidates | one 7–8B instruct model at 4-bit and one 3–4B instruct model (`config/llm.yaml: candidates`) |
 | Determinism | `temperature 0`, `seed 42` on every request; identical requests are cached (in-memory LRU) |
 | Context | `num_ctx 4096` (a fact sheet is ≤ ~600 tokens; system prompt + retry fit easily). The bench also tries 8192 |
 | Output | `max_tokens` 300 for answers (the prompt asks for ≤ 170 words), 200 for JSON parses, 16 for routing |
 | keep_alive | `"2h"` on **every** request, so the model isn't unloaded mid-demo |
 | Warm-up | `make_client()` loads the model at API start-up in a background thread (same options as real calls) and logs if it isn't fully on the GPU |
-| Time budget | **25 s per answer** for all LLM calls together (router + parser + answer + retry). Per-call caps: router 4 s, parse 6 s, answer 12 s. A retry starts only with ≥ `min_retry_s` left (8 s, TODO_BENCH). UI timeouts: 30 s |
+| Time budget | **25 s per answer** for all LLM calls together (router + parser + answer + retry). Per-call caps: router 4 s, parse 6 s, answer 12 s. A retry starts only with ≥ `min_retry_s` left (7 s, the bench's p95 attempt time). UI timeouts: 30 s |
 | Cost | £0 (local model) |
 
 Both providers are called over plain `httpx` streaming. Our own deadline stops reading mid-stream, and no
@@ -187,15 +187,35 @@ Run on the demo laptop: `make eval` (`python -m evaluation.eval_llm`). Without a
 - **Also:** `must_not` violations, intent and scenario accuracy, what-if parse accuracy (rules only vs
   rules + LLM), fallback rate by reason, latency median/p95, tokens per answer.
 
-**Results: TODO_BENCH** (from `make eval` on the demo laptop, `reports/llm_eval.md`):
+**Results** (`make eval` on the demo laptop, `qwen2.5:7b-instruct-q4_K_M`, real engine models, commit
+`8c1447a`; full report `reports/llm_eval.md`):
 
-| Metric | Before checker | After checker | Target |
+| Metric | Before checker (raw first attempt) | After checker (answer shown) | Target |
 |---|---|---|---|
-| Numeric groundedness | TODO_BENCH | TODO_BENCH | ≥ 90% |
-| Factual accuracy | — | TODO_BENCH | ≥ 90% |
-| Unsupported claim rate (human) | — | TODO_BENCH (κ = TODO_BENCH) | < 5% |
-| What-if parse accuracy | rules only TODO_BENCH | rules + LLM TODO_BENCH | — |
-| Latency median / p95 | — | TODO_BENCH | ≤ 25 s |
+| Numeric groundedness | 84.3% | **100.0%** | ≥ 90% |
+| Factual accuracy (numbers matching a fact) | — | **100.0%** | ≥ 90% |
+| Unsupported claim rate (human) | — | pending human annotation | < 5% |
+| `must_mention` satisfied | — | 63.5% | ≥ 90% |
+| `must_not` violations | — | 1 of 80 | 0 |
+| Intent / scenario accuracy | — | 100% / 100% | — |
+| What-if parse accuracy | rules only 46/50 | rules + LLM 44/50 | — |
+| Latency median / p95 | — | 3.3 s / 12.9 s | ≤ 25 s |
+
+How to read it:
+- **The checker does its job.** One in six raw drafts had an unsupported number (most often an electricity
+  increase described as a saving after a heat pump); every one was rewritten or replaced by the template,
+  so every number a user sees matches a fact. Answers by source: 64 LLM, 5 template after a failed check,
+  10 template after an LLM error, 1 template by design.
+- **The 10 LLM errors are over-long answers.** Recommendations answers run past the 300-token cap or the
+  12-second call cap (the model ignores the ≤ 170-word instruction when listing up to six retrofits), so
+  those answers are templates. They are correct, just not LLM-written.
+- **`must_mention` is below target.** The LLM often leaves out data notes (estimated answers, scaled-up
+  meter readings) and infeasibility reasons that the template always includes. The check is a phrase
+  match, so some misses are correct answers worded differently, but the gap is real.
+- **The one `must_not` violation** (S41): asked about loft insulation on a flat under another flat, the
+  answer correctly said it isn't possible and kept every number right, but also wrote "the recommended plan
+  includes loft insulation", which it doesn't.
+- **The LLM fallback hurts parsing slightly** (44/50 vs 46/50 rules only), so the rules-first design is right.
 
 Pipeline test with templates only (dev machine, no LLM, stub models; this shows the pipeline works, not
 model quality): the shown answers were 100% grounded, `must_mention` was 100% satisfied, there were 0
