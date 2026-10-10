@@ -4,3 +4,8 @@ extend-exclude = ["data", "models", "outputs"]
 
 [lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[lint.isort]
+# ui/ modules are imported by bare name (Streamlit puts ui/ on sys.path)
+known-first-party = ["greenhome", "api", "data_pipeline", "training", "evaluation",
+                     "api_client", "state", "components"]
