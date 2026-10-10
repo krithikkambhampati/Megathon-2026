@@ -1,0 +1,45 @@
+{% set d = view.diff.rows %}
+{% set sc = view.scenario %}
+{% if sc.mode == "none" %}
+With no retrofits at all, nothing changes in your home's energy use; here is how that compares with the full recommended plan.
+{% elif sc.mode == "recommended" %}
+This scenario uses the full recommended plan{% if sc.overrides %} with the changes you described to your home{% endif %}.
+{% else %}
+This scenario installs: {{ sc.retrofits | join(", ") if sc.retrofits else "no retrofits" }}. Compared with the full recommended plan:
+{% endif %}
+{% if d.score_after %}
+- Score after the retrofits: {{ d.score_after.new }} with this scenario ({{ d.score_after.base }} with the full plan, change {{ d.score_after.delta }}){% if d.class_after and d.class_after.changed %}; class {{ d.class_after.change }}{% endif %}.
+{% endif %}
+{% if d.score and d.score.changed %}
+- Your current score changes too: {{ d.score.base }} → {{ d.score.new }}, because of the changes to your home.
+{% endif %}
+{% for key, word in [("gas_kwh", "Gas"), ("electricity_kwh", "Electricity"), ("net_kwh", "Net energy")] if d[key] %}
+- {{ word }}: {{ d[key].new }}{{ " (use goes up)" if d[key].new_increase else " estimated saving" }} with this scenario, against {{ d[key].base }} with the full plan.
+{% endfor %}
+{% if d.carbon_total_kg %}
+- Carbon: {{ d.carbon_total_kg.new }}{{ " (emissions go up)" if d.carbon_total_kg.new_increase else " estimated saving" }} with this scenario, against {{ d.carbon_total_kg.base }} with the full plan.
+{% endif %}
+{% if d.value_uplift_pct_mid %}
+- Indicative value change (middle estimate): {{ d.value_uplift_pct_mid.new }} with this scenario, against {{ d.value_uplift_pct_mid.base }} with the full plan.
+{% endif %}
+{% if d.improvement_potential_pct %}
+- Improvement potential: {{ d.improvement_potential_pct.new }} ({{ d.improvement_potential_pct.base }} before).
+{% endif %}
+{% if d.electricity_kwh and d.electricity_kwh.new_increase %}
+
+Electricity use goes up while gas use goes down: a heat pump moves heating from gas to electricity.
+{% endif %}
+{% set caps = view.recommendations["items"] | selectattr("suitability") | selectattr("retrofit", "in", sc.package) | list %}
+{% if caps %}
+
+{% for r in caps %}{{ r.name }}: suitability {{ r.suitability | lower }}{% if r.reasons %}. {{ r.reasons | join(" ") }}{% else %}.{% endif %}{{ " " if not loop.last }}{% endfor %}
+
+{% endif %}
+{% if view.rejected %}
+
+Not possible for your home, so left out: {% for r in view.rejected %}{{ r.name }} ({{ r.reason }}){{ "; " if not loop.last else "." }}{% endfor %}
+
+{% endif %}
+
+These are estimates from our models, not guarantees.
+{% include "_notes.j2" %}
