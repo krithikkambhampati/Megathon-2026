@@ -1,0 +1,3 @@
+# Placeholder until P1's script writes train-split P5/P95 of purchased_kwh / floor_area_m2 (README P1.10).
+i_best: 50
+i_worst: 300

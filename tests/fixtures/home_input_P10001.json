@@ -1,0 +1,25 @@
+{
+  "property_id": "P10001",
+  "property_type": "semi_detached",
+  "age_band": "1950_1966",
+  "floor_area_m2": 85.0,
+  "bedrooms": 3,
+  "region": "east_midlands",
+  "current_value_gbp": 350000.0,
+  "energy_rating": "E",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "low",
+  "wall_type": "cavity",
+  "wall_insulation": "none",
+  "glazing": "single",
+  "heating_system": "gas_boiler_condensing",
+  "main_fuel": "mains_gas",
+  "renewables": "none",
+  "smart_controls": "programmer_thermostat",
+  "listed_or_conservation": "no",
+  "outdoor_space": "yes",
+  "energy": {
+    "annual_electricity_kwh": 4800.0,
+    "annual_gas_kwh": 12000.0
+  }
+}

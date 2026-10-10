@@ -1,0 +1,574 @@
+{
+  "contract_version": "1.0.0",
+  "analysis_id": "2d720553ebb0a2052651874e8b8b6919c9b3425b94612b44deb10520f716eebe",
+  "model_versions": {
+    "energy": "stub-0",
+    "rating": "stub-0",
+    "recommender": "stub-0",
+    "value": "stub-0"
+  },
+  "home": {
+    "home": {
+      "property_id": "P10001",
+      "customer_id": null,
+      "property_type": "semi_detached",
+      "age_band": "1950_1966",
+      "floor_area_m2": 85.0,
+      "bedrooms": 3,
+      "region": "east_midlands",
+      "current_value_gbp": 350000.0,
+      "energy_rating": "E",
+      "roof_type": "pitched_loft",
+      "roof_insulation": "low",
+      "wall_type": "cavity",
+      "wall_insulation": "none",
+      "glazing": "single",
+      "heating_system": "gas_boiler_condensing",
+      "main_fuel": "mains_gas",
+      "renewables": "none",
+      "smart_controls": "programmer_thermostat",
+      "listed_or_conservation": "no",
+      "outdoor_space": "yes",
+      "energy": {
+        "annual_electricity_kwh": 4800.0,
+        "annual_gas_kwh": 12000.0,
+        "monthly": null
+      }
+    },
+    "provenance": {
+      "property_type": "user",
+      "age_band": "user",
+      "floor_area_m2": "user",
+      "bedrooms": "user",
+      "region": "user",
+      "energy_rating": "user",
+      "roof_type": "user",
+      "roof_insulation": "user",
+      "wall_type": "user",
+      "wall_insulation": "user",
+      "glazing": "user",
+      "heating_system": "user",
+      "main_fuel": "user",
+      "renewables": "user",
+      "smart_controls": "user",
+      "listed_or_conservation": "user",
+      "outdoor_space": "user",
+      "electricity_kwh": "user",
+      "gas_kwh": "user"
+    },
+    "energy": {
+      "electricity_kwh": 4800.0,
+      "gas_kwh": 12000.0,
+      "purchased_kwh": 16800.0,
+      "electricity_coverage": null,
+      "gas_coverage": null,
+      "source": "annual"
+    },
+    "intensity_kwh_m2": 197.64705882352942,
+    "sap_estimate": 46.5,
+    "flags": [],
+    "in_savings_scope": true
+  },
+  "score": {
+    "status": "ok",
+    "score": 36,
+    "score_raw": 36.088235294117645,
+    "score_class": "poor",
+    "score_range": [
+      36,
+      36
+    ],
+    "components": [
+      {
+        "key": "energy_efficiency",
+        "weight": 0.25,
+        "sub_score": 47.0,
+        "contribution": 11.75,
+        "inputs": {
+          "energy_rating": "E"
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      },
+      {
+        "key": "consumption_intensity",
+        "weight": 0.2,
+        "sub_score": 40.94117647058823,
+        "contribution": 8.188235294117646,
+        "inputs": {
+          "purchased_kwh": 16800.0,
+          "floor_area_m2": 85.0,
+          "intensity_kwh_m2": 197.64705882352942,
+          "i_best": 50.0,
+          "i_worst": 300.0
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      },
+      {
+        "key": "insulation",
+        "weight": 0.15,
+        "sub_score": 26.0,
+        "contribution": 3.9,
+        "inputs": {
+          "roof_type": "pitched_loft",
+          "roof_insulation": "low",
+          "wall_type": "cavity",
+          "wall_insulation": "none"
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      },
+      {
+        "key": "heating",
+        "weight": 0.15,
+        "sub_score": 65.0,
+        "contribution": 9.75,
+        "inputs": {
+          "heating_system": "gas_boiler_condensing"
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      },
+      {
+        "key": "glazing",
+        "weight": 0.1,
+        "sub_score": 0.0,
+        "contribution": 0.0,
+        "inputs": {
+          "glazing": "single"
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      },
+      {
+        "key": "renewables",
+        "weight": 0.1,
+        "sub_score": 0.0,
+        "contribution": 0.0,
+        "inputs": {
+          "renewables": "none"
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      },
+      {
+        "key": "smart_controls",
+        "weight": 0.05,
+        "sub_score": 50.0,
+        "contribution": 2.5,
+        "inputs": {
+          "smart_controls": "programmer_thermostat"
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      }
+    ],
+    "method_version": "score-v1"
+  },
+  "issues": [
+    {
+      "code": "POOR_WALL_INSULATION",
+      "severity": "high",
+      "component": "insulation",
+      "message": "Walls are not insulated.",
+      "evidence": {
+        "wall_type": "cavity",
+        "wall_insulation": "none",
+        "provenance": {
+          "wall_type": "user",
+          "wall_insulation": "user"
+        }
+      }
+    },
+    {
+      "code": "SINGLE_GLAZING",
+      "severity": "high",
+      "component": "glazing",
+      "message": "Windows are single glazed.",
+      "evidence": {
+        "glazing": "single",
+        "provenance": {
+          "glazing": "user"
+        }
+      }
+    },
+    {
+      "code": "LOW_RATING",
+      "severity": "medium",
+      "component": "energy_efficiency",
+      "message": "Energy rating E is below average.",
+      "evidence": {
+        "energy_rating": "E",
+        "provenance": {
+          "energy_rating": "user"
+        }
+      }
+    },
+    {
+      "code": "POOR_ROOF_INSULATION",
+      "severity": "medium",
+      "component": "insulation",
+      "message": "Roof insulation is low.",
+      "evidence": {
+        "roof_type": "pitched_loft",
+        "roof_insulation": "low",
+        "provenance": {
+          "roof_type": "user",
+          "roof_insulation": "user"
+        }
+      }
+    },
+    {
+      "code": "NO_RENEWABLES",
+      "severity": "medium",
+      "component": "renewables",
+      "message": "No renewables, and solar panels look feasible.",
+      "evidence": {
+        "renewables": "none",
+        "provenance": {
+          "renewables": "user"
+        }
+      }
+    }
+  ],
+  "is_poor": true,
+  "recommendations": [
+    {
+      "retrofit": "cavity_wall_insulation",
+      "rank": 1,
+      "feasibility": "feasible",
+      "suitability": "medium",
+      "reasons": [
+        "HIGH_SAVING"
+      ],
+      "depends_on": [],
+      "standalone_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 1680.0,
+        "net_kwh": 1680.0
+      },
+      "incremental_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 1680.0,
+        "net_kwh": 1680.0
+      },
+      "standalone_carbon_kg": 307.44,
+      "cost_low_gbp": 1000.0,
+      "cost_high_gbp": 3000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "loft_insulation",
+      "rank": 2,
+      "feasibility": "feasible",
+      "suitability": "medium",
+      "reasons": [
+        "QUICK_WIN_LOW_COST"
+      ],
+      "depends_on": [],
+      "standalone_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 1050.0,
+        "net_kwh": 1050.0
+      },
+      "incremental_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 840.0,
+        "net_kwh": 840.0
+      },
+      "standalone_carbon_kg": 192.15,
+      "cost_low_gbp": 500.0,
+      "cost_high_gbp": 1500.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "double_glazing",
+      "rank": 3,
+      "feasibility": "feasible",
+      "suitability": "low",
+      "reasons": [],
+      "depends_on": [
+        "loft_insulation",
+        "cavity_wall_insulation"
+      ],
+      "standalone_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 1050.0,
+        "net_kwh": 1050.0
+      },
+      "incremental_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 735.0,
+        "net_kwh": 735.0
+      },
+      "standalone_carbon_kg": 192.15,
+      "cost_low_gbp": 4000.0,
+      "cost_high_gbp": 9000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "smart_thermostat",
+      "rank": 4,
+      "feasibility": "feasible",
+      "suitability": "medium",
+      "reasons": [
+        "QUICK_WIN_LOW_COST"
+      ],
+      "depends_on": [
+        "loft_insulation",
+        "cavity_wall_insulation",
+        "double_glazing"
+      ],
+      "standalone_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 630.0,
+        "net_kwh": 630.0
+      },
+      "incremental_saving": {
+        "electricity_kwh": 0.0,
+        "gas_kwh": 385.875,
+        "net_kwh": 385.875
+      },
+      "standalone_carbon_kg": 115.28999999999999,
+      "cost_low_gbp": 150.0,
+      "cost_high_gbp": 400.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "air_source_heat_pump",
+      "rank": 5,
+      "feasibility": "feasible",
+      "suitability": "high",
+      "reasons": [
+        "HIGH_SAVING",
+        "ELECTRICITY_RISES_GAS_FALLS"
+      ],
+      "depends_on": [
+        "loft_insulation",
+        "cavity_wall_insulation",
+        "double_glazing",
+        "smart_thermostat"
+      ],
+      "standalone_saving": {
+        "electricity_kwh": -3600.0,
+        "gas_kwh": 10800.0,
+        "net_kwh": 7200.0
+      },
+      "incremental_saving": {
+        "electricity_kwh": -2507.7375,
+        "gas_kwh": 7523.2125,
+        "net_kwh": 5015.474999999999
+      },
+      "standalone_carbon_kg": 1231.1999999999998,
+      "cost_low_gbp": 8000.0,
+      "cost_high_gbp": 14000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "solar_pv",
+      "rank": 6,
+      "feasibility": "feasible",
+      "suitability": "low",
+      "reasons": [],
+      "depends_on": [
+        "air_source_heat_pump"
+      ],
+      "standalone_saving": {
+        "electricity_kwh": 1320.0,
+        "gas_kwh": 0.0,
+        "net_kwh": 1320.0
+      },
+      "incremental_saving": {
+        "electricity_kwh": 2009.6278125,
+        "gas_kwh": 0.0,
+        "net_kwh": 2009.6278125
+      },
+      "standalone_carbon_kg": 273.24,
+      "cost_low_gbp": 5000.0,
+      "cost_high_gbp": 8000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "solid_wall_insulation",
+      "rank": null,
+      "feasibility": "infeasible",
+      "suitability": null,
+      "reasons": [
+        "WRONG_WALL_TYPE"
+      ],
+      "depends_on": [],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 8000.0,
+      "cost_high_gbp": 15000.0,
+      "assessor_likelihood": null
+    }
+  ],
+  "scenario": {
+    "name": "recommended",
+    "mode": "recommended",
+    "retrofits": [],
+    "overrides": {}
+  },
+  "rejected": [],
+  "savings": {
+    "status": "ok",
+    "retrofits": [
+      "cavity_wall_insulation",
+      "loft_insulation",
+      "double_glazing",
+      "smart_thermostat",
+      "air_source_heat_pump",
+      "solar_pv"
+    ],
+    "baseline": {
+      "electricity_kwh": 4800.0,
+      "gas_kwh": 12000.0,
+      "purchased_kwh": 16800.0
+    },
+    "after": {
+      "electricity_kwh": 5298.1096875,
+      "gas_kwh": 835.9125,
+      "purchased_kwh": 6134.022187500001
+    },
+    "saving": {
+      "electricity_kwh": -498.1096875000003,
+      "gas_kwh": 11164.0875,
+      "net_kwh": 10665.9778125
+    },
+    "improvement_potential_pct": 63.48796316964286,
+    "saving_low": null,
+    "saving_high": null
+  },
+  "carbon": {
+    "electricity_kg": -103.10870531250005,
+    "gas_kg": 2043.0280125,
+    "total_kg": 1939.9193071875,
+    "ef_electricity": 0.207,
+    "ef_gas": 0.183,
+    "ef_source": "electricity: TODO_SOURCE DESNZ Greenhouse gas reporting: conversion factors, sheet UK electricity (2024); gas: TODO_SOURCE DESNZ Greenhouse gas reporting: conversion factors, Natural gas (kWh, gross CV) (2024)"
+  },
+  "value": {
+    "status": "ok",
+    "current_value_gbp": 350000.0,
+    "current_value_source": "user",
+    "rating_before": "E",
+    "rating_after": "C",
+    "sap_before": 46.5,
+    "sap_after": 77.5,
+    "uplift_pct_low": 2.5454533953518026,
+    "uplift_pct_mid": 3.0454533953518026,
+    "uplift_pct_high": 3.5454533953518026,
+    "value_low_gbp": 358909.0868837313,
+    "value_high_gbp": 362409.0868837313,
+    "caveat_code": "indicative_not_causal"
+  },
+  "score_after": {
+    "status": "ok",
+    "score": 87,
+    "score_raw": 87.22680264705883,
+    "score_class": "highly_efficient",
+    "score_range": [
+      87,
+      87
+    ],
+    "components": [
+      {
+        "key": "energy_efficiency",
+        "weight": 0.25,
+        "sub_score": 75.0,
+        "contribution": 18.75,
+        "inputs": {
+          "energy_rating": "C"
+        },
+        "provenance": "user",
+        "sub_score_range": null
+      },
+      {
+        "key": "consumption_intensity",
+        "weight": 0.2,
+        "sub_score": 91.13401323529412,
+        "contribution": 18.226802647058825,
+        "inputs": {
+          "purchased_kwh": 6134.022187500001,
+          "floor_area_m2": 85.0,
+          "intensity_kwh_m2": 72.16496691176471,
+          "i_best": 50.0,
+          "i_worst": 300.0
+        },
+        "provenance": "derived",
+        "sub_score_range": null
+      },
+      {
+        "key": "insulation",
+        "weight": 0.15,
+        "sub_score": 100.0,
+        "contribution": 15.0,
+        "inputs": {
+          "roof_type": "pitched_loft",
+          "roof_insulation": "full",
+          "wall_type": "cavity",
+          "wall_insulation": "full"
+        },
+        "provenance": "derived",
+        "sub_score_range": null
+      },
+      {
+        "key": "heating",
+        "weight": 0.15,
+        "sub_score": 100.0,
+        "contribution": 15.0,
+        "inputs": {
+          "heating_system": "heat_pump"
+        },
+        "provenance": "derived",
+        "sub_score_range": null
+      },
+      {
+        "key": "glazing",
+        "weight": 0.1,
+        "sub_score": 80.0,
+        "contribution": 8.0,
+        "inputs": {
+          "glazing": "double"
+        },
+        "provenance": "derived",
+        "sub_score_range": null
+      },
+      {
+        "key": "renewables",
+        "weight": 0.1,
+        "sub_score": 80.0,
+        "contribution": 8.0,
+        "inputs": {
+          "renewables": "solar_pv"
+        },
+        "provenance": "derived",
+        "sub_score_range": null
+      },
+      {
+        "key": "smart_controls",
+        "weight": 0.05,
+        "sub_score": 85.0,
+        "contribution": 4.25,
+        "inputs": {
+          "smart_controls": "smart_thermostat"
+        },
+        "provenance": "derived",
+        "sub_score_range": null
+      }
+    ],
+    "method_version": "score-v1"
+  },
+  "flags": [],
+  "peer": {
+    "intensity_kwh_m2": 197.64705882352942,
+    "property_type": "semi_detached",
+    "floor_area_band": "50_90",
+    "p50_kwh_m2": 165.0,
+    "p75_kwh_m2": 205.0,
+    "p90_kwh_m2": 250.0
+  }
+}

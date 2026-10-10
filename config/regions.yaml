@@ -1,0 +1,19 @@
+# Regions [P1]. TODO_SOURCE (P1): HDD factors (Met Office), PV yield (PVGIS), monthly shares (NEED/smart-meter).
+# Placeholder shares are a typical UK profile (Jan..Dec), identical across regions until P1 replaces them.
+_shares: &shares
+  gas_monthly_share:  [0.160, 0.140, 0.120, 0.080, 0.050, 0.030, 0.025, 0.025, 0.035, 0.070, 0.110, 0.155]
+  elec_monthly_share: [0.095, 0.087, 0.087, 0.080, 0.077, 0.072, 0.073, 0.074, 0.076, 0.085, 0.092, 0.102]
+  pv_monthly_share:   [0.030, 0.050, 0.080, 0.110, 0.130, 0.130, 0.130, 0.115, 0.090, 0.065, 0.040, 0.030]
+national: {hdd_factor: 1.00, pv_yield_kwh_per_kwp: 930, <<: *shares}
+regions:
+  north_east:       {hdd_factor: 1.12, pv_yield_kwh_per_kwp: 860, <<: *shares}
+  north_west:       {hdd_factor: 1.06, pv_yield_kwh_per_kwp: 870, <<: *shares}
+  yorkshire_humber: {hdd_factor: 1.08, pv_yield_kwh_per_kwp: 880, <<: *shares}
+  east_midlands:    {hdd_factor: 1.04, pv_yield_kwh_per_kwp: 920, <<: *shares}
+  west_midlands:    {hdd_factor: 1.04, pv_yield_kwh_per_kwp: 910, <<: *shares}
+  east_of_england:  {hdd_factor: 0.98, pv_yield_kwh_per_kwp: 960, <<: *shares}
+  london:           {hdd_factor: 0.88, pv_yield_kwh_per_kwp: 950, <<: *shares}
+  south_east:       {hdd_factor: 0.95, pv_yield_kwh_per_kwp: 990, <<: *shares}
+  south_west:       {hdd_factor: 0.92, pv_yield_kwh_per_kwp: 1010, <<: *shares}
+  wales:            {hdd_factor: 1.00, pv_yield_kwh_per_kwp: 930, <<: *shares}
+local_authority_to_region: {}

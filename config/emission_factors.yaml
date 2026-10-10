@@ -1,0 +1,12 @@
+# [P1] TODO_SOURCE: copy exact values from the DESNZ GHG conversion factors spreadsheet and set the year.
+# Values below are placeholders so the engine runs; do not cite them.
+- fuel: electricity
+  kg_co2e_per_kwh: 0.207
+  scope: "generation (scope 2), excludes T&D losses"
+  source: "TODO_SOURCE DESNZ Greenhouse gas reporting: conversion factors, sheet UK electricity"
+  year: 2024
+- fuel: gas
+  kg_co2e_per_kwh: 0.183
+  basis: "gross calorific value (matches metered kWh)"
+  source: "TODO_SOURCE DESNZ Greenhouse gas reporting: conversion factors, Natural gas (kWh, gross CV)"
+  year: 2024
