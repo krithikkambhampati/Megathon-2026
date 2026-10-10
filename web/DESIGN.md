@@ -6,13 +6,17 @@ served by FastAPI at `/`. Everything it needs is vendored (`web/vendor`, `web/fo
 ## Product voice
 - A calm, expert advisor. Plain English, short sentences, active voice. No exclamation marks, no emoji.
 - Name things the way a homeowner would: "loft insulation", "your energy use", never enum codes or field ids.
+  Say "improvements", not "retrofits"; "your own plan", not "scenario"; "points out of 100", not "SAP".
+- A saving and an increase get different labels: "Electricity saved" vs "Extra electricity" (in `--bad`).
 - Never show internal identifiers (P10001, analysis ids), model versions, API status or raw JSON.
 - Every saving, carbon and value figure is an estimate; say so once per section, quietly ("Estimates").
   Value changes are "indicative". Never "guarantee", never financial advice.
 - An increase is an increase: a negative saving is written "… more" / "increase", in the `--bad` colour.
 
 ## Visual identity
-- **Typeface:** Geist (UI and headings), Geist Mono for figures that line up (tabular numbers). No other faces.
+- **Typeface:** Geist for everything. Figures use the `.num` class (Geist with tabular digits, so columns line
+  up); `--mono` now points at Geist too, because monospace figures read as "technical" to homeowners.
+- **Section labels** (`.eyebrow`) are sentence case in brand green, never ALL CAPS.
 - **Palette** (tokens in `styles.css`, never raw hex in components except the EPC/class scales below):
   paper `--paper` (warm-neutral off-white), surfaces white, ink near-black green, one brand green
   `--brand`. Electricity `--elec` (blue), gas `--gas` (amber). Semantic: `--good`, `--warn`, `--bad`.
@@ -35,7 +39,7 @@ served by FastAPI at `/`. Everything it needs is vendored (`web/vendor`, `web/fo
 | `js/api.js` | core | `api.*` calls to `/v1/*`, throws `ApiError {status, code, message}` |
 | `js/format.js` | core | Port of `greenhome/format.py`. **The only number formatting.** |
 | `js/labels.js` | core | `label(enum, value)`, `issueText`, `reasonText`, `flagText`, `componentText`, `fieldText` (loaded from `/v1/labels`) |
-| `js/store.js` | core | App state + actions (analyse, scenario, explain, ask) and `useStore` |
+| `js/store.js` | core | App state + actions (login/signup/logout, analyse, scenario, explain, ask) and `useStore`; saved per account in localStorage |
 | `js/router.js` | core | Hash router: `navigate(path)`, `useRoute()` |
 | `js/ui.js` | core | Shared components (below) |
 | `js/app.js` | core | Top bar, routes, footer |
@@ -51,7 +55,8 @@ pound, chevron-down, chevron-right, close, message, edit, refresh, warning, plus
 suffix, min, step, placeholder}` · `Toggle {checked, onChange, label}` · `Disclosure {title, children, defaultOpen}` ·
 `Drawer {open, onClose, title, children, width}` · `Skeleton {h, w}` · `Spinner` · `Notice {tone, title, children}` ·
 `EmptyState {title, body, action}` · `HouseGlyph {type, size}` · `SectionHeader {eyebrow, title, intro, actions}` ·
-`AiAnswer {text, check}` (renders an explanation; shows "Verified against the figures" or "Standard answer").
+`AiAnswer {text, check}` (renders an explanation; shows "Every figure checked against your report" or "Standard
+summary of your report").
 
 ## Data rules
 - Numbers come from the API. Screens **never** add, subtract, convert or round results: use `format.js`
@@ -64,3 +69,5 @@ suffix, min, step, placeholder}` · `Toggle {checked, onChange, label}` · `Disc
 ## Routes
 `#/` catalogue · `#/home/:id` home profile (catalogue home) · `#/home/new` start from scratch ·
 `#/report` the analysis · `#/lenders` portfolio view · `#/how-it-works` methodology.
+Until there is a session (`GET /v1/auth/me`), every route shows the log in / create account screen
+(`js/screens/auth.js`). On phones (< 760px) the nav links move to a second row of the top bar.

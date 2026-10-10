@@ -1,6 +1,6 @@
 # Running the project
 
-Everything needed to run the app is in the repo: code, the trained models (`models/`, compressed), the demo
+Everything needed to run the app is in the repo: code, the trained models (`models/`, compressed), the 19 demo
 homes (`data/examples/`) and a prebuilt portfolio. You only need the raw public data to *rebuild* the data
 or retrain the models.
 
@@ -9,16 +9,20 @@ or retrain the models.
 Requirements: Linux, macOS or Windows with WSL2; about 2 GB of disk. A GPU is only needed for the optional
 language model.
 
-1. Install uv (≥ 0.4): `pip install --user uv`, or the installer at https://docs.astral.sh/uv/.
+1. Install uv (≥ 0.4): `pip install --user uv`, or the installer at https://docs.astral.sh/uv/. `make`
+   calls `uv`, so `~/.local/bin` must be on your `PATH` (open a new terminal after installing).
 2. `git clone https://github.com/krithikkambhampati/Megathon-2026.git && cd Megathon-2026`
 3. `make setup`: installs Python 3.11 if needed and every pinned package from `uv.lock` into `.venv`.
 4. `make test`: the whole suite should pass.
-5. In one terminal `make api` (API on http://localhost:8000, interactive docs at `/docs`).
-   In another `make ui` (dashboard on http://localhost:8501).
-6. On **Your home**, pick an example home, click **Load example**, then **Analyse my home**.
+5. `make api`, then open **http://localhost:8000**. That is the web app (API docs at `/docs`).
+6. Create an account, open any example home, then click **See the report**.
+
+`make ui` still starts the older Streamlit dashboard on http://localhost:8501, an earlier UI for the same API
+with no login; the web app is the one to demo.
 
 Without a language model the app is complete: explanations and chat use template answers built from the same
-computed numbers (shown as "Template answer").
+computed numbers (the web app labels them "Standard summary of your report"; the dashboard says "Template
+answer").
 
 Run every Python command through `uv run …` or a `make` target, never with a system `python`.
 
@@ -30,8 +34,8 @@ Explanations and chat use a hosted open-weight model on Groq: `openai/gpt-oss-12
 1. `cp .env.example .env` and put your Groq key (https://console.groq.com/keys) in it as `LLM_API_KEY=...`.
    Leave `LLM_MODEL=` empty to use the pinned model. `.env` is gitignored: never commit the key.
 2. `make api`. The log shows `LLM on: openai_compat:openai/gpt-oss-120b` and its warm-up time (~0.5 s);
-   `/v1/health` shows `"llm_ok": true` and the dashboard's sidebar says "LLM: on". Answers then show
-   "✓ all N numbers verified" when the checker passes.
+   `/v1/health` shows `"llm_ok": true`. Answers that pass the number checker are labelled "Every figure
+   checked against your report" in the web app ("✓ all N numbers verified" in the dashboard).
 
 Free tier: 1000 requests/day and 8000 tokens/min per model. On HTTP 429 the client tries
 `openai/gpt-oss-20b` (its own quota), then falls back to the template answer.
@@ -53,7 +57,7 @@ Every `make` target reads `.env` when it exists.
 The web app at http://localhost:8000 asks you to log in or create an account (email + password). Accounts
 and login sessions live in one SQLite file, `data/app.sqlite` (gitignored, created on first run; set
 `GREENHOME_DB` to move it). Passwords are scrypt-hashed; a session is an httpOnly cookie that lasts 30 days
-and survives API restarts. Each account's open home, report and chat are kept in the browser per account.
+and survives API restarts. Each account's open home, report and chat are kept in that browser (localStorage, one slot per account).
 The `/v1` data API stays open by default because the Streamlit UI has no login; set
 `GREENHOME_REQUIRE_AUTH=1` to require a session there too. Behind HTTPS, set `GREENHOME_COOKIE_SECURE=1`.
 
@@ -80,25 +84,27 @@ The `/v1` data API stays open by default because the Streamlit UI has no login; 
 Each of these Problem Statement test cases has a demo home; `tests/integration/test_ps_scenarios.py` checks
 the same things automatically.
 
-| Case | Home (Your home → example) | What the app shows |
+| Case | Home (card on the web app's Homes page) | What the app shows |
 |---|---|---|
-| Too little information | Almost no information | "Not enough information" for score, savings and value; no numbers |
-| Missing meter readings | Missing winter meter readings / Gas meter data missing | A note that the year was scaled up, or estimated from similar homes |
-| Conflicting answers | Good rating, very high usage | "High energy use for a home this size" despite a good rating |
-| Infeasible retrofits | Flat with a dwelling above | Loft insulation and solar under "Not suitable", with reasons; rejected in What-if |
-| Interacting retrofits | PS2 example home (P10001) | Heat pump comes after insulation ("do after …"); without insulation it is Low with "Works best after insulating the home first" |
-| Electricity rises after a heating change | P10001 → What-if → only Air source heat pump | Electricity saving shown in red as an increase, gas saving, and the explanation says so |
+| Too little information | Not on the Homes page: open `http://localhost:8000/#/home/P1000205_minimal` | "Not enough information" for score, savings and value; no numbers |
+| Missing meter readings | Inter-war terraced house (winter gaps) / Large 1970s detached house (gas missing) | A note that the year was scaled up, or estimated from similar homes |
+| Conflicting answers | 1970s purpose-built flat | "High energy use for a home this size" despite a good rating |
+| Infeasible retrofits | Victorian conversion flat | Loft insulation and solar under "Not in this plan", with reasons |
+| Interacting retrofits | Post-war semi-detached house (the brief's P10001) or 1930s semi with an empty loft | Insulation before the heat pump ("Best done after …"); without insulation the heat pump is capped with "Works best after insulating the home first" |
+| Electricity rises after a heating change | P10001 → report → **Make your own plan** → only Air source heat pump → **Compare with our plan** (or ask "What if I only install a heat pump?") | "Extra electricity" in red, gas saved, and the explanation says so |
 | Off-gas heating | (API test home P90005) | Score shown; savings "out of scope" |
-| Large ≠ inefficient | Large but efficient detached | Good class despite high total use |
+| Large ≠ inefficient | Modern detached family home | Good class despite high total use |
+| Very poor home | Victorian house with electric heaters | Score 27, Very poor |
 
 ## 6. Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| Sidebar says "API unreachable" | Start `make api` first; the dashboard expects it on `GREENHOME_API_URL` (default `http://localhost:8000`) |
+| `make: uv: No such file or directory` | uv isn't installed or not on `PATH`: step 1 above, then open a new terminal |
+| Web app says it can't reach the service, or the dashboard says "API unreachable" | Start `make api` first; the dashboard expects it on `GREENHOME_API_URL` (default `http://localhost:8000`) |
 | "Address already in use" | Something is on port 8000/8501: stop it, or run uvicorn/streamlit with another `--port` |
 | `VIRTUAL_ENV … does not match` warning | Harmless: an outer virtual environment (e.g. pyenv) is active; uv uses the project's `.venv` |
-| Explanations say "Template answer" | The language model is off, slow or rate limited (25 s budget per answer): check `LLM_API_KEY` in `.env` and `/v1/health` |
+| Explanations say "Standard summary" / "Template answer" | The language model is off, slow or rate limited (25 s budget per answer): check `LLM_PROVIDER` and `LLM_API_KEY` in `.env`; the `make api` log says `llm: on` or `llm: off` |
 | "Explanations aren't available yet" | `greenhome/llm/` is missing: pull the latest `main` |
 
 ## 7. Dependencies (team rule)

@@ -1,5 +1,10 @@
 # Part 2 (Core Engine) — Roadmap & Build Spec
 
+> **Archived build log (2026-10-11).** Written during the hackathon to plan and track the build. Some of it is
+> out of date (for example local Ollama instead of the hosted Groq model, Streamlit as the only UI, the
+> stricter LLM prompt). For how the system works now, see `README.md` and `docs/` (RUN, ARCHITECTURE, LLM,
+> SCORING, DATA, MODELS, RESPONSIBLE_AI).
+
 Source of truth for *what* to build: the team guide (README §7 contracts, PART 2). This file says *how* and
 *in what order*, so a human or an agent can pick up any task cold. Tick boxes as tasks land.
 
@@ -184,7 +189,7 @@ class Engine:
   contradict a real all-electric home), matching the user-given rule for rating and age conflicts.
 - `_E` enums are `StrEnum`s that hash like their value, so members and plain strings are interchangeable as
   dict keys (AgeBand member names differ from their values).
-- Part 5 change requests CR-1…CR-8 (`P5_change_requests.md`) folded in before the freeze, still
+- Part 5 change requests CR-1…CR-8 (`docs/archive/P5_change_requests.md`) folded in before the freeze, still
   `CONTRACT_VERSION` 1.0.0: memory payload models + `ChatResponse.memory_proposal` (CR-1); `ResultDiff` +
   `core/diff.py::diff_results` + `ChatResponse.diff` (CR-2); `AnalysisResult.peer` (CR-3, band names match
   config: `lt50…gt200`, `property_type` nullable); `portfolio()` → `list[PortfolioRow]` (CR-4);

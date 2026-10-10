@@ -1,4 +1,4 @@
-"""Model benchmark for the demo laptop (docs/ROADMAP_P4.md P4-11): which Ollama model to pin.
+"""Model benchmark for the demo laptop (docs/archive/ROADMAP_P4.md P4-11): which Ollama model to pin.
 
 Run on the machine that will give the demo, with Ollama running and the candidates pulled:
     uv run python -m evaluation.llm_bench                 # candidates from config/llm.yaml

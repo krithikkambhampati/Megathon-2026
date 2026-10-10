@@ -1,21 +1,12 @@
 # LLM layer (Part 4)
 
 Deliverable E: prompts, model and API details, guardrails, evaluation approach and results.
-Code: `greenhome/llm/`. Config: `config/llm.yaml`. Evaluation: `evaluation/`. Build plan: `docs/ROADMAP_P4.md`.
+Code: `greenhome/llm/`. Config: `config/llm.yaml`. Evaluation: `evaluation/`. Build plan: `docs/archive/ROADMAP_P4.md`.
 
-> **Runtime (decision 2026-10-11): hosted on Groq, not local Ollama.** `LLM_PROVIDER=openai_compat`,
-> `LLM_BASE_URL=https://api.groq.com/openai/v1`, key in `.env` only. Model `openai/gpt-oss-120b` (open-weight,
-> Apache-2.0), chosen in a live probe: it routed test messages correctly in ~0.3–0.7 s and follows the JSON
-> schema. `gpt-oss-20b` misrouted a what-if and `qwen/qwen3.8-27b` misclassified one in JSON mode.
-> - gpt-oss is a reasoning model: hidden reasoning counts toward `max_tokens`, so requests send
->   `reasoning_effort: low`, `include_reasoning: false` (`request_extra` in `config/llm.yaml`) and the
->   caps leave room for it (router 256, parse 400, answers 700). A reply cut at the cap is never shown.
-> - Free tier per model: 1000 requests/day, 8000 tokens/min. On HTTP 429 the client cools down for the
->   `retry-after` time and the request goes to `fallback_models` (`openai/gpt-oss-20b`, its own quota); if
->   all are limited, the user gets the checked template. `/v1/health` pings are cached for 30 s.
-> - Privacy: only the fact sheet (engine numbers and labels, no address or personal data) is sent to Groq.
-> - The checker now also rejects a saving described as an increase (seen live; the retry fixed it).
-> - Sections below that describe Ollama on the demo laptop apply only to the optional offline path.
+> **Current setup (2026-10-11).** Hosted open-weight model on Groq: `openai/gpt-oss-120b`, failing over to
+> `openai/gpt-oss-20b` when rate limited. Local Ollama is an optional offline alternative (§10). The guardrails
+> were loosened a little on 2026-10-11 (§1, §4, §6): friendlier prompt, off-topic chat answered by the LLM,
+> hedged roundings of a fact accepted. The evaluation in §8 was run before both changes and needs a re-run.
 
 ## 1. What the LLM does, and what it never does
 
@@ -25,7 +16,8 @@ scores or estimates a number.
 
 Four guardrails enforce this:
 1. **Fact sheet.** The model only sees pre-formatted numbers, the exact strings the screens show.
-2. **Number checker.** Every number in every reply is checked against that fact sheet.
+2. **Number checker.** Every number in every reply is checked against that fact sheet. A hedged rounding of a
+   fact is accepted ("about 4,000 kWh" for 3,990 kWh); a nearby number that only looks precise is not.
 3. **One retry, then a template.** A failed check gets one retry with feedback, then a deterministic
    template answer built from the same facts. The user never sees an unchecked number.
 4. **The LLM is never on the critical path.** With the LLM off, slow or failing, every endpoint still
@@ -35,7 +27,7 @@ Four guardrails enforce this:
 flowchart LR
   R[AnalysisResult\nP2 engine] --> F[facts.py\nfact sheet:\nformat.py strings]
   F --> P[prompts/*.j2\nREADME P4.3 rules\n+ FACTS + DATA_NOTES + REASONS]
-  P --> L[client.py\nOllama / OpenAI-compatible\ntemp 0 · seed 42]
+  P --> L[client.py\nGroq gpt-oss-120b\n(Ollama offline)\ntemp 0 · seed 42]
   L --> C{checker.py\nevery number\nin FACTS?}
   C -- pass --> A[answer shown\n✓ verified]
   C -- fail, time left --> L
@@ -46,22 +38,23 @@ flowchart LR
   WP --> E[engine.run_scenario\nmodels rerun first]
   E --> D[core/diff.py] --> F
   RT -- memory --> M[memory_parser.py\n→ proposal, never stored]
+  RT -- off-topic / unclear --> G[general.j2\nLLM answers or redirects\nsame checker, template fallback] --> C
 ```
 
 ## 2. Model and runtime
 
 | Item | Value |
 |---|---|
-| Runtime | Ollama ≥ 0.5 (JSON-schema structured output), local; any OpenAI-compatible endpoint as a fallback (README L5) |
-| Model | **`qwen2.5:7b-instruct-q4_K_M`**, pinned in `config/llm.yaml` from `make llm-bench` on the demo laptop (RTX 4050 6 GB, 16 GB RAM): fully on GPU, p95 answer 6.7 s, 81% first-attempt checker pass, 100% JSON (`reports/llm_bench_cachyos-x8664.md`) |
-| Candidates | one 7–8B instruct model at 4-bit and one 3–4B instruct model (`config/llm.yaml: candidates`) |
+| Runtime | Groq's OpenAI-compatible API (`LLM_PROVIDER=openai_compat`). Ollama ≥ 0.5 works offline with the same code (§10) |
+| Model | **`openai/gpt-oss-120b`** (open-weight, Apache-2.0), pinned in `config/llm.yaml`. Picked in a live probe: correct routing in ~0.3–0.7 s and reliable JSON; `gpt-oss-20b` misrouted a what-if and `qwen/qwen3.8-27b` misclassified one |
+| Failover | On HTTP 429 the client waits out `retry-after` for that model and sends the request to `fallback_models` (`openai/gpt-oss-20b`, its own quota). If every model is limited, the user gets the checked template |
+| Quota | Groq free tier per model: 1000 requests/day, 8000 tokens/min. `/v1/health` pings are cached for 30 s |
+| Reasoning | gpt-oss is a reasoning model: requests send `reasoning_effort: low`, `include_reasoning: false` (`request_extra`); hidden reasoning counts toward `max_tokens` |
 | Determinism | `temperature 0`, `seed 42` on every request; identical requests are cached (in-memory LRU) |
-| Context | `num_ctx 4096` (a fact sheet is ≤ ~600 tokens; system prompt + retry fit easily). The bench also tries 8192 |
-| Output | `max_tokens` 300 for answers (the prompt asks for ≤ 170 words), 200 for JSON parses, 16 for routing |
-| keep_alive | `"2h"` on **every** request, so the model isn't unloaded mid-demo |
-| Warm-up | `make_client()` loads the model at API start-up in a background thread (same options as real calls) and logs if it isn't fully on the GPU |
-| Time budget | **25 s per answer** for all LLM calls together (router + parser + answer + retry). Per-call caps: router 4 s, parse 6 s, answer 12 s. A retry starts only with ≥ `min_retry_s` left (7 s, the bench's p95 attempt time). UI timeouts: 30 s |
-| Cost | £0 (local model) |
+| Output | `max_tokens` 900 for answers (the prompt asks for ≤ 250 words; the rest is room for reasoning), 400 for JSON parses, 256 for routing. A reply cut at the cap is never shown |
+| Time budget | **25 s per answer** for all LLM calls together (router + parser + answer + retry). Per-call caps: router 4 s, parse 6 s, answer 12 s. A retry starts only with ≥ `min_retry_s` left (7 s). UI timeouts: 30 s |
+| Privacy | Only the fact sheet (engine numbers and labels, no address or personal data) and the user's message are sent |
+| Cost | £0 on the free tier |
 
 Both providers are called over plain `httpx` streaming. Our own deadline stops reading mid-stream, and no
 SDK retries in the background. A reply cut off at `max_tokens` is treated as a failure, never shown.
@@ -72,7 +65,7 @@ SDK retries in the background. A reply cut off at `max_tokens` is treated as a f
 |---|---|
 | `LLM_PROVIDER` | `ollama` or `openai_compat`. **Env only**: unset means LLM off, so tests and unconfigured machines run on templates |
 | `LLM_MODEL` | overrides the pinned model; leave empty to use the pin |
-| `LLM_BASE_URL` | `http://localhost:11434` for Ollama; the `/v1` base URL for a hosted endpoint |
+| `LLM_BASE_URL` | `https://api.groq.com/openai/v1` (or `http://localhost:11434` for Ollama) |
 | `LLM_API_KEY` | hosted endpoint only; lives in `.env`, never committed |
 | `LLM_TIMEOUT_S` | hard cap for one call (30) |
 | `LLM_ANSWER_BUDGET_S` | budget for a whole answer (25) |
@@ -88,15 +81,16 @@ make_client() -> LLMClient | None       # None if not configured / unreachable /
 ```
 
 `CheckReport` always describes the text actually shown: `passed`, `numbers_found`, `unsupported`,
-`banned_phrases`, `attempts` (LLM calls made), `fallback_used` (template). The UI badge is
-"✓ all N numbers verified" (LLM answer) or "template answer".
+`banned_phrases`, `attempts` (LLM calls made), `fallback_used` (template). The web app labels a checked LLM
+answer "Every figure checked against your report" and a template "Standard summary of your report" (the
+Streamlit dashboard: "✓ all N numbers verified" / "Template answer").
 
 | Chat intent | `scenario` | `result` | `diff` | `memory_proposal` |
 |---|---|---|---|---|
 | `whatif` | parsed scenario | `engine.run_scenario(...)` | `diff_results(base, result)` | — |
 | `explain` | current scenario | base, or the current scenario's result | only for "why did it change?" | — |
 | `memory` | current scenario | — | — | proposed events, **not stored** |
-| `out_of_scope` / `unclear` | current scenario | — | — | — |
+| `out_of_scope` / `unclear` | current scenario | — | — | — (the LLM answers general home-energy questions or redirects; template if off or failing) |
 
 ## 4. Prompts (`greenhome/llm/prompts/`)
 
@@ -108,18 +102,24 @@ make_client() -> LLMClient | None       # None if not configured / unreachable /
 | `whatif_parse.j2` | LLM fallback: message → `{"mode", "retrofits"}` (JSON schema; never numbers) |
 | `memory_parse.j2` | LLM fallback: message → `{"events": [...]}` (budgets kept only if the user typed them) |
 | `router.j2` | LLM fallback: message → one intent (JSON enum) |
+| `general.j2` | off-topic or unclear messages: answer general home-energy questions, or redirect in a sentence or two |
 
-The system prompt's rules (verbatim from README P4.3, a unit test checks they are present):
+The system prompt's rules (a unit test checks they are present):
 ```
-1. Use ONLY numbers that appear in FACTS, copied exactly as their "display" text.
-   Never calculate, add, subtract, convert, round or estimate a number yourself.
-2. If the user asks for something not in FACTS, say it isn't available from this tool.
-3. Savings are "estimated". Property value changes are "indicative" and not guaranteed or causal.
-4. If DATA_NOTES list missing, assumed or conflicting data, mention the ones that affect your answer.
-5. Never recommend a retrofit marked infeasible. Explain its REASON instead.
-6. If electricity use goes up while gas goes down, say so explicitly.
-7. No financial or mortgage advice. Plain English, at most 170 words, no tables.
+1. Numbers about this home (scores, kWh, carbon, £, %) must come from FACTS, copied as their "display" text.
+   Don't calculate new figures yourself. Light approximation of a FACTS number is fine ("about 4,000 kWh").
+2. You may add general, widely known context and practical tips (how a heat pump works, why draughts
+   matter, what to ask an installer), as long as you don't attach new numbers to them.
+3. If the user asks for a figure that isn't in FACTS, say this tool doesn't estimate it, then help as best
+   you can without inventing one.
+4. Savings are "estimated". Property value changes are "indicative" and not guaranteed or causal.
+5. If DATA_NOTES list missing, assumed or conflicting data, mention the ones that affect your answer.
+6. Don't recommend a retrofit marked infeasible. Explain its REASON instead.
+7. If electricity use goes up while gas goes down, say so explicitly.
+8. No personal financial or mortgage advice. Plain, warm English, at most 250 words, no tables.
 ```
+Before 2026-10-11 the prompt was stricter (exact copies only, no general context, ≤ 170 words) and every
+off-topic message got a fixed reply without calling the LLM.
 
 ## 5. Fact sheet (`facts.py`)
 
@@ -148,7 +148,8 @@ F15 All recommended retrofits · estimated carbon saving (tonnes): 1.9 t CO2e/ye
    are ignored (`CO2e`, `F7`, `P10001`).
 2. **Match** against the display numbers of the sheet's facts, numbers in the notes and reasons, and a few
    context-bound structural numbers (0, small counts not followed by a time unit, "/100", "12 months").
-   Same unit class, tolerance `max(½ display step, 0.5 %)`.
+   Same unit class, tolerance `max(½ display step, 0.5 %)`. After a hedge word ("about", "around",
+   "roughly", "nearly", "over", "~" …) the number may also be the fact rounded to 1 or 2 significant figures.
 3. **£ claims with no fact fail outright**: £-per-year bill savings and "adds £N to your value".
 4. **Banned phrases, negation-aware.** "guarantee", "will increase your value", "certainly save",
    "exactly N", "financial advice", "you should remortgage" fail, but "indicative and not guaranteed" passes.
@@ -159,7 +160,8 @@ F15 All recommended retrofits · estimated carbon saving (tonnes): 1.9 t CO2e/ye
 |---|---|
 | "Gas falls by 11,130 kWh/year, but electricity use goes up by 1,240 kWh/year." | pass |
 | "You would save 1,240 kWh/year of electricity." | fail (direction) |
-| "You'd save around 12,500 kWh of gas." | fail (not in FACTS) |
+| "You'd save around 12,500 kWh of gas." (fact: 12,000) | fail (not a rounding of a fact) |
+| "Gas use drops to about 900 kWh/year." (fact: 870) | pass (hedged 2-significant-figure rounding) |
 | "That would save £400 a year on bills." | fail (no such figure) |
 | "This is indicative and not guaranteed." | pass |
 
@@ -170,7 +172,8 @@ The templates go through the same checker in the tests. All 4 sections × 5 fixt
 - **Router** (`router.py`), rules first in this order: hypotheticals ("what if", "suppose") → what-if;
   memory statements ("we installed", "our budget is", "we don't want") → memory; questions with a home-energy
   word → explain (section picked from the words); retrofit names with "only / without / add" → what-if; no
-  domain word → out of scope; otherwise the LLM classifies (JSON enum) or the answer is "unclear".
+  domain word → out of scope; otherwise the LLM classifies (JSON enum) or the answer is "unclear". Out of
+  scope and unclear messages then go to the LLM with `general.j2` (checked like any answer).
 - **What-if parser** (`whatif_parser.py`): synonyms → retrofit ids, then operators applied **left to right on
   one working list**, so follow-ups build on the current scenario (README §16 step 6: "only solar", then
   "and a heat pump but no loft insulation", gives `[solar_pv, air_source_heat_pump]`; the engine then caps the
@@ -180,7 +183,9 @@ The templates go through the same checker in the tests. All 4 sections × 5 fixt
   gets a clarifying question. Infeasible requests are passed on and P2's engine rejects them with a reason.
 - **Memory** (`memory_parser.py`): "We installed loft insulation last year and we don't want a heat pump"
   becomes `completed_retrofit(loft_insulation)` + `exclude(air_source_heat_pump)`. P4 **never stores**
-  anything: the UI asks the user to confirm and P5 stores it.
+  anything; the reply confirms what it heard. Storing these and feeding them back into the analysis (the
+  optional customer-memory extension) is **not wired up yet**: the engine accepts a `CustomerContext`, but the
+  API always passes none (`TODO(P5-23)` in `api/routes/analyse.py` and `chat.py`).
 
 ## 8. Evaluation
 
@@ -201,8 +206,9 @@ Run on the demo laptop: `make eval` (`python -m evaluation.eval_llm`). Without a
 - **Also:** `must_not` violations, intent and scenario accuracy, what-if parse accuracy (rules only vs
   rules + LLM), fallback rate by reason, latency median/p95, tokens per answer.
 
-**Results** (`make eval` on the demo laptop, `qwen2.5:7b-instruct-q4_K_M`, real engine models, commit
-`8c1447a`; full report `reports/llm_eval.md`):
+**Results** (`make eval` on the demo laptop with the **earlier local model** `qwen2.5:7b-instruct-q4_K_M`
+and the earlier, stricter guardrails, real engine models, commit `8c1447a`; full report `reports/llm_eval.md`).
+These are not yet re-measured on gpt-oss-120b: run `make eval` with the Groq key in `.env` to refresh them.
 
 | Metric | Before checker (raw first attempt) | After checker (answer shown) | Target |
 |---|---|---|---|
@@ -220,9 +226,9 @@ How to read it:
   increase described as a saving after a heat pump); every one was rewritten or replaced by the template,
   so every number a user sees matches a fact. Answers by source: 64 LLM, 5 template after a failed check,
   10 template after an LLM error, 1 template by design.
-- **The 10 LLM errors are over-long answers.** Recommendations answers run past the 300-token cap or the
-  12-second call cap (the model ignores the ≤ 170-word instruction when listing up to six retrofits), so
-  those answers are templates. They are correct, just not LLM-written.
+- **The 10 LLM errors were over-long answers.** With the old 300-token cap and ≤ 170-word instruction,
+  recommendations answers listing up to six retrofits ran past the cap, so those answers were templates.
+  Correct, just not LLM-written. The caps are now 900 tokens / 250 words.
 - **`must_mention` is below target.** The LLM often leaves out data notes (estimated answers, scaled-up
   meter readings) and infeasibility reasons that the template always includes. The check is a phrase
   match, so some misses are correct answers worded differently, but the gap is real.
@@ -238,23 +244,26 @@ model quality): the shown answers were 100% grounded, `must_mention` was 100% sa
 
 ## 9. Limitations
 
-- A small local model will make mistakes. The checker stops wrong numbers, not clumsy wording. A sentence
+- Any LLM will make mistakes. The checker stops wrong numbers, not clumsy wording. A sentence
   with correct numbers can still be unhelpful, so the human annotation measures that separately.
 - `must_mention` uses phrase patterns, so a correct answer worded differently counts as a miss.
 - The direction check uses nearby cue words. An unusual phrasing can slip past it or be flagged wrongly
   (flagged answers fall back to the template, which is safe).
 - A custom what-if scenario skips P2's budget filter (`OVER_BUDGET` exists only in recommended mode).
-- Results are reported for the stub models until P3's models are switched on. Explanations then follow
-  the new numbers automatically, with no prompt changes.
+- General advice the LLM adds (rule 2) has no numbers but is not fact-checked; it is limited to widely
+  known context, and the human annotation is where unhelpful or wrong advice would show up.
+- The hosted model depends on Groq's free-tier quota; when it runs out, answers fall back to templates.
 
-## 10. Running it on the demo laptop
+## 10. Offline alternative: a local model with Ollama
+
+The hosted setup needs only `LLM_API_KEY` in `.env` (docs/RUN.md §2). To run without internet:
 
 1. Install Ollama ≥ 0.5. For a 6 GB GPU, set `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_FLASH_ATTENTION=1` and
    `OLLAMA_KV_CACHE_TYPE=q8_0`.
-2. Pull each model in `config/llm.yaml: candidates` with `ollama pull <tag>`.
-3. In `.env`, set `LLM_PROVIDER=ollama` and `LLM_BASE_URL=http://localhost:11434`. Leave `LLM_MODEL=` empty.
-4. Run `uv run --env-file .env python -m evaluation.llm_bench`. Read `reports/llm_bench_<host>.md` and pin
-   the recommended `model`, `num_ctx` and `min_retry_s`.
+2. `ollama pull qwen2.5:7b-instruct-q4_K_M`.
+3. In `.env`, set `LLM_PROVIDER=ollama`, `LLM_BASE_URL=http://localhost:11434` and
+   `LLM_MODEL=qwen2.5:7b-instruct-q4_K_M` (the demo-laptop benchmark winner).
+4. Optional: `make llm-bench` compares local candidates (`reports/llm_bench_<host>.md`).
 5. Run `uv run --env-file .env python -m evaluation.eval_llm`. This writes `reports/llm_eval.md` and the
    annotation pack (`evaluation/annotation/`).
 6. Send P1 and P2 `MESSAGE.md`. When both sheets are back, run `uv run python -m evaluation.annotate score`

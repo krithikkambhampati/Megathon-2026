@@ -3,8 +3,10 @@
 How the Green Home Score & Retrofit Engine handles privacy, bias, explainability, hallucination, human
 oversight and data limitations (Problem Statement 2, deliverable H). Details are in the linked documents.
 
-LLM results come from `reports/llm_eval.md` (80 test scenarios). The app uses the open-weight
-`gpt-oss-120b` hosted on Groq; only the fact sheet of computed numbers is sent, never an address or personal details. The unsupported-claim rate is **pending** the human annotation of 40 answers.
+LLM results come from `reports/llm_eval.md` (80 test scenarios), measured with the earlier local model
+(qwen2.5 7B) and the earlier, stricter guardrails; they need a re-run on the current model. The app uses the
+open-weight `gpt-oss-120b` hosted on Groq; only the fact sheet of computed numbers is sent, never an address
+or personal details. The unsupported-claim rate is **pending** the human annotation of 40 answers.
 
 ## 1. Privacy
 
@@ -15,11 +17,14 @@ LLM results come from `reports/llm_eval.md` (80 test scenarios). The app uses th
   `data/processed/`, and real EPC keys are replaced by synthetic property ids.
 - **Customers are synthetic.** Who owns which property is generated, never taken from real data.
 - **The app never asks for an address or a name.** It asks about the home's features and energy use only.
-- **Everything runs locally.** The engine, the models and the language model (Ollama) run on one laptop, so
-  no answers leave the machine. If a hosted OpenAI-compatible model is configured instead, the fact sheet for
-  an answer (the home's computed results, no identifiers) is sent to that provider; the key lives in `.env`.
-- **Nothing about a user is stored.** Analyses are kept only in an in-memory cache that is cleared when the
-  API restarts.
+- **Only computed facts go to the language model.** The engine and the models run on one laptop. The
+  language model is hosted on Groq: for each answer it receives the fact sheet (the home's computed results,
+  no identifiers) and the user's question. The key lives in `.env`. With `LLM_PROVIDER=ollama` and a local
+  model nothing leaves the machine.
+- **What is stored about a user.** An account is an email, a name and a scrypt password hash in
+  `data/app.sqlite` on the server, plus login sessions (only a hash of each session token is stored). The
+  home details, report and chat a user opens are kept in their own browser (localStorage), not on the
+  server. Analyses on the server are kept only in an in-memory cache that is cleared when the API restarts.
 
 ## 2. Bias and coverage
 
@@ -36,8 +41,8 @@ LLM results come from `reports/llm_eval.md` (80 test scenarios). The app uses th
 ## 3. Explainability
 
 - **The score is a formula, not a model.** Seven fixed weights times documented sub-score tables
-  ([SCORING.md](SCORING.md)). The Score screen shows each component's contribution, the sub-score tables
-  ("How is this computed?") and the score after the recommended package.
+  ([SCORING.md](SCORING.md)). The report's overview shows each component's weight, rating and points, and
+  the score after all the improvements; the "How it works" page lists the points for each feature.
 - **Unknown answers are visible.** "Not sure" stays unknown; estimated values are labelled "Estimated by a
   model" or "Assumed", and the score shows a range when unknowns could change it.
 - **Every recommendation gives its reasons** in plain English (for example "Works best after insulating the
@@ -50,12 +55,14 @@ LLM results come from `reports/llm_eval.md` (80 test scenarios). The app uses th
 
 ## 4. Hallucination
 
-A local language model will sometimes invent or round numbers, so it is never trusted with one.
+Any language model will sometimes invent or round numbers, so it is never trusted with one.
 
 - It receives a **fact sheet** of numbers already computed by the engine and formatted exactly as the screens
-  show them, and is told to copy them and do no arithmetic.
+  show them, and is told to use only those and do no arithmetic. It may round a fact after a hedge word
+  ("about 4,000 kWh" for 3,990) and add widely known general context with no numbers attached.
 - Every reply goes through a deterministic **number checker**:
-  - every number must match a fact;
+  - every number must match a fact (or, after "about"/"around", be that fact rounded to 1–2 significant
+    figures);
   - money claims the tool has no figure for (bill savings, £ value gains) fail;
   - "guarantee"-style promises and mortgage advice fail;
   - an increase described as a saving (for example a heat pump's extra electricity) fails.
@@ -67,7 +74,7 @@ A local language model will sometimes invent or round numbers, so it is never tr
 - The whole answer has a **25-second budget**; after that the template answer is used, so a slow model never
   blocks the app. The app works with the language model off.
 
-Measured effect (80 scenarios): numeric groundedness **84.3%** in the model's raw first drafts and **100%**
+Measured effect (80 scenarios, earlier local model and stricter guardrails): numeric groundedness **84.3%** in the model's raw first drafts and **100%**
 in the answers shown, with **100%** of shown numbers matching a fact (targets ≥ 90%). The checker's most
 frequent catch was an electricity increase after a heat pump described as a saving. Still open: answers
 mention required data notes and reasons only 63.5% of the time (target 90%; the template always includes
@@ -83,8 +90,8 @@ Details: [LLM.md](LLM.md), `reports/llm_eval.md`.
   survey" rather than recommended outright.
 - **Feasibility is rule-based.** Whether a retrofit is physically possible (for example no loft insulation
   under another flat) is decided by documented rules, never by a model.
-- **The user stays in control of scenarios.** What-if results are shown next to the recommended plan, so the
-  user sees what each choice changes.
+- **The user stays in control of the plan.** "Make your own plan" and what-if questions show the result next
+  to the recommended plan, so the user sees what each choice changes.
 
 ## 6. Data limitations
 

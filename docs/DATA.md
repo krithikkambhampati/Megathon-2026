@@ -59,7 +59,7 @@ Norwich, Bristol, Cornwall (off-gas heavy), Cardiff, Camden, Brighton & Hove, co
 | Retrofit history | `repeat_epc.py` | `retrofit_history.parquet` |
 | Product dataset | `build_dataset.py` | `properties` (pre-value), `energy_monthly`, `splits`, `sim_hidden`, energy labels, score helpers |
 | Value baseline | `value_baseline.py` | `properties.parquet` |
-| Demo homes | `make_examples.py` | `data/examples/*.json` |
+| Demo homes | `make_examples.py` | `data/examples/*.json`: 19 homes (17 real test-split homes chosen by rule, the minimal-information home and the PS example P10001) |
 | Imputation tables | `imputation_tables.py` | `config/generated/imputation.yaml` |
 | Validation | `manifest.py` | `MANIFEST.json` + contract checks |
 | Data report | `data_report.py` | `reports/data_report.md` + `reports/figures/` (validation charts) |

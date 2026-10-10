@@ -1,33 +1,65 @@
-# Green Home Score & Retrofit Engine — Team Build Guide
+# Green Home Score & Retrofit Engine
 **Megathon X: Singularity · Problem Statement 2 · Lloyds**
 
-> This README is the single source of truth for the build. It restates the problem, reviews and corrects
-> our current plan, locks the key decisions, defines the **shared contracts** every part must obey, and splits
-> the work into **5 parts** with step-by-step instructions and the integration hazards each owner must watch.
->
-> **Decision update (2026-10-11), supersedes L5 and every "local Ollama" mention below:** the LLM is a
-> **hosted open-weight model on Groq** (OpenAI-compatible API, free tier): `openai/gpt-oss-120b`, failing over
-> to `openai/gpt-oss-20b` when rate limited. Set `LLM_API_KEY` in `.env` (see `docs/RUN.md`). Local Ollama
-> remains an optional offline fallback. Guardrails are unchanged: hosted models still invent numbers.
->
-> **Team assumptions:** 5 people, one owner per part, 24–36 h hackathon, a local/free LLM (Ollama),
-> FastAPI + Streamlit, mostly real UK public data (EPC, Land Registry, UK HPI, NEED) plus synthetic data
-> where real data cannot exist (metered monthly energy, post-retrofit outcomes).
-
----
+A web app that tells a UK homeowner how green their home is today (a 0–100 Green Home Score), what to
+improve and in which order, how much energy and carbon each improvement could save, and how it could change
+the home's value. A lender view ranks many homes by how much they could improve. Every number comes from
+documented formulas and trained models; a language model only explains those numbers, and a checker verifies
+every number it writes.
 
 ## Quick start
 
 ```bash
-pip install --user uv                     # once
-make setup                                # Python 3.11 + pinned packages
-make api                                  # API on :8000 (trained models are in the repo)
-make ui                                   # dashboard on :8501 → Your home → load an example → Analyse
+pip install --user uv        # once; make calls uv, so ~/.local/bin must be on PATH
+make setup                   # Python 3.11 + pinned packages into .venv
+make api                     # web app + API on http://localhost:8000 (trained models are in the repo)
 ```
 
-Full instructions (language model, rebuilding data and models, demo checks, troubleshooting):
-[`docs/RUN.md`](docs/RUN.md). Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Responsible AI:
-[`docs/RESPONSIBLE_AI.md`](docs/RESPONSIBLE_AI.md).
+Open http://localhost:8000, create an account, open an example home and click **See the report**. For AI
+explanations put a Groq key in `.env` (`LLM_PROVIDER=openai_compat`, `LLM_API_KEY=…`; see `.env.example`);
+without one, explanations use checked template answers. `make ui` starts the older Streamlit dashboard
+(:8501): an earlier UI for the same API, without a login.
+
+| Read | For |
+|---|---|
+| [`docs/RUN.md`](docs/RUN.md) | Setup, language model, accounts, rebuilding data and models, demo checks, troubleshooting |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Components, request flows, HTTP API, deployment ([diagram](docs/architecture.png)) |
+| [`docs/SCORING.md`](docs/SCORING.md) | The score: weights, sub-score tables, worked example, ordering and reasons |
+| [`docs/DATA.md`](docs/DATA.md) · [`docs/MODELS.md`](docs/MODELS.md) | Data sources, synthetic parts, splits · the four models and their baselines |
+| [`docs/LLM.md`](docs/LLM.md) | Prompts, model, number checker, evaluation |
+| [`docs/RESPONSIBLE_AI.md`](docs/RESPONSIBLE_AI.md) | Privacy, bias, explainability, hallucination, oversight, limitations |
+| `reports/evaluation.md`, `reports/llm_eval.md` | Evaluation results |
+
+## What is built
+
+| Area | Status |
+|---|---|
+| Green Home Score, problem areas, Poor / Very poor flag | Done: fixed weights, documented monotone sub-scores, score range when answers are unknown |
+| Models | Four LightGBM models, trained and committed: EPC rating (real EPCs), energy after retrofits per fuel (simulator labels calibrated to NEED), recommender (real assessor recommendations), value (real Land Registry sales) |
+| Recommendations, savings, carbon, value | Done: feasible measures only, ordered by interactions, per-fuel savings, DESNZ carbon factors, indicative value range |
+| What-if | Done: "Make your own plan" in the report, or ask in the chat; models rerun before the LLM explains |
+| LLM | `openai/gpt-oss-120b` on Groq (failover `gpt-oss-20b`); local Ollama optional. Fact sheet → number checker → one retry → template |
+| Web app | React (no build step) served by FastAPI: email/password accounts with persistent sessions (SQLite), 19 example homes (18 shown), report, lender portfolio, methodology |
+| Customer memory (optional extension) | **Partial:** the chat recognises "we installed…/we don't want…/our budget is…" and the engine supports a customer context, but nothing is stored or fed back yet (`TODO(P5-23)`) |
+
+## About the rest of this document
+
+Everything below is the **team build guide written at the start of the hackathon**: the problem restated,
+the plan, the locked decisions, the shared contracts (§7, still accurate: `greenhome/contracts.py`) and the
+per-part build instructions. Code comments cite its sections (e.g. "README P4.3"). Where the build changed
+the plan, the docs above are the truth. The main changes:
+
+- **LLM (L5):** a hosted open-weight model on Groq (`openai/gpt-oss-120b`), not local Ollama; Ollama is an
+  optional offline fallback. The prompt was later loosened a little (≤ 250 words, general tips without
+  numbers, hedged roundings of a fact allowed, off-topic messages answered by the LLM), still behind the
+  number checker ([docs/LLM.md](docs/LLM.md)).
+- **UI (L3):** the main UI is a React web app served by FastAPI at `/`, with accounts; the Streamlit
+  dashboard remains as a secondary UI.
+- **Storage (L1):** SQLite holds accounts and login sessions (`data/app.sqlite`); the memory store was not built.
+- **Numbers in examples** (e.g. "Score 36" for P10001) were stub-model values; with the trained models
+  P10001 scores 32 (Poor).
+
+---
 
 ## Table of contents
 0. [How to use this document](#0-how-to-use-this-document)
@@ -222,11 +254,11 @@ scores them but says savings are unavailable. This is a documented limitation an
 
 | # | Decision | Value |
 |---|---|---|
-| L1 | Language | **Python 3.11** everywhere; YAML config; SQLite for memory; Markdown + Mermaid for docs |
+| L1 | Language | **Python 3.11** everywhere; YAML config; SQLite for memory (as built: SQLite for accounts and sessions; no memory store); Markdown + Mermaid for docs |
 | L2 | Env/package manager | **uv** (`uv sync`, `uv run`), single `pyproject.toml`, `uv.lock` committed |
-| L3 | Architecture | `greenhome` core library → FastAPI service → Streamlit UI |
+| L3 | Architecture | `greenhome` core library → FastAPI service → Streamlit UI (as built: React web app at `/` is the main UI; Streamlit is secondary) |
 | L4 | ML library | **LightGBM** (all tabular models), scikit-learn (splits, baselines, metrics), statsmodels (hedonic OLS check) |
-| L5 | LLM | **Ollama** local, OpenAI-compatible adapter as fallback (any free hosted endpoint). Temperature 0, fixed seed |
+| L5 | LLM | ~~**Ollama** local~~ **Superseded 2026-10-11:** `openai/gpt-oss-120b` on Groq (OpenAI-compatible), failover `gpt-oss-20b`; Ollama optional offline. Temperature 0, fixed seed |
 | L6 | Geography | England & Wales; ONS regions (10) |
 | L7 | Fuels in scope | Grid electricity (import) + mains gas |
 | L8 | Retrofit catalogue | 7 measures: `loft_insulation`, `cavity_wall_insulation`, `solid_wall_insulation`, `double_glazing`, `air_source_heat_pump`, `solar_pv`, `smart_thermostat` |
@@ -1729,7 +1761,7 @@ checker + fallback, per-fuel savings, splits/leakage tests, docs D/G/H/I.
 ## 15. Submission checklist
 | Item | What | Owner | Location |
 |---|---|---|---|
-| A | Working prototype | P5 | `make api` + `make ui`; demo video optional |
+| A | Working prototype | P5 | `make api` → web app on :8000 (`make ui`: Streamlit, optional); demo video optional |
 | B | Source + data scripts + run instructions + datasets (where licence permits, no addresses) | P5 (P1 data) | repo, `docs/RUN.md`, `data/processed/` |
 | C | Trained models + inference code | P3 | `models/`, `greenhome/ml/` |
 | D | Sub-score mappings, justifications, worked example, monotonicity tests | P2 | `docs/SCORING.md`, `config/score.yaml`, `tests/unit/p2/` |
@@ -1742,21 +1774,24 @@ checker + fallback, per-fuel savings, splits/leakage tests, docs D/G/H/I.
 ---
 
 ## 16. Demo script (5–7 min)
-1. **Load P10001** → Score 36, Poor, contributions chart: "glazing and renewables contribute 0; the rating is
-   the biggest lever."
-2. **Problem areas** → single glazing, unfilled cavity, low loft insulation; intensity vs similar semis.
-3. **Recommendations** → loft → cavity → glazing → smart thermostat → heat pump → solar; the heat pump card
-   shows electricity **rising** (red) and gas falling; "insulate first" dependency.
-4. **Savings & carbon** → per-fuel bars, net kWh, improvement potential, t CO2e; "estimates" label.
-5. **Value** → E → C, indicative range on £350k, caveat.
-6. **What-if:** "What if I only install solar?" → rerun → answer with the ✓ verified badge. Then "and a heat pump
-   but no loft insulation?" → the heat pump is capped at Low with `INSULATE_FIRST`.
-7. **Edge cases:** load the "missing winter months" home (low-coverage flag, annualisation explained) and the
-   "almost no info" home (honest "insufficient" message plus a score range).
-8. **Memory:** "We installed loft insulation last year and we don't want a heat pump" → confirm → the
-   recommendations diff.
-9. **Portfolio** view → ranked list of Poor homes by improvement potential.
-10. Close on the evaluation slide: baselines beaten, checker groundedness before/after, limitations.
+Updated to the web app and the trained models (2026-10-11).
+1. **Log in**, open **Post-war semi-detached house** (the brief's P10001) → **See the report** → score 32,
+   Poor; the overview table shows each area's points: "glazing and renewables score 0; the rating is the
+   biggest lever."
+2. **Problem areas** and **Compared with similar homes**: single glazing, unfilled cavity, low loft
+   insulation; energy use per m² against similar semis.
+3. **Improvement plan**: loft → cavity → double glazing → smart thermostat → heat pump → solar. The heat pump
+   card shows **Extra electricity** in red and gas saved; "Best done after …" shows the dependency.
+4. **Savings and value**: per-fuel before/after, energy you could stop buying (≈62%), carbon saved, EPC E → B,
+   indicative value range with its caveat.
+5. **What-if**: ask "What if I only install solar?" (models rerun, answer checked), then "and a heat pump but
+   no loft insulation?" → the heat pump is capped with "Works best after insulating the home first". Or use
+   **Make your own plan** → **Compare with our plan**.
+6. **Edge cases**: Inter-war terraced house (missing winter readings, annualisation explained);
+   `#/home/P1000205_minimal` (almost no information: an honest "not enough information"); Victorian house
+   with electric heaters (Very poor).
+7. **For lenders**: the example homes ranked by improvement potential, filter to Poor or very poor.
+8. Close on the evaluation: baselines beaten, checker groundedness before/after, limitations.
 
 ---
 
@@ -1766,7 +1801,7 @@ checker + fallback, per-fuel savings, splits/leakage tests, docs D/G/H/I.
 | EPC download/registration blocked at the venue | Medium | Pre-download; or the EPC API with a key; worst case synthetic properties from NEED/EPC national marginals (generator already exists) |
 | EPC format changed (new service) | Medium | Column alias map; parse tests flag it fast |
 | PPD↔EPC match rate too low | Medium | Synthetic sales with injected, documented premium + confounding demo |
-| Local LLM too slow on CPU | High | Smaller model; shorter facts; template explanations by default and LLM only in chat; free hosted OpenAI-compatible endpoint |
+| Local LLM too slow on CPU | High | Smaller model; shorter facts; template explanations by default and LLM only in chat; free hosted OpenAI-compatible endpoint (**what we did:** Groq) |
 | Local LLM bad at JSON | Medium | Rules-first parser + scenario toggles in the UI |
 | Models not ready by H+18 | Medium | Stubs keep the app working; evaluation reports what exists |
 | Integration break late | Medium | Checkpoints I1/I2, fixtures, integration tests on every merge |

@@ -397,7 +397,7 @@ wall insulation in the same package. Thresholds are initial values; Part 3 tunes
 | `HIGH_SAVING` | saving_share ≥ 10% |
 | `QUICK_WIN_LOW_COST` | top of cost range ≤ £1,500 and net saving > 0 |
 | `HIGH_COST_LOW_SAVING` | cost midpoint ≥ £5,000 and saving_share < 3% |
-| `ELECTRICITY_RISES_GAS_FALLS` | electricity saving < 0 and gas saving > 0 |
+| `ELECTRICITY_RISES_GAS_FALLS` | electricity saving, rounded to the 10 kWh display step, < 0 and gas saving > 0 (model noise that shows as "0 kWh/year" doesn't trigger it) |
 | `ASSESSORS_OFTEN_RECOMMEND` | recommender probability ≥ 0.6 |
 | `CUSTOMER_EXCLUDED`, `CUSTOMER_DECLINED_BEFORE`, `OVER_BUDGET` | from the customer context (below) |
 

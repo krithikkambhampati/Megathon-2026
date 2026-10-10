@@ -1,7 +1,12 @@
 # Part 4 (LLM Layer) — Roadmap & Build Spec
 
+> **Archived build log (2026-10-11).** Written during the hackathon to plan and track the build. Some of it is
+> out of date (for example local Ollama instead of the hosted Groq model, Streamlit as the only UI, the
+> stricter LLM prompt). For how the system works now, see `README.md` and `docs/` (RUN, ARCHITECTURE, LLM,
+> SCORING, DATA, MODELS, RESPONSIBLE_AI).
+
 Source of truth for *what* to build: the team guide (README §2.11, §4.3, PART 4) plus P5's change requests
-(`P5_change_requests.md`, CR-1/2/7/8) and P5's follow-ups (one answer budget, warm-up). This file says *how*
+(`docs/archive/P5_change_requests.md`, CR-1/2/7/8) and P5's follow-ups (one answer budget, warm-up). This file says *how*
 and *in what order*, so a human or an agent can pick up any task cold. Tick boxes as tasks land. Task IDs
 are commit IDs: task `P4-05` lands as commit `P4-05: …`.
 

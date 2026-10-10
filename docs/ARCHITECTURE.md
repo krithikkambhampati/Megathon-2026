@@ -38,14 +38,17 @@ flowchart LR
     FMT[[format.py<br/>the only number formatter]]
   end
   subgraph P4["Part 4 · LLM layer (greenhome/llm/)"]
-    FACTS[fact sheet] --> LLM[Ollama / OpenAI-compatible<br/>local model]
+    FACTS[fact sheet] --> LLM[gpt-oss-120b on Groq<br/>OpenAI-compatible API<br/>Ollama optional offline]
     LLM --> CHK{number checker}
     CHK -- fails twice --> TPL[template answer]
     RT[router + what-if parser<br/>rules first, LLM JSON fallback]
   end
-  subgraph P5["Part 5 · Product (api/, ui/)"]
-    API[FastAPI<br/>/v1/*] --> UI[Streamlit dashboard<br/>9 screens]
+  subgraph P5["Part 5 · Product (api/, web/, ui/)"]
+    API[FastAPI<br/>/v1/*] --> UI[React web app<br/>served at /, login]
+    API --> ST[Streamlit dashboard<br/>secondary, no login]
     CACHE[(result cache<br/>LRU 512)]
+    AUTH[(SQLite<br/>accounts + sessions)]
+    API --> AUTH
   end
   ORC --> API
   API --> CACHE
@@ -63,14 +66,14 @@ flowchart LR
 | Models | P3 | `training/`, `greenhome/ml/` | Trains four LightGBM models; `greenhome.ml.features` is the single feature builder for training and inference; `registry.load_models()` serves them |
 | Engine | P2 | `greenhome/` | Contracts, validation and annualisation, score, issues, feasibility, ordering, savings, carbon, value range, scenarios, diffs; `format.py` is the only formatter |
 | LLM | P4 | `greenhome/llm/`, `evaluation/` | Fact sheets, prompts, number checker, templates, router, what-if parser, chat, memory proposals, benchmark and evaluation |
-| Product | P5 | `api/`, `ui/`, `greenhome/labels.py` | HTTP API, dashboard, shared plain-English labels, packaging |
+| Product | P5 | `api/`, `web/`, `ui/`, `greenhome/labels.py` | HTTP API, accounts, the React web app (main UI), the Streamlit dashboard (secondary), shared plain-English labels, packaging |
 
 ## 2. Request flow: "analyse my home"
 
 ```mermaid
 sequenceDiagram
   actor U as User
-  participant UI as Streamlit
+  participant UI as Web app
   participant API as FastAPI
   participant E as Engine (P2)
   participant M as Models (P3)
@@ -96,7 +99,7 @@ sequenceDiagram
   participant API as FastAPI
   participant C as chat / explainer (P4)
   participant E as Engine (P2)
-  participant L as Local LLM
+  participant L as LLM (Groq)
   U->>API: POST /v1/chat "what if I only install solar?"
   API->>E: base = analyse(home)
   API->>C: chat(req, engine, llm, ctx, base)
@@ -112,7 +115,7 @@ sequenceDiagram
     C->>C: still failing or out of time → template answer from the same facts
   end
   C-->>API: ChatResponse {answer, scenario, result, diff, check}
-  API-->>U: answer + "verified" / "template answer" badge
+  API-->>U: answer + "checked" / "standard summary" badge
 ```
 
 The LLM never sees a question without the recomputed results attached, and the app works with the LLM off:
@@ -122,7 +125,10 @@ explanations and chat then use the template answers.
 
 | Method & path | Purpose |
 |---|---|
+| `POST /v1/auth/signup`, `/login`, `/logout`, `GET /v1/auth/me` | Accounts and login sessions (httpOnly cookie, SQLite) |
 | `GET /v1/health` | Status, contract version, model mode (stub / real / fixture) and versions, live LLM check |
+| `GET /v1/labels` | Plain-English labels for every enum, issue, reason and flag |
+| `GET /v1/catalogue` | The demo homes as cards (name, score, class), scored once at start-up |
 | `GET /v1/examples`, `GET /v1/examples/{id}` | Demo homes |
 | `POST /v1/analyse` | Full analysis of a home |
 | `POST /v1/scenario` | Analysis under a chosen set of retrofits or changed answers |
@@ -133,6 +139,8 @@ explanations and chat then use the template answers.
 | `GET /v1/methodology` | Score weights, sub-score tables, catalogue and emission factors, read from config |
 
 Errors are `{"error": {"code", "message"}}`; validation failures are 422. Responses never contain NaN.
+With `GREENHOME_REQUIRE_AUTH=1` every `/v1` route except auth, health and labels needs a session (off by
+default so the Streamlit dashboard, which has no login, keeps working).
 Interactive documentation is served at `/docs`.
 
 ## 5. Shared contracts
@@ -153,15 +161,19 @@ increase. Missing values are `null`, never zero.
 
 ```mermaid
 flowchart LR
-  B[Browser] -->|:8501| ST[Streamlit<br/>make ui]
-  ST -->|HTTP :8000| UV[uvicorn + FastAPI<br/>make api]
+  B[Browser] -->|:8000| UV[uvicorn + FastAPI<br/>make api<br/>serves web/ at /]
+  B2[Browser, optional] -->|:8501| ST[Streamlit<br/>make ui]
+  ST -->|HTTP :8000| UV
   UV --> ENG[Engine + models<br/>loaded once at start-up]
-  UV -->|HTTP :11434| OL[Ollama<br/>local model on GPU]
+  UV -->|HTTPS| GQ[Groq API<br/>gpt-oss-120b, failover gpt-oss-20b]
+  UV --> DB[(data/app.sqlite<br/>accounts + sessions)]
   ENG --> FS[(config/ · models/ · data/)]
 ```
 
-Everything runs on one laptop (RTX 4050 6 GB): no cloud services and no personal data. Models and the LLM
-client are loaded once at start-up, never per request. The trained models are committed under `models/`
+Everything except the language model runs on one laptop, with no personal data. The LLM is a hosted
+open-weight model on Groq; only the fact sheet of already-computed, formatted numbers and the user's question
+are sent to it. Without a key (or with `LLM_PROVIDER=ollama` and a local model) the app still works. Models and
+the LLM client are loaded once at start-up, never per request. The trained models are committed under `models/`
 (compressed, 59 MB) and used by default (`config/global.yaml: models: real`); the test suite pins stand-in
 models with `GREENHOME_MODELS=stub`, so tests don't depend on training.
 
@@ -174,6 +186,6 @@ models with `GREENHOME_MODELS=stub`, so tests don't depend on training.
 | Models | `make train` | `models/` |
 | Evaluation | `make eval`, `make llm-bench` | `reports/` |
 | Tests | `make test` | unit + integration tests |
-| Run | `make api`, `make ui` | API on :8000, dashboard on :8501 |
+| Run | `make api` (`make ui` optional) | Web app and API on :8000; Streamlit dashboard on :8501 |
 
 Every script reads the seed (42) from `config/global.yaml`; LightGBM runs deterministically.

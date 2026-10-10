@@ -16,7 +16,7 @@ LANES = [  # title, owner, fill, edge
     ("Models", "Part 3 · training/, greenhome/ml/", "#f4eefb", "#6d4bb3"),
     ("Core engine", "Part 2 · greenhome/", "#eaf5ef", "#0d6a50"),
     ("LLM layer", "Part 4 · greenhome/llm/", "#fdf3e6", "#b8741a"),
-    ("Product", "Part 5 · api/, ui/", "#fbeceb", "#b03a2e"),
+    ("Product", "Part 5 · api/, web/, ui/", "#fbeceb", "#b03a2e"),
 ]
 
 
@@ -222,7 +222,7 @@ box(
 # Part 4
 box("rt", 3, 245, "Router + what-if parser", ["rules first,", "LLM JSON as fallback"])
 box("facts", 3, 370, "Fact sheet", ["numbers pre-formatted", "exactly as the screens show"])
-box("llm", 3, 495, "Local LLM (Ollama)", ["explains FACTS only", "25 s budget per answer"])
+box("llm", 3, 495, "LLM: gpt-oss-120b (Groq)", ["explains FACTS only", "25 s budget per answer"])
 box("chk", 3, 620, "Number checker", ["numbers · money claims", "promises · increase-as-saving"])
 box("tpl", 3, 745, "Template answer", ["if the check fails twice", "or the LLM is off"])
 # Part 5
@@ -238,7 +238,7 @@ box(
     "ui",
     4,
     660,
-    "Streamlit dashboard",
+    "Web app (React, login)",
     [
         "home form ('Not sure' = null)",
         "score · issues · recommendations",
@@ -332,8 +332,8 @@ d.text(
 )
 d.text(
     (60, 1125),
-    "Runs on one laptop: Streamlit :8501 → FastAPI :8000 → engine + models; Ollama :11434 on the GPU. "
-    "No cloud services, no personal data.",
+    "Runs on one laptop: browser → FastAPI :8000 (web app + API) → engine + models; LLM hosted on Groq "
+    "(sees only computed facts). No personal data. Streamlit :8501 optional.",
     font=F_SMALL,
     fill=MUTED,
 )

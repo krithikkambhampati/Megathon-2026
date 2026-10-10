@@ -1,6 +1,6 @@
 """What-if parser (README P4.5): message → a valid `Scenario`, rules first, LLM JSON as the fallback.
 
-Operators are applied left to right to ONE working list of retrofits (docs/ROADMAP_P4.md), so a follow-up
+Operators are applied left to right to ONE working list of retrofits (docs/archive/ROADMAP_P4.md), so a follow-up
 like "and a heat pump but no loft insulation" builds on the current scenario. Numbers in overrides are the
 user's own (e.g. "if my gas was 9,000 kWh"); P4 never makes one up. Feasibility is not checked here: P2's
 `run_scenario` puts infeasible requests in `rejected` with a reason, and the answer explains it.

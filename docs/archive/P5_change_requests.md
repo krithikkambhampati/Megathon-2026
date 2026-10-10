@@ -1,5 +1,10 @@
 # P5 → P2: contract change requests (CR-1 … CR-8)
 
+> **Archived build log (2026-10-11).** Written during the hackathon to plan and track the build. Some of it is
+> out of date (for example local Ollama instead of the hosted Groq model, Streamlit as the only UI, the
+> stricter LLM prompt). For how the system works now, see `README.md` and `docs/` (RUN, ARCHITECTURE, LLM,
+> SCORING, DATA, MODELS, RESPONSIBLE_AI).
+
 **To:** P2 (contract owner). CR-6 also concerns P2's orchestrator. CR-7 concerns **P4**.
 **From:** P5 (API, UI, memory)
 **Reply needed by:** H+2 (contract freeze). If these go into `contracts.py` v1.0.0, nobody needs a version bump or regenerated fixtures later.
