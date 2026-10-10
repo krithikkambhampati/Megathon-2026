@@ -223,6 +223,8 @@ def parse_rules(message: str, home: HomeInput, base: AnalysisResult, current: Sc
     custom = current is not None and current.mode == "custom"
     if any(op == "only" for op, _ in ops):
         work: list[str] = []
+    elif vocab.EVERYTHING.search(text):  # "everything except X" starts from the full plan, even mid-chat
+        work = list(base.savings.retrofits)
     elif custom:
         work = list(current.retrofits)
     elif instead or ops[0][0] == "remove":

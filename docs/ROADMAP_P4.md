@@ -311,8 +311,7 @@ An engine error on a parsed scenario (e.g. a bad override) → intent `unclear` 
 - **Display strings only from `format.py`:** `fmt_kwh`, `fmt_kwh_saving` (negative → "… increase"), `fmt_kg`,
   `fmt_kg_saving`, `fmt_tonnes` (positive totals only; it doesn't handle negatives), `fmt_gbp_value`,
   `fmt_gbp_cost`, `fmt_pct`, `fmt_score`, `fmt_points` (sub-scores, contributions), `fmt_sap`,
-  `fmt_intensity`, `fmt_range` ("a – b"), `fmt_delta`. Labels from `greenhome.labels`. Floor area has no
-  formatter yet → left out.
+  `fmt_intensity`, `fmt_range` ("a – b"), `fmt_delta`. Labels from `greenhome.labels`. Floor area via `fmt_area`.
 - **Prompt form:** `F7 Heat pump · electricity: 3,600 kWh/year increase`. The raw `value` and `unit` are never
   shown to the model, so it can't copy unrounded numbers.
 - **Statuses gate numbers:** an `insufficient` / `out_of_scope` section contributes a status and its flag
@@ -335,7 +334,7 @@ An engine error on a parsed scenario (e.g. a bad override) → intent `unclear` 
 - **DATA_NOTES** from `result.flags` (it already contains `home.flags`), deduped by (code, field), errors
   first, as `FLAG_TEXT` + the engine message. Missing/estimated answers are grouped into one note listing
   field names, **without a count**. Engine messages with raw values (e.g. "floor_area_m2 estimated as 70.0")
-  are replaced by the field name only. (Asked P5 for `FIELD_LABEL` in `greenhome.labels`.)
+  are replaced by the field's `FIELD_LABEL` name only.
 - **Size:** each sheet ≲ 1.5k tokens (unit test with a char budget per sheet on the largest fixture).
 
 ## Number checker (P4-04)
@@ -463,25 +462,13 @@ return template + check (attempts=2, fallback)
 
 ---
 
-## Requests to teammates
-- **P5, `/v1/chat`:** not on `p5/main` yet. Call `chat(req, engine, llm, ctx, base)` with
-  `base = engine.analyse(req.home, ctx)`. No try/except needed for LLM failures.
-- **P5, UI timeouts:** `ui/api_client.py` has `DEFAULT_TIMEOUT_S = 15` (cuts explain off) and
-  `CHAT_TIMEOUT_S = 60`. Please use 30 s for explain and chat. Fetch explanations on demand, not 4 at once
-  (Ollama queues them, and each answer's budget includes queue time).
-- **P5, `.env` loading (before I2, H+20):** nothing loads `.env`, so on the demo laptop the LLM stays off.
-  Please use `uv run $(if $(wildcard .env),--env-file .env)` in `api`, `eval` and `llm-bench` (never in `test`,
-  so `test_api_shell`'s `llm_ok is False` stays green). In `.env.example`, make `LLM_MODEL=` empty with the
-  comment on its own line (uv can't parse `<exact ollama tag>`), and add `LLM_ANSWER_BUDGET_S=25`.
-- **P5, Makefile:** add `llm-bench:` → `$(call run_mod,evaluation.llm_bench,,P4)`.
-- **P5, labels:** `greenhome.labels` has landed and P4 uses it. Still missing: `FIELD_LABEL` (HomeInput
-  field → plain English, for data notes) and `INCOMPATIBLE_HEATING` in `REASON_TEXT` (emitted by
-  `feasibility.py`; until then the raw code would show).
-- **P5, explain test:** already done on main (the test now simulates a missing module).
-- **P5, `/v1/health`:** `llm_ok` can use `app.state.llm.ping(2)` for a live check.
-- **P2:** `fmt_intensity` and `fmt_points` have landed and P4 uses them (sub-scores and contributions read
-  exactly like the score screen). Still wanted: `fmt_area` (m²). No contract change needed; if
-  `CONTRACT_VERSION` changes, P4 re-runs its tests.
+## Requests to teammates (all done, on main)
+- **P5:** `/v1/chat` calls `chat()` per CR-7 · UI timeouts 30 s · `.env` loaded by every make target ·
+  `make llm-bench` · `.env.example` (blank `LLM_MODEL`, `LLM_ANSWER_BUDGET_S=25`) · `INCOMPATIBLE_HEATING`
+  and `FIELD_LABEL` in `greenhome.labels` · live `llm.ping(2)` on `/v1/health`.
+- **P2:** `fmt_intensity`, `fmt_points`, `fmt_area` in `format.py`; P4 uses all three.
+- **Still open:** P1 + P2 annotate the 40 answers (by H+22, after the demo-laptop eval run); P3's real
+  models (P4 re-runs its tests and the eval when `models: real`).
 
 ---
 

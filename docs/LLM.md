@@ -122,6 +122,8 @@ F15 All recommended retrofits · estimated carbon saving (tonnes): 1.9 t CO2e/ye
 - **No arithmetic in P4.** Diff facts (what-ifs) come from P2's `core/diff.py`.
 - **Statuses gate numbers.** An `insufficient` or `out_of_scope` section contributes no numbers, only the
   reason (e.g. the no-info home P90003, the off-gas home P90005).
+- **Score sheet** also carries floor area (`fmt_area`) and energy use per m² against similar homes
+  (`fmt_intensity`); data notes use `FIELD_LABEL` names.
 - **Size.** One section is ≲ 2.4k characters (≈ 600 tokens). Incremental savings and infeasible-item details
   are added only for retrofits the user names.
 
@@ -207,7 +209,6 @@ model quality): the shown answers were 100% grounded, `must_mention` was 100% sa
 - `must_mention` uses phrase patterns, so a correct answer worded differently counts as a miss.
 - The direction check uses nearby cue words. An unusual phrasing can slip past it or be flagged wrongly
   (flagged answers fall back to the template, which is safe).
-- Floor area has no shared formatter yet, so explanations leave it out.
 - A custom what-if scenario skips P2's budget filter (`OVER_BUDGET` exists only in recommended mode).
 - Results are reported for the stub models until P3's models are switched on. Explanations then follow
   the new numbers automatically, with no prompt changes.

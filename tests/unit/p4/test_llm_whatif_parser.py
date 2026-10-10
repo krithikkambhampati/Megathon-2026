@@ -137,3 +137,9 @@ FULL = [
 def test_everything_except_x_is_the_recommended_plan_minus_x(message, removed) -> None:
     res = parse_whatif(message, _home("P10001"), _base("P10001"))
     assert res.scenario.mode == "custom" and res.scenario.retrofits == [r for r in FULL if r != removed]
+
+
+def test_everything_except_starts_from_the_full_plan_even_mid_chat() -> None:
+    current = Scenario(name="x", mode="custom", retrofits=["solar_pv", "air_source_heat_pump"])
+    res = parse_whatif("everything except the heat pump", _home("P10001"), _base("P10001"), current)
+    assert res.scenario.retrofits == [r for r in FULL if r != "air_source_heat_pump"]
