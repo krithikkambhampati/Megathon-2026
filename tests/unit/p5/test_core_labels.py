@@ -55,6 +55,22 @@ def test_flag_codes_used_by_engine_have_text():
     assert not missing, f"add FLAG_TEXT for {sorted(missing)}"
 
 
+def test_reason_and_issue_constants_in_engine_have_text():
+    # P2 declares codes as module constants, e.g. INCOMPATIBLE_HEATING = "INCOMPATIBLE_HEATING"
+    src = "\n".join(p.read_text() for p in (ROOT / "greenhome" / "core").rglob("*.py"))
+    declared = set(re.findall(r'^([A-Z][A-Z_]+) = "\1"$', src, flags=re.M))
+    assert declared, "found no code constants: has the engine changed how it declares them?"
+    known = set(labels.REASON_TEXT) | set(labels.ISSUE_TEXT) | set(labels.FLAG_TEXT)
+    assert not declared - known, f"add text for {sorted(declared - known)}"
+
+
+def test_every_home_field_and_provenance_key_has_a_label():
+    fields = set(contracts.HomeInput.model_fields)
+    prov_keys = {k for p in (ROOT / "tests" / "fixtures").glob("analysis_result_*.json")
+                 for k in json.loads(p.read_text())["home"]["provenance"]}
+    assert fields | prov_keys <= set(labels.FIELD_LABEL), (fields | prov_keys) - set(labels.FIELD_LABEL)
+
+
 def test_label_helpers():
     assert labels.label("Glazing", None) == labels.NOT_SURE
     assert labels.label("Glazing", "single") == "Single glazing"

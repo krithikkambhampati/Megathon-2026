@@ -198,6 +198,34 @@ REASON_TEXT: dict[str, str] = {
     "CUSTOMER_DECLINED_BEFORE": "You declined this before, so it's ranked lower.",
     "OVER_BUDGET": "Doesn't fit within your budget.",
     "OUT_OF_SCOPE_FUEL": "Savings can't be estimated for your heating fuel.",
+    "INCOMPATIBLE_HEATING": "Doesn't work with your heating system (direct electric heaters).",
+}
+
+# HomeInput field (and provenance key) → plain English, for data notes ("your loft insulation was estimated")
+FIELD_LABEL: dict[str, str] = {
+    "property_id": "Property reference",
+    "customer_id": "Customer reference",
+    "property_type": "Property type",
+    "age_band": "Age of the home",
+    "floor_area_m2": "Floor area",
+    "bedrooms": "Number of bedrooms",
+    "region": "Region",
+    "current_value_gbp": "Property value",
+    "energy_rating": "EPC rating",
+    "roof_type": "Roof type",
+    "roof_insulation": "Loft insulation",
+    "wall_type": "Wall type",
+    "wall_insulation": "Wall insulation",
+    "glazing": "Windows",
+    "heating_system": "Heating system",
+    "main_fuel": "Main heating fuel",
+    "renewables": "Renewables",
+    "smart_controls": "Heating controls",
+    "listed_or_conservation": "Listed building or conservation area",
+    "outdoor_space": "Outdoor space for a heat pump",
+    "energy": "Energy use",
+    "electricity_kwh": "Electricity use",
+    "gas_kwh": "Gas use",
 }
 
 
