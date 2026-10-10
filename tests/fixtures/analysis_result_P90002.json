@@ -19,7 +19,7 @@
       "current_value_gbp": 300000.0,
       "energy_rating": "D",
       "roof_type": "dwelling_above",
-      "roof_insulation": "medium",
+      "roof_insulation": "low",
       "wall_type": "cavity",
       "wall_insulation": "full",
       "glazing": "double",
@@ -85,9 +85,9 @@
         "code": "IMPUTED_FIELD",
         "severity": "info",
         "field": "roof_insulation",
-        "message": "roof_insulation estimated as medium.",
+        "message": "roof_insulation estimated as low.",
         "evidence": {
-          "value": "medium",
+          "value": "low",
           "method": "mode_by_age_band_and_property_type"
         }
       }
@@ -137,7 +137,7 @@
         "contribution": 15.0,
         "inputs": {
           "roof_type": "dwelling_above",
-          "roof_insulation": "medium",
+          "roof_insulation": "low",
           "wall_type": "cavity",
           "wall_insulation": "full"
         },
@@ -452,7 +452,7 @@
         "contribution": 15.0,
         "inputs": {
           "roof_type": "dwelling_above",
-          "roof_insulation": "medium",
+          "roof_insulation": "low",
           "wall_type": "cavity",
           "wall_insulation": "full"
         },
@@ -528,9 +528,9 @@
       "code": "IMPUTED_FIELD",
       "severity": "info",
       "field": "roof_insulation",
-      "message": "roof_insulation estimated as medium.",
+      "message": "roof_insulation estimated as low.",
       "evidence": {
-        "value": "medium",
+        "value": "low",
         "method": "mode_by_age_band_and_property_type"
       }
     }

@@ -81,6 +81,16 @@ def fmt_pct(x: float | None) -> str:
     return UNKNOWN if x is None else f"{_num(x, 0.1, 1)}%"
 
 
+def fmt_points(x: float | None) -> str:
+    """Score contributions and sub-scores (0–100 points), 1 dp."""
+    return UNKNOWN if x is None else _num(x, 0.1, 1)
+
+
+def fmt_intensity(x: float | None) -> str:
+    """Energy intensity, whole kWh per m² per year."""
+    return UNKNOWN if x is None else f"{_num(x, 1)} kWh/m²/year"
+
+
 def fmt_score(x: float | None) -> str:
     return UNKNOWN if x is None else str(round_score(x))
 

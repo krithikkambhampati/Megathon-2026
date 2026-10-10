@@ -13,20 +13,20 @@
       "customer_id": null,
       "property_type": null,
       "age_band": null,
-      "floor_area_m2": 70.0,
+      "floor_area_m2": 65.12218216162725,
       "bedrooms": 2,
       "region": "north_west",
       "current_value_gbp": null,
       "energy_rating": "C",
       "roof_type": "pitched_loft",
-      "roof_insulation": "medium",
+      "roof_insulation": "full",
       "wall_type": "cavity",
       "wall_insulation": "full",
       "glazing": "double",
       "heating_system": "gas_boiler_condensing",
       "main_fuel": "mains_gas",
       "renewables": "none",
-      "smart_controls": "programmer_thermostat",
+      "smart_controls": "programmer_thermostat_trvs",
       "listed_or_conservation": null,
       "outdoor_space": null,
       "energy": {
@@ -57,15 +57,15 @@
       "gas_kwh": "imputed"
     },
     "energy": {
-      "electricity_kwh": 2700.0,
-      "gas_kwh": 10500.0,
-      "purchased_kwh": 13200.0,
+      "electricity_kwh": 2317.0,
+      "gas_kwh": 8937.0,
+      "purchased_kwh": 11254.0,
       "electricity_coverage": null,
       "gas_coverage": null,
       "source": "imputed"
     },
-    "intensity_kwh_m2": 188.57142857142858,
-    "sap_estimate": 70.5,
+    "intensity_kwh_m2": 172.81361936042944,
+    "sap_estimate": 74.5,
     "flags": [
       {
         "code": "MISSING_FIELD",
@@ -176,9 +176,9 @@
         "code": "IMPUTED_FIELD",
         "severity": "info",
         "field": "floor_area_m2",
-        "message": "floor_area_m2 estimated as 70.0.",
+        "message": "floor_area_m2 estimated as 65.12218216162725.",
         "evidence": {
-          "value": 70.0,
+          "value": 65.12218216162725,
           "method": "median_by_property_type_and_bedrooms"
         }
       },
@@ -196,9 +196,9 @@
         "code": "IMPUTED_FIELD",
         "severity": "info",
         "field": "roof_insulation",
-        "message": "roof_insulation estimated as medium.",
+        "message": "roof_insulation estimated as full.",
         "evidence": {
-          "value": "medium",
+          "value": "full",
           "method": "mode_by_age_band_and_property_type"
         }
       },
@@ -256,9 +256,9 @@
         "code": "IMPUTED_FIELD",
         "severity": "info",
         "field": "smart_controls",
-        "message": "smart_controls estimated as programmer_thermostat.",
+        "message": "smart_controls estimated as programmer_thermostat_trvs.",
         "evidence": {
-          "value": "programmer_thermostat",
+          "value": "programmer_thermostat_trvs",
           "method": "mode_by_age_band_and_property_type"
         }
       },
@@ -283,9 +283,9 @@
             "gas_kwh"
           ],
           "main_fuel": "mains_gas",
-          "floor_area_band": "50_90",
-          "electricity_kwh": 2700.0,
-          "gas_kwh": 10500.0
+          "floor_area_band": "50-100",
+          "electricity_kwh": 2317.0,
+          "gas_kwh": 8937.0
         }
       },
       {
@@ -463,9 +463,9 @@
       "solar_pv"
     ],
     "baseline": {
-      "electricity_kwh": 2700.0,
-      "gas_kwh": 10500.0,
-      "purchased_kwh": 13200.0
+      "electricity_kwh": 2317.0,
+      "gas_kwh": 8937.0,
+      "purchased_kwh": 11254.0
     },
     "after": null,
     "saving": null,
@@ -480,7 +480,7 @@
     "current_value_source": null,
     "rating_before": "C",
     "rating_after": "B",
-    "sap_before": 70.5,
+    "sap_before": 74.5,
     "sap_after": 87.0,
     "uplift_pct_low": null,
     "uplift_pct_mid": null,
@@ -600,9 +600,9 @@
       "code": "IMPUTED_FIELD",
       "severity": "info",
       "field": "floor_area_m2",
-      "message": "floor_area_m2 estimated as 70.0.",
+      "message": "floor_area_m2 estimated as 65.12218216162725.",
       "evidence": {
-        "value": 70.0,
+        "value": 65.12218216162725,
         "method": "median_by_property_type_and_bedrooms"
       }
     },
@@ -620,9 +620,9 @@
       "code": "IMPUTED_FIELD",
       "severity": "info",
       "field": "roof_insulation",
-      "message": "roof_insulation estimated as medium.",
+      "message": "roof_insulation estimated as full.",
       "evidence": {
-        "value": "medium",
+        "value": "full",
         "method": "mode_by_age_band_and_property_type"
       }
     },
@@ -680,9 +680,9 @@
       "code": "IMPUTED_FIELD",
       "severity": "info",
       "field": "smart_controls",
-      "message": "smart_controls estimated as programmer_thermostat.",
+      "message": "smart_controls estimated as programmer_thermostat_trvs.",
       "evidence": {
-        "value": "programmer_thermostat",
+        "value": "programmer_thermostat_trvs",
         "method": "mode_by_age_band_and_property_type"
       }
     },
@@ -707,9 +707,9 @@
           "gas_kwh"
         ],
         "main_fuel": "mains_gas",
-        "floor_area_band": "50_90",
-        "electricity_kwh": 2700.0,
-        "gas_kwh": 10500.0
+        "floor_area_band": "50-100",
+        "electricity_kwh": 2317.0,
+        "gas_kwh": 8937.0
       }
     },
     {
