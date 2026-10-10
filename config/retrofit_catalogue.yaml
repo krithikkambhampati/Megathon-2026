@@ -1,0 +1,76 @@
+# Retrofit catalogue [P1 fills values with sources; P2 owns schema — see greenhome/config.py:RetrofitSpec].
+# TODO_SOURCE (P1): every number below is a placeholder until replaced with a cited value (README D3).
+# effect_range_frac: fraction of the end-use demand removed, keyed by the starting value of `state_field`
+#   ("default" applies to any starting value). Insulation/glazing/controls act on space-heating DEMAND.
+- retrofit: loft_insulation
+  stage: fabric
+  applies_to_end_use: space_heating
+  state_field: roof_insulation
+  effect_range_frac: {none: [0.15, 0.20], low: [0.10, 0.15], medium: [0.03, 0.06]}
+  cost_gbp: [500, 1500]
+  lifetime_years: 40
+  prerequisites: []
+  soft_after: []
+  source: "TODO_SOURCE Energy Saving Trust; PS2 illustrative 12–18%"
+  notes: "Effect is on space-heating DEMAND, so it reduces the heating fuel"
+- retrofit: cavity_wall_insulation
+  stage: fabric
+  applies_to_end_use: space_heating
+  state_field: wall_insulation
+  effect_range_frac: {none: [0.15, 0.25], partial: [0.05, 0.10]}
+  cost_gbp: [1000, 3000]
+  lifetime_years: 40
+  prerequisites: []
+  soft_after: []
+  source: "TODO_SOURCE"
+- retrofit: solid_wall_insulation
+  stage: fabric
+  applies_to_end_use: space_heating
+  state_field: wall_insulation
+  effect_range_frac: {none: [0.15, 0.25], partial: [0.05, 0.10]}
+  cost_gbp: [8000, 15000]
+  lifetime_years: 30
+  prerequisites: []
+  soft_after: []
+  source: "TODO_SOURCE"
+- retrofit: double_glazing
+  stage: glazing
+  applies_to_end_use: space_heating
+  state_field: glazing
+  effect_range_frac: {single: [0.10, 0.15], partial_double: [0.04, 0.08], secondary: [0.02, 0.05]}
+  cost_gbp: [4000, 9000]
+  lifetime_years: 25
+  prerequisites: []
+  soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation]
+  source: "TODO_SOURCE"
+- retrofit: smart_thermostat
+  stage: controls
+  applies_to_end_use: space_heating
+  state_field: smart_controls
+  effect_range_frac: {default: [0.05, 0.10]}
+  cost_gbp: [150, 400]
+  lifetime_years: 10
+  prerequisites: []
+  soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation, double_glazing]
+  source: "TODO_SOURCE"
+- retrofit: air_source_heat_pump
+  stage: heating
+  applies_to_end_use: space_and_water_heating
+  scop_range: [2.4, 3.4]             # lower end applies to poor fabric (high flow temps)
+  cost_gbp: [8000, 14000]
+  grant_gbp: 7500                    # Boiler Upgrade Scheme (England & Wales), verify at event
+  lifetime_years: 20
+  prerequisites: [{insulation_sub_score_min: 50, or_in_package_any: [loft_insulation, cavity_wall_insulation, solid_wall_insulation]}]
+  soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation, double_glazing, smart_thermostat]
+  source: "TODO_SOURCE UK Electrification of Heat demonstration project; Energy Saving Trust"
+  notes: "Physics-based saving is larger than the PS's illustrative 15–25% (README §2.2)"
+- retrofit: solar_pv
+  stage: generation
+  applies_to_end_use: electricity_import
+  state_field: renewables
+  effect_range_frac: {default: [0.20, 0.35]}
+  cost_gbp: [5000, 8000]
+  lifetime_years: 25
+  prerequisites: []
+  soft_after: [air_source_heat_pump]
+  source: "TODO_SOURCE"

@@ -1,0 +1,38 @@
+# Imputation tables [P1 fills values from EPC/NEED; P2 owns schema — see greenhome/config.py:ImputationCfg].
+# TODO_SOURCE (P1): every number below is a placeholder.
+# Floor area (m²) by bedrooms: list index = bedrooms, clipped to the last entry.
+floor_area_m2:
+  _default: [40, 50, 70, 90, 120, 150, 190]
+  flat: [35, 45, 65, 85, 100, 120, 140]
+  maisonette: [40, 50, 70, 90, 110, 130, 150]
+# Most common feature value: _default, overridden by age band, then by property type.
+feature_mode:
+  _default: {roof_type: pitched_loft, roof_insulation: medium, wall_type: cavity, wall_insulation: full,
+             glazing: double, heating_system: gas_boiler_condensing, main_fuel: mains_gas,
+             renewables: none, smart_controls: programmer_thermostat}
+  by_age_band:
+    pre_1900:   {wall_type: solid, wall_insulation: none, roof_insulation: low}
+    "1900_1929":  {wall_type: solid, wall_insulation: none, roof_insulation: low}
+    "1930_1949":  {wall_insulation: none, roof_insulation: low}
+    "1950_1966":  {wall_insulation: none}
+    "1967_1982":  {wall_insulation: partial}
+    "1983_1995":  {}
+    "1996_2006":  {roof_insulation: full}
+    "2007_onwards": {roof_insulation: full}
+  by_property_type:
+    flat: {roof_type: dwelling_above}
+    maisonette: {roof_type: dwelling_above}
+# NEED-style typical annual energy (kWh/yr) by main fuel → floor-area band (README P2.2 step 3).
+typical_energy_kwh:
+  mains_gas:
+    lt50:    {electricity_kwh: 2100, gas_kwh: 7500}
+    "50_90":   {electricity_kwh: 2700, gas_kwh: 10500}
+    "90_130":  {electricity_kwh: 3300, gas_kwh: 13500}
+    "130_200": {electricity_kwh: 4000, gas_kwh: 17000}
+    gt200:   {electricity_kwh: 5000, gas_kwh: 22000}
+  electricity:
+    lt50:    {electricity_kwh: 4500, gas_kwh: 0}
+    "50_90":   {electricity_kwh: 6500, gas_kwh: 0}
+    "90_130":  {electricity_kwh: 8500, gas_kwh: 0}
+    "130_200": {electricity_kwh: 10500, gas_kwh: 0}
+    gt200:   {electricity_kwh: 13000, gas_kwh: 0}
