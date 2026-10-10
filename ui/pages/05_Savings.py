@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from components.common import ESTIMATE_NOTE, flags_with, insufficient, require_analysis, saving_md
+from components.explain_box import explain_box
 from greenhome import format as F
 from labels import FUEL_COLOUR
 
@@ -62,6 +63,7 @@ if F.round_half_up(sv["saving"]["electricity_kwh"], 10) < 0:
         "heating, which uses far less energy in total."
     )
 st.caption(ESTIMATE_NOTE)
+explain_box(result, "savings", "Explain these savings")
 
 if carbon:
     st.subheader("Carbon, fuel by fuel")

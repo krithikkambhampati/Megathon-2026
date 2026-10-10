@@ -3,6 +3,7 @@ import streamlit as st
 
 import api_client
 from components.common import class_chip, flags_with, insufficient, require_analysis
+from components.explain_box import explain_box
 from greenhome import format as F
 from labels import CLASS_COLOUR, SCORE_COMPONENT, label
 
@@ -109,6 +110,8 @@ if after and after.get("score") is not None:
             unsafe_allow_html=True,
         )
         st.caption("If every recommended retrofit were installed. See Recommendations for the list.")
+
+explain_box(result, "score", "Explain my score")
 
 with st.expander("How is this computed?"):
     if not m:

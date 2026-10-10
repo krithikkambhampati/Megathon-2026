@@ -1,6 +1,7 @@
 import streamlit as st
 
 from components.common import ESTIMATE_NOTE, chip, flags_with, insufficient, require_analysis, saving_md
+from components.explain_box import explain_box
 from greenhome import format as F
 from labels import REASON_TEXT, label
 
@@ -48,6 +49,7 @@ for r in ranked:
             st.caption("Do after: " + ", ".join(label("Retrofit", d) for d in r["depends_on"]))
 if ranked:
     st.caption(ESTIMATE_NOTE)
+    explain_box(result, "recommendations", "Explain these recommendations")
 
 if other:
     with st.expander(f"Not suitable for this home ({len(other)})"):
