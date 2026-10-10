@@ -5,7 +5,9 @@
 **Reply needed by:** H+2 (contract freeze). If these go into `contracts.py` v1.0.0, nobody needs a version bump or regenerated fixtures later.
 
 ## P2 reply (2026-10-10)
-All 8 answered in the table below and implemented in `contracts.py` v1.0.0 (no version bump).
+All 8 answered in the table below and implemented in `contracts.py` v1.0.0.
+**Update (PR #1 review):** bumped to **v1.1.0**: `DiffKey` gains `score_after` and `class_after` (12 rows), because
+`score` / `score_class` only move when a scenario overrides home fields.
 Fixtures: `tests/fixtures/analysis_result_*.json` (4 homes, stub models), regenerate with
 `.venv/bin/python tests/fixtures/generate.py`.
 

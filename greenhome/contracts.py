@@ -11,7 +11,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-CONTRACT_VERSION = "1.0.0"
+CONTRACT_VERSION = "1.1.0"  # 1.1.0: DiffKey gains score_after / class_after
 
 
 class _E(StrEnum):
@@ -396,8 +396,8 @@ class AnalysisResult(Strict):
 
 # ---------- DIFF (CR-2) ----------
 DiffKey = Literal[
-    "score", "score_class", "electricity_kwh", "gas_kwh", "net_kwh", "improvement_potential_pct",
-    "carbon_total_kg", "value_uplift_pct_mid", "rating_after", "sap_after",
+    "score", "score_class", "score_after", "class_after", "electricity_kwh", "gas_kwh", "net_kwh",
+    "improvement_potential_pct", "carbon_total_kg", "value_uplift_pct_mid", "rating_after", "sap_after",
 ]
 
 
@@ -412,7 +412,7 @@ class DiffRow(Strict):
 class ResultDiff(Strict):
     base_analysis_id: str
     new_analysis_id: str
-    rows: list[DiffRow]  # always all 10 keys, in DiffKey order
+    rows: list[DiffRow]  # always all 12 keys, in DiffKey order
     retrofits_added: list[Retrofit]  # in new.savings.retrofits, not in base
     retrofits_removed: list[Retrofit]
 

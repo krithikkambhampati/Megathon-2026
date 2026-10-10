@@ -1,6 +1,9 @@
 """Base vs scenario comparison (CR-2): one function feeds the what-if UI table and P4's diff facts.
 
-Energy rows compare `savings.saving` (positive = reduction, §7.1); delta = new − base, unrounded.
+`score` / `score_class` are the home's current score: they change only when a scenario overrides home
+fields. `score_after` / `class_after` are the score after each result's package, so they show what a
+scenario's retrofits do. Energy rows compare `savings.saving` (positive = reduction, §7.1);
+delta = new − base, unrounded.
 """
 
 from __future__ import annotations
@@ -12,6 +15,8 @@ from greenhome.contracts import AnalysisResult, DiffKey, DiffRow, ResultDiff
 _ROWS: dict[str, tuple[str, Any]] = {  # key → (unit, getter)
     "score": ("score", lambda r: r.score.score),
     "score_class": ("class", lambda r: r.score.score_class),
+    "score_after": ("score", lambda r: r.score_after and r.score_after.score),
+    "class_after": ("class", lambda r: r.score_after and r.score_after.score_class),
     "electricity_kwh": ("kwh_per_year", lambda r: r.savings.saving and r.savings.saving.electricity_kwh),
     "gas_kwh": ("kwh_per_year", lambda r: r.savings.saving and r.savings.saving.gas_kwh),
     "net_kwh": ("kwh_per_year", lambda r: r.savings.saving and r.savings.saving.net_kwh),
