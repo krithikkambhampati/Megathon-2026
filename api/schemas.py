@@ -33,6 +33,25 @@ class DiffRequest(Strict):
     new_analysis_id: str
 
 
+class CatalogueItem(Strict):
+    id: str
+    name: str
+    summary: str
+    reference: bool  # the challenge brief's reference home
+    location: str | None
+    property_type: str | None
+    era: str | None
+    bedrooms: int | None
+    floor_area_m2: float | None
+    epc_rating: str | None
+    heating: str | None
+    highlights: list[str]
+    score: int | None
+    score_class: str | None
+    score_after: int | None
+    improvement_potential_pct: float | None
+
+
 class ExampleIndexItem(Strict):
     property_id: str
     title: str

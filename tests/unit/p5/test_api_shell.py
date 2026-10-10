@@ -15,7 +15,7 @@ class _Num(BaseModel):
 
 @pytest.fixture
 def client():
-    app = create_app()
+    app = create_app(web=False)  # test routes are added after creation; the web mount would shadow them
 
     @app.get("/_test/nan-dict")
     def nan_dict():
