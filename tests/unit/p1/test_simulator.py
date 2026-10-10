@@ -1,16 +1,32 @@
 """Behavioural tests for the physics model and retrofit simulator (README P1.9)."""
+
 import numpy as np
 import pandas as pd
 import pytest
 
-from data_pipeline import physics as ph, simulator as sim
-from data_pipeline.kernels_tmp import apply_retrofits, feasible_set
+from data_pipeline import physics as ph
+from data_pipeline import simulator as sim
+from data_pipeline.kernels import apply_frame as apply_retrofits
+from data_pipeline.kernels import feasible_frame as feasible_set
 
-P10001 = dict(property_id="P10001", property_type="semi_detached", age_band="1950_1966", floor_area_m2=85.0,
-              bedrooms=3, region="east_midlands", roof_type="pitched_loft", roof_insulation="low",
-              wall_type="cavity", wall_insulation="none", glazing="single", gas_connected=True,
-              heating_system="gas_boiler_condensing", main_fuel="mains_gas", renewables="none",
-              smart_controls="programmer_thermostat")
+P10001 = dict(
+    property_id="P10001",
+    property_type="semi_detached",
+    age_band="1950_1966",
+    floor_area_m2=85.0,
+    bedrooms=3,
+    region="east_midlands",
+    roof_type="pitched_loft",
+    roof_insulation="low",
+    wall_type="cavity",
+    wall_insulation="none",
+    glazing="single",
+    gas_connected=True,
+    heating_system="gas_boiler_condensing",
+    main_fuel="mains_gas",
+    renewables="none",
+    smart_controls="programmer_thermostat",
+)
 
 
 @pytest.fixture
@@ -41,7 +57,7 @@ def test_heat_pump_raises_electricity_and_cuts_gas(home):
     b, a = base(p, h), run(p, h, {"air_source_heat_pump"})
     assert (a.electricity_kwh > b.electricity_kwh).all()
     assert (a.gas_kwh < b.gas_kwh).all()
-    assert (a.gas_kwh > 0).all()          # cooking gas remains on the gas meter
+    assert (a.gas_kwh > 0).all()  # cooking gas remains on the gas meter
 
 
 def test_solar_only_cuts_grid_import_within_ps_range(home):
@@ -50,7 +66,7 @@ def test_solar_only_cuts_grid_import_within_ps_range(home):
     cut = 1 - a.electricity_kwh / b.electricity_kwh
     assert np.allclose(a.gas_kwh, b.gas_kwh)
     assert (cut > 0).all() and (cut <= 0.35 + 1e-9).all()
-    assert np.allclose(a.electricity_demand_kwh, b.electricity_demand_kwh)   # demand unchanged
+    assert np.allclose(a.electricity_demand_kwh, b.electricity_demand_kwh)  # demand unchanged
 
 
 def test_package_is_not_additive(home):
@@ -58,7 +74,7 @@ def test_package_is_not_additive(home):
     b = base(p, h)
     singles = sum((b.gas_kwh - run(p, h, {r}).gas_kwh) for r in ["loft_insulation", "cavity_wall_insulation"])
     pkg = b.gas_kwh - run(p, h, {"loft_insulation", "cavity_wall_insulation"}).gas_kwh
-    assert (pkg < singles).all()          # multiplicative compounding
+    assert (pkg < singles).all()  # multiplicative compounding
 
 
 def test_insulating_first_shrinks_heat_pump_electricity(home):
@@ -82,6 +98,8 @@ def test_apply_retrofits_idempotent_and_order_free():
 
 
 def test_flat_with_dwelling_above_has_no_loft_or_solar():
-    p = pd.DataFrame([{**P10001, "property_type": "flat", "roof_type": "dwelling_above", "roof_insulation": None}])
+    p = pd.DataFrame(
+        [{**P10001, "property_type": "flat", "roof_type": "dwelling_above", "roof_insulation": None}]
+    )
     f = feasible_set(p).iloc[0]
     assert not f["loft_insulation"] and not f["solar_pv"]

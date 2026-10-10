@@ -16,11 +16,11 @@ Outputs: data/processed/retrofit_history.parquet  (property_id, retrofit, comple
          sap_after, delta_sap, source='epc_repeat')
          reports/retrofit_history_summary.csv  (counts + median delta SAP per retrofit)
 """
+
 from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,8 +31,14 @@ ORD = {
     "roof_insulation": {"none": 0, "low": 1, "medium": 2, "full": 3},
     "wall_insulation": {"none": 0, "partial": 1, "full": 2},
     "glazing": {"single": 0, "partial_double": 1, "secondary": 2, "double": 3, "triple": 4},
-    "smart_controls": {"none": 0, "timer_only": 1, "programmer_thermostat": 2, "programmer_thermostat_trvs": 3,
-                       "smart_thermostat": 4, "smart_zoned": 5},
+    "smart_controls": {
+        "none": 0,
+        "timer_only": 1,
+        "programmer_thermostat": 2,
+        "programmer_thermostat_trvs": 3,
+        "smart_thermostat": 4,
+        "smart_zoned": 5,
+    },
     "renewables": {"none": 0, "solar_thermal": 1, "solar_pv": 2, "solar_pv_battery": 3},
 }
 
@@ -45,7 +51,10 @@ def main() -> None:
     prev = c.groupby("property_id").shift(1)
     pair = prev["cert_id"].notna()
     a, b = prev[pair], c[pair]
-    print(f"properties with >= 2 certificates: {c.property_id.nunique():,}; consecutive pairs: {int(pair.sum()):,}")
+    print(
+        f"properties with >= 2 certificates: {c.property_id.nunique():,}; "
+        f"consecutive pairs: {int(pair.sum()):,}"
+    )
 
     worse = pd.Series(0, index=b.index)
     better = {}
@@ -62,32 +71,59 @@ def main() -> None:
 
     def add(mask, retrofit):
         m = mask & ok
-        events.append(pd.DataFrame({"property_id": b.loc[m, "property_id"], "retrofit": retrofit,
-                                    "completion_date": b.loc[m, "lodgement_date"],
-                                    "sap_before": a.loc[m, "sap_score"], "sap_after": b.loc[m, "sap_score"]}))
+        events.append(
+            pd.DataFrame(
+                {
+                    "property_id": b.loc[m, "property_id"],
+                    "retrofit": retrofit,
+                    "completion_date": b.loc[m, "lodgement_date"],
+                    "sap_before": a.loc[m, "sap_score"],
+                    "sap_after": b.loc[m, "sap_score"],
+                }
+            )
+        )
 
     add(better["roof_insulation"] & b["roof_type"].isin(["pitched_loft", "room_in_roof"]), "loft_insulation")
     wall_up = a["wall_insulation"].isin(["none", "partial"]) & b["wall_insulation"].eq("full")
     add(wall_up & b["wall_type"].eq("cavity"), "cavity_wall_insulation")
     add(wall_up & b["wall_type"].eq("solid"), "solid_wall_insulation")
-    add(a["glazing"].isin(["single", "partial_double", "secondary"]) & b["glazing"].isin(["double", "triple"]),
-        "double_glazing")
-    add(a["heating_system"].ne("heat_pump") & a["heating_system"].notna() & b["heating_system"].eq("heat_pump"),
-        "air_source_heat_pump")
-    add(~a["renewables"].isin(["solar_pv", "solar_pv_battery"]) & b["renewables"].isin(["solar_pv", "solar_pv_battery"]),
-        "solar_pv")
-    add(a["smart_controls"].map(ORD["smart_controls"]).lt(4) & b["smart_controls"].map(ORD["smart_controls"]).ge(4),
-        "smart_thermostat")
+    add(
+        a["glazing"].isin(["single", "partial_double", "secondary"])
+        & b["glazing"].isin(["double", "triple"]),
+        "double_glazing",
+    )
+    add(
+        a["heating_system"].ne("heat_pump")
+        & a["heating_system"].notna()
+        & b["heating_system"].eq("heat_pump"),
+        "air_source_heat_pump",
+    )
+    add(
+        ~a["renewables"].isin(["solar_pv", "solar_pv_battery"])
+        & b["renewables"].isin(["solar_pv", "solar_pv_battery"]),
+        "solar_pv",
+    )
+    add(
+        a["smart_controls"].map(ORD["smart_controls"]).lt(4)
+        & b["smart_controls"].map(ORD["smart_controls"]).ge(4),
+        "smart_thermostat",
+    )
 
     h = pd.concat(events, ignore_index=True)
     h["delta_sap"] = h["sap_after"] - h["sap_before"]
     h["source"] = "epc_repeat"
     h = h.sort_values(["property_id", "completion_date", "retrofit"]).reset_index(drop=True)
     h.to_parquet(PROCESSED / "retrofit_history.parquet", index=False)
-    summ = h.groupby("retrofit").agg(events=("property_id", "size"), median_delta_sap=("delta_sap", "median"),
-                                     share_sap_improved=("delta_sap", lambda d: float((d > 0).mean())))
+    summ = h.groupby("retrofit").agg(
+        events=("property_id", "size"),
+        median_delta_sap=("delta_sap", "median"),
+        share_sap_improved=("delta_sap", lambda d: float((d > 0).mean())),
+    )
     summ["single_change_median_delta_sap"] = (
-        h[~h.duplicated(["property_id", "completion_date"], keep=False)].groupby("retrofit")["delta_sap"].median())
+        h[~h.duplicated(["property_id", "completion_date"], keep=False)]
+        .groupby("retrofit")["delta_sap"]
+        .median()
+    )
     REPORTS.mkdir(exist_ok=True)
     summ.round(3).to_csv(REPORTS / "retrofit_history_summary.csv")
     print(f"pairs discarded as inconsistent: {int((~ok).sum()):,} of {int(pair.sum()):,}")

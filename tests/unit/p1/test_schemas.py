@@ -1,4 +1,5 @@
 """Contract checks on the processed data files (skipped if `make data` has not run)."""
+
 import json
 from pathlib import Path
 
@@ -10,7 +11,9 @@ from data_pipeline.manifest import ENUMS, HIDDEN, check_enums
 ROOT = Path(__file__).resolve().parents[3]
 PROCESSED = ROOT / "data" / "processed"
 EXAMPLES = ROOT / "data" / "examples"
-pytestmark = pytest.mark.skipif(not (PROCESSED / "properties.parquet").exists(), reason="run the data pipeline first")
+pytestmark = pytest.mark.skipif(
+    not (PROCESSED / "properties.parquet").exists(), reason="run the data pipeline first"
+)
 
 
 @pytest.fixture(scope="module")
@@ -20,8 +23,17 @@ def props():
 
 def test_properties_contract(props):
     check_enums("properties", props)
-    for col in ["property_id", "customer_id", "property_type", "age_band", "floor_area_m2", "region",
-                "energy_rating", "current_value_gbp", "current_value_source"]:
+    for col in [
+        "property_id",
+        "customer_id",
+        "property_type",
+        "age_band",
+        "floor_area_m2",
+        "region",
+        "energy_rating",
+        "current_value_gbp",
+        "current_value_source",
+    ]:
         assert col in props.columns
     assert not HIDDEN & set(props.columns)
     assert props["property_id"].is_unique
@@ -30,7 +42,16 @@ def test_properties_contract(props):
 def test_no_addresses_anywhere():
     for f in PROCESSED.rglob("*.parquet"):
         cols = {c.upper() for c in pd.read_parquet(f).columns}
-        assert not cols & {"ADDRESS", "ADDRESS1", "ADDRESS2", "ADDRESS3", "POSTCODE", "UPRN", "PAON", "SAON"}, f
+        assert not cols & {
+            "ADDRESS",
+            "ADDRESS1",
+            "ADDRESS2",
+            "ADDRESS3",
+            "POSTCODE",
+            "UPRN",
+            "PAON",
+            "SAON",
+        }, f
 
 
 def test_splits_leak_free_and_cover_product():
@@ -60,5 +81,5 @@ def test_examples_are_valid_home_inputs():
         for col, allowed in ENUMS.items():
             if col in h and h[col] is not None:
                 assert h[col] in allowed, (f.name, col, h[col])
-        for m in (h["energy"]["monthly"] or []):
+        for m in h["energy"]["monthly"] or []:
             assert m["electricity_kwh"] is None or m["electricity_kwh"] >= 0

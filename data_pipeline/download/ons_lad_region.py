@@ -6,6 +6,7 @@ from 2015 to 2025. Every Welsh code (W06*) maps to 'wales'.
 
 Output: data/processed/reference/lad_region_lookup.csv  (lad_code, lad_name, region, ons_year)
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -33,19 +34,32 @@ ENGLAND = {
 WALES_SERVICE = "WD25_LAD25_CTYUA25_RGN25_CTRY25_UK_LU"
 
 REGION_NAME_TO_ENUM = {
-    "North East": "north_east", "North West": "north_west",
-    "Yorkshire and The Humber": "yorkshire_humber", "East Midlands": "east_midlands",
-    "West Midlands": "west_midlands", "East of England": "east_of_england",
-    "London": "london", "South East": "south_east", "South West": "south_west",
+    "North East": "north_east",
+    "North West": "north_west",
+    "Yorkshire and The Humber": "yorkshire_humber",
+    "East Midlands": "east_midlands",
+    "West Midlands": "west_midlands",
+    "East of England": "east_of_england",
+    "London": "london",
+    "South East": "south_east",
+    "South West": "south_west",
 }
 
 
 def query_all(service: str) -> list[dict]:
     rows, offset = [], 0
     while True:
-        r = requests.get(f"{BASE}/{service}/FeatureServer/0/query", timeout=60, params={
-            "where": "1=1", "outFields": "*", "f": "json",
-            "resultOffset": offset, "resultRecordCount": 2000})
+        r = requests.get(
+            f"{BASE}/{service}/FeatureServer/0/query",
+            timeout=60,
+            params={
+                "where": "1=1",
+                "outFields": "*",
+                "f": "json",
+                "resultOffset": offset,
+                "resultRecordCount": 2000,
+            },
+        )
         r.raise_for_status()
         body = r.json()
         feats = body.get("features", [])
@@ -65,19 +79,32 @@ def main() -> None:
     out = []
     for yy, svc in ENGLAND.items():
         for a in query_all(svc):
-            out.append({"lad_code": pick(a, f"LAD{yy}CD"), "lad_name": pick(a, f"LAD{yy}NM"),
-                        "region": REGION_NAME_TO_ENUM[pick(a, f"RGN{yy}NM")], "ons_year": 2000 + yy})
+            out.append(
+                {
+                    "lad_code": pick(a, f"LAD{yy}CD"),
+                    "lad_name": pick(a, f"LAD{yy}NM"),
+                    "region": REGION_NAME_TO_ENUM[pick(a, f"RGN{yy}NM")],
+                    "ons_year": 2000 + yy,
+                }
+            )
     for a in query_all(WALES_SERVICE):
         code = pick(a, "LAD25CD")
         if code.startswith("W06"):
-            out.append({"lad_code": code, "lad_name": pick(a, "LAD25NM"), "region": "wales", "ons_year": 2025})
-    df = (pd.DataFrame(out).sort_values("ons_year", ascending=False)
-          .drop_duplicates("lad_code").sort_values("lad_code"))
+            out.append(
+                {"lad_code": code, "lad_name": pick(a, "LAD25NM"), "region": "wales", "ons_year": 2025}
+            )
+    df = (
+        pd.DataFrame(out)
+        .sort_values("ons_year", ascending=False)
+        .drop_duplicates("lad_code")
+        .sort_values("lad_code")
+    )
     # a code must never map to two regions across years
     assert df["lad_code"].is_unique
     OUT.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUT, index=False)
-    print(f"{len(df)} LAD codes -> {df.region.nunique()} regions"); print(df.region.value_counts())
+    print(f"{len(df)} LAD codes -> {df.region.nunique()} regions")
+    print(df.region.value_counts())
 
 
 if __name__ == "__main__":

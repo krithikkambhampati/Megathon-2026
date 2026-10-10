@@ -8,6 +8,7 @@ Outputs (data/processed/reference/, committed: aggregated public statistics, OGL
 NEED sheets hold several sub-tables side by side (a: counts, b: mean, c: median ...),
 separated by an empty column. Each sub-table starts with a header row whose first cell is "Year".
 """
+
 from __future__ import annotations
 
 import re
@@ -23,16 +24,24 @@ OUT = ROOT / "data" / "processed" / "reference"
 # headline tables we use, with the dimension they break down by
 HEADLINE = {
     "Consumption_headline_EW_2024.xlsx": {
-        "Table_1": ("gas", "floor_area_band"), "Table_2": ("electricity", "floor_area_band"),
-        "Table_3": ("gas", "bedrooms"), "Table_4": ("electricity", "bedrooms"),
-        "Table_5": ("gas", "property_type"), "Table_6": ("electricity", "property_type"),
-        "Table_7": ("gas", "property_age"), "Table_8": ("electricity", "property_age"),
-        "Table_15": ("gas", "region"), "Table_16": ("electricity", "region"),
-        "Table_27": ("gas", "epc_band"), "Table_28": ("electricity", "epc_band"),
+        "Table_1": ("gas", "floor_area_band"),
+        "Table_2": ("electricity", "floor_area_band"),
+        "Table_3": ("gas", "bedrooms"),
+        "Table_4": ("electricity", "bedrooms"),
+        "Table_5": ("gas", "property_type"),
+        "Table_6": ("electricity", "property_type"),
+        "Table_7": ("gas", "property_age"),
+        "Table_8": ("electricity", "property_age"),
+        "Table_15": ("gas", "region"),
+        "Table_16": ("electricity", "region"),
+        "Table_27": ("gas", "epc_band"),
+        "Table_28": ("electricity", "epc_band"),
     },
     "Consumption_gas_per_square_metre_EW_2024.xlsx": {
-        "Table_1.2": ("gas_per_m2", "floor_area_band"), "Table_3.2": ("gas_per_m2", "property_type"),
-        "Table_4.2": ("gas_per_m2", "property_age"), "Table_8.2": ("gas_per_m2", "region"),
+        "Table_1.2": ("gas_per_m2", "floor_area_band"),
+        "Table_3.2": ("gas_per_m2", "property_type"),
+        "Table_4.2": ("gas_per_m2", "property_age"),
+        "Table_8.2": ("gas_per_m2", "region"),
         "Table_14.2": ("gas_per_m2", "epc_band"),
     },
 }
@@ -85,9 +94,16 @@ def parse_sheet(df: pd.DataFrame) -> list[dict]:
                     year = int(year)
                 except (TypeError, ValueError):
                     break
-                for k, cat in zip(range(c + 1, end), categories):
-                    rows.append({"metric": metric, "metric_title": title, "category": cat,
-                                 "year": year, "value": _num(df.iat[r, k])})
+                for k, cat in zip(range(c + 1, end), categories, strict=False):
+                    rows.append(
+                        {
+                            "metric": metric,
+                            "metric_title": title,
+                            "category": cat,
+                            "year": year,
+                            "value": _num(df.iat[r, k]),
+                        }
+                    )
                 r += 1
             c = end
     return rows
@@ -108,34 +124,69 @@ def build_headline() -> pd.DataFrame:
 # ---- multiple attributes table -> our enums -------------------------------------------------
 
 REGION_MAP = {
-    "North East": "north_east", "North West": "north_west",
-    "Yorkshire and The Humber": "yorkshire_humber", "East Midlands": "east_midlands",
-    "West Midlands": "west_midlands", "East of England": "east_of_england", "East": "east_of_england",
-    "London": "london", "South East": "south_east", "South West": "south_west", "Wales": "wales",
+    "North East": "north_east",
+    "North West": "north_west",
+    "Yorkshire and The Humber": "yorkshire_humber",
+    "East Midlands": "east_midlands",
+    "West Midlands": "west_midlands",
+    "East of England": "east_of_england",
+    "East": "east_of_england",
+    "London": "london",
+    "South East": "south_east",
+    "South West": "south_west",
+    "Wales": "wales",
 }
 # NEED property types -> ours. NEED has no bungalow/maisonette split in this table; documented.
-PTYPE_MAP = {"Detached": "detached", "Semi detached": "semi_detached", "Semi-detached": "semi_detached",
-             "End terrace": "terraced", "Mid terrace": "terraced", "Bungalow": "bungalow",
-             "Converted flat": "flat", "Purpose built flat": "flat", "Flat": "flat"}
+PTYPE_MAP = {
+    "Detached": "detached",
+    "Semi detached": "semi_detached",
+    "Semi-detached": "semi_detached",
+    "End terrace": "terraced",
+    "Mid terrace": "terraced",
+    "Bungalow": "bungalow",
+    "Converted flat": "flat",
+    "Purpose built flat": "flat",
+    "Flat": "flat",
+}
 
 
 def build_multi() -> pd.DataFrame:
     t = pd.read_excel(RAW / "Consumption_multiple_attributes_EW_2024.xlsx", sheet_name="Table", header=None)
     hdr = next(i for i in range(len(t)) if str(t.iat[i, 0]).strip() == "Year")
-    df = t.iloc[hdr + 1:].copy()
+    df = t.iloc[hdr + 1 :].copy()
     df.columns = [re.sub(r"\s+", " ", str(c)).strip() for c in t.iloc[hdr]]
-    df = df.rename(columns={
-        "Year": "year", "Region code": "region_code", "Region": "need_region",
-        "Property type": "need_property_type", "Property age": "need_property_age",
-        "Number of bedrooms": "need_bedrooms", "Gas present": "gas_present",
-        "Electricity type": "electricity_type", "Number in sample": "n",
-        "Mean: Gas": "gas_mean", "Lower quartile: Gas": "gas_q25", "Median: Gas": "gas_median",
-        "Upper quartile: Gas": "gas_q75", "Mean: Electricity": "elec_mean",
-        "Lower quartile: Electricity": "elec_q25", "Median: Electricity": "elec_median",
-        "Upper quartile: Electricity": "elec_q75",
-    })
-    for c in ["n", "gas_mean", "gas_q25", "gas_median", "gas_q75",
-              "elec_mean", "elec_q25", "elec_median", "elec_q75"]:
+    df = df.rename(
+        columns={
+            "Year": "year",
+            "Region code": "region_code",
+            "Region": "need_region",
+            "Property type": "need_property_type",
+            "Property age": "need_property_age",
+            "Number of bedrooms": "need_bedrooms",
+            "Gas present": "gas_present",
+            "Electricity type": "electricity_type",
+            "Number in sample": "n",
+            "Mean: Gas": "gas_mean",
+            "Lower quartile: Gas": "gas_q25",
+            "Median: Gas": "gas_median",
+            "Upper quartile: Gas": "gas_q75",
+            "Mean: Electricity": "elec_mean",
+            "Lower quartile: Electricity": "elec_q25",
+            "Median: Electricity": "elec_median",
+            "Upper quartile: Electricity": "elec_q75",
+        }
+    )
+    for c in [
+        "n",
+        "gas_mean",
+        "gas_q25",
+        "gas_median",
+        "gas_q75",
+        "elec_mean",
+        "elec_q25",
+        "elec_median",
+        "elec_q75",
+    ]:
         df[c] = df[c].map(_num)
     df["year"] = df["year"].astype(int)
     df["region"] = df["need_region"].map(REGION_MAP)
@@ -152,7 +203,10 @@ def main() -> None:
     multi = build_multi()
     multi.to_parquet(OUT / "need_multi.parquet", index=False)
     print(f"need_headline: {len(head)} rows; need_multi: {len(multi)} rows")
-    print("unmapped NEED property types:", sorted(multi.loc[multi.property_type.isna(), "need_property_type"].unique()))
+    print(
+        "unmapped NEED property types:",
+        sorted(multi.loc[multi.property_type.isna(), "need_property_type"].unique()),
+    )
     print("unmapped NEED regions:", sorted(multi.loc[multi.region.isna(), "need_region"].unique()))
     print("NEED ages:", sorted(multi["need_property_age"].astype(str).unique()))
 

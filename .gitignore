@@ -30,16 +30,17 @@ build/
 # `python -m data_pipeline.run_all` (docs/DATA.md)
 data/processed/*
 !data/processed/.gitkeep
+# demo homes (test split + PS2 P10001; no addresses) are committed for the UI
 data/examples/*
 !data/examples/.gitkeep
+!data/examples/*.json
 config/generated/*.parquet
 # Peer percentiles are small train-split aggregates (no addresses); committed so every machine
 # compares homes with real peers instead of engine.yaml placeholders.
 !config/generated/peer_percentiles.parquet
-# Part 3: trained models and predictions stay on the build machine (team decision);
+# Part 3:
 # retrain with the training/ scripts (docs/MODELS.md)
-models/*
-!models/.gitkeep
-outputs/test_predictions/*
-!outputs/test_predictions/.gitkeep
+# trained models (deliverable C) and held-out predictions (deliverable I) are committed compressed
+models/**/*.txt
+outputs/test_predictions/*.csv
 reports/*.log

@@ -12,9 +12,12 @@ train/serve feature mismatch fails loudly instead of silently predicting garbage
     p = m.recommender.predict_proba(homes)                  # DataFrame n x 7 retrofits (NaN: no model)
     lp = m.value.predict_log_price(homes, ratings, "2026-07")   # (20, n) ensemble log GBP
 """
+
 from __future__ import annotations
 
+import gzip
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -23,8 +26,6 @@ import numpy as np
 import pandas as pd
 
 from greenhome.ml import features as F
-
-import os
 
 ROOT = Path(__file__).resolve().parents[2]
 MODELS = Path(os.environ.get("GREENHOME_MODELS_DIR", ROOT / "models"))
@@ -52,6 +53,14 @@ def sap_to_band(sap) -> np.ndarray:
     return out
 
 
+def _booster(path: Path) -> lgb.Booster:
+    """Load a LightGBM text model, gzip-compressed (.txt.gz, as committed) or plain."""
+    if path.suffix == ".gz":
+        with gzip.open(path, "rt") as fh:
+            return lgb.Booster(model_str=fh.read())
+    return lgb.Booster(model_file=str(path))
+
+
 @dataclass
 class _Loaded:
     boosters: list[lgb.Booster]
@@ -59,17 +68,19 @@ class _Loaded:
     manifest: dict
 
     @classmethod
-    def load(cls, name: str) -> "_Loaded":
+    def load(cls, name: str) -> _Loaded:
         d = MODELS / name
         man = json.loads((d / "manifest.json").read_text())
         feats = json.loads((d / "features.json").read_text())
-        boosters = [lgb.Booster(model_file=str(d / f)) for f in man["model_files"]]
+        boosters = [_booster(d / f) for f in man["model_files"]]
         return cls(boosters, feats["columns"], man)
 
     def check(self, X: pd.DataFrame, name: str) -> pd.DataFrame:
         if list(X.columns) != self.columns:
-            raise RuntimeError(f"{name}: feature mismatch between greenhome.ml.features and the trained model. "
-                               f"Retrain or fix features.py. model={self.columns} built={list(X.columns)}")
+            raise RuntimeError(
+                f"{name}: feature mismatch between greenhome.ml.features and the trained model. "
+                f"Retrain or fix features.py. model={self.columns} built={list(X.columns)}"
+            )
         return X
 
     @property
@@ -106,12 +117,20 @@ class EnergyModel:
         X = F.energy_features(df, eb, gb, pk)
         # each fuel is predicted as a ratio to its OWN baseline (no cross-fuel leakage)
         el = np.clip(self.e.boosters[0].predict(self.e.check(X, "energy_elec")), 0, None) * eb.to_numpy()
-        ga = np.where(gb.to_numpy() > 1.0,
-                      np.clip(self.g.boosters[0].predict(self.g.check(F.mask_for_fuel(X, "gas"), "energy_gas")), 0, None)
-                      * gb.to_numpy(), 0.0)
-        empty = np.array([len(p) == 0 for p in pk])
-        el = np.where(empty, eb, el)
-        ga = np.where(empty, gb, ga)
+        ga = np.where(
+            gb.to_numpy() > 1.0,
+            np.clip(
+                self.g.boosters[0].predict(self.g.check(F.mask_for_fuel(X, "gas"), "energy_gas")), 0, None
+            )
+            * gb.to_numpy(),
+            0.0,
+        )
+        # a fuel with no relevant retrofit in the package keeps its baseline exactly (e.g. solar-only -> gas
+        # unchanged); the models were never trained on packages with no relevant retrofit
+        no_gas = np.array([not (set(p) - set(F.FUEL_IRRELEVANT_RETROFITS["gas"])) for p in pk])
+        no_el = np.array([not (set(p) - set(F.FUEL_IRRELEVANT_RETROFITS["elec"])) for p in pk])
+        el = np.where(no_el, eb, el)
+        ga = np.where(no_gas, gb, ga)
         return pd.DataFrame({"electricity_kwh": el, "gas_kwh": ga, "purchased_kwh": el + ga})
 
 
@@ -119,8 +138,11 @@ class RecommenderModel:
     """M2: P(an EPC assessor would recommend r | home), per retrofit. Call only for rule-feasible r."""
 
     def __init__(self):
-        self.models = {r: _Loaded.load(f"recommender/{r}") for r in F.RETROFITS
-                       if (MODELS / "recommender" / r / "manifest.json").exists()}
+        self.models = {
+            r: _Loaded.load(f"recommender/{r}")
+            for r in F.RETROFITS
+            if (MODELS / "recommender" / r / "manifest.json").exists()
+        }
         self.version = max(m.version for m in self.models.values())
 
     def predict_proba(self, homes) -> pd.DataFrame:
@@ -147,16 +169,24 @@ class ValueModel:
         n = len(df)
         p = pd.Period(as_of, freq="M")
         month_index = pd.Series([(p.year - 2015) * 12 + p.month - 1] * n, dtype=float)
-        hpi = pd.Series([self.hpi.get((self.region_hpi.get(r), as_of), np.nan) for r in df["region"]], dtype=float)
+        hpi = pd.Series(
+            [self.hpi.get((self.region_hpi.get(r), as_of), np.nan) for r in df["region"]], dtype=float
+        )
         X = self.m.check(F.value_features(df, pd.Series(list(ratings)), month_index, hpi), "value")
         return np.vstack([b.predict(X) for b in self.m.boosters])
 
     def uplift_pct(self, homes, rating_before, rating_after, as_of: str) -> pd.DataFrame:
-        d = self.predict_log_price(homes, rating_after, as_of) - self.predict_log_price(homes, rating_before, as_of)
+        d = self.predict_log_price(homes, rating_after, as_of) - self.predict_log_price(
+            homes, rating_before, as_of
+        )
         u = (np.exp(d) - 1) * 100
-        return pd.DataFrame({"uplift_pct_low": np.percentile(u, 10, axis=0),
-                             "uplift_pct_mid": np.median(u, axis=0),
-                             "uplift_pct_high": np.percentile(u, 90, axis=0)})
+        return pd.DataFrame(
+            {
+                "uplift_pct_low": np.percentile(u, 10, axis=0),
+                "uplift_pct_mid": np.median(u, axis=0),
+                "uplift_pct_high": np.percentile(u, 90, axis=0),
+            }
+        )
 
 
 @dataclass
@@ -167,9 +197,13 @@ class Models:
     value: ValueModel
 
     @classmethod
-    def load(cls) -> "Models":
+    def load(cls) -> Models:
         return cls(RatingModel(), EnergyModel(), RecommenderModel(), ValueModel())
 
     def versions(self) -> dict[str, str]:
-        return {"rating": self.rating.version, "energy": self.energy.version,
-                "recommender": self.recommender.version, "value": self.value.version}
+        return {
+            "rating": self.rating.version,
+            "energy": self.energy.version,
+            "recommender": self.recommender.version,
+            "value": self.value.version,
+        }

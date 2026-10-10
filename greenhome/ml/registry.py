@@ -5,6 +5,7 @@ Each adapter implements the matching Protocol in greenhome/ml/protocols.py exact
 CleanHome objects to the contract-column frame that greenhome.ml.features was trained on.
 Models are loaded once; every call is batched.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -57,9 +58,17 @@ class RealEnergy:
             raise ValueError("len(homes) != len(packages)")
         eb = [c.energy.electricity_kwh or 0.0 for c in homes]
         gb = [c.energy.gas_kwh or 0.0 for c in homes]
-        out = self._m.predict_after(homes_frame(homes), eb, gb, [frozenset(_val(r) for r in p) for p in packages])
-        return [FuelEnergy(electricity_kwh=float(r.electricity_kwh), gas_kwh=float(r.gas_kwh),
-                           purchased_kwh=float(r.purchased_kwh)) for r in out.itertuples()]
+        out = self._m.predict_after(
+            homes_frame(homes), eb, gb, [frozenset(_val(r) for r in p) for p in packages]
+        )
+        return [
+            FuelEnergy(
+                electricity_kwh=float(r.electricity_kwh),
+                gas_kwh=float(r.gas_kwh),
+                purchased_kwh=float(r.purchased_kwh),
+            )
+            for r in out.itertuples()
+        ]
 
 
 class RealRecommender:
@@ -79,7 +88,9 @@ class RealValue:
         self._m = I.ValueModel()
         self.version = f"value-{self._m.version}"
 
-    def predict_log_price(self, homes: list[CleanHome], ratings: list[EnergyRating], as_of: str) -> np.ndarray:
+    def predict_log_price(
+        self, homes: list[CleanHome], ratings: list[EnergyRating], as_of: str
+    ) -> np.ndarray:
         if not homes:
             return np.empty((len(self._m.m.boosters), 0))
         return self._m.predict_log_price(homes_frame(homes), [_val(r) for r in ratings], as_of[:7])

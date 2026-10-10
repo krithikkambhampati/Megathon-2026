@@ -197,6 +197,6 @@ Median £277k (indexed sales) / £226k (area model).
 | P2 stubs, P3 rating | real median ΔSAP for single-change repeat EPCs: solid wall +11, heat pump +10, cavity +8, solar +8, loft +7, glazing +6, controls +4 |
 | P3 recommender | heat pump has no assessor labels; feasible-rule agreement with assessors 97–100% |
 | P3 value | 618k sales with rating at sale; use `cert_id_at_sale` for features at sale time |
-| P2, P3 kernels | `data_pipeline/kernels_tmp.py` holds temporary copies of `apply_retrofits` / `feasible_set`; swap to Part 2's versions when they land |
+| P2, P3 kernels | the pipeline uses Part 2's `feasible_set` / `apply_retrofits` (vectorised in `data_pipeline/kernels.py`), so "feasible" in the labels is exactly "feasible" in the app |
 | P2 imputation | `config/generated/imputation.yaml`: floor area by type × bedrooms, feature modes by age × type, typical energy |
 | P2 ranking | `config/retrofit_catalogue.yaml` costs: solid wall, glazing, heat pump and controls verified from Energy Saving Trust pages (May–Sep 2026); loft, cavity and solar from secondary sources |

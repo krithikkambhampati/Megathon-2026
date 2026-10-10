@@ -11,6 +11,7 @@ Metrics per retrofit: ROC-AUC, PR-AUC, precision/recall/F1 at the val-tuned thre
 Ranking per certificate (NDCG@3 vs the assessor's own order) on feasible retrofits.
 Baselines: "recommend all feasible" and "popularity by property type" (train recommendation rate).
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -21,16 +22,21 @@ from greenhome.ml import features as F
 from training.common import PRED, PROCESSED, REPORTS, SEED, save_model, splits, train_lgb
 
 MAX_TRAIN = 1_000_000
-LABEL_VALID_FROM = {"air_source_heat_pump": "2025-01-01"}   # label only possible from RdSAP 10 onwards
+LABEL_VALID_FROM = {"air_source_heat_pump": "2025-01-01"}  # label only possible from RdSAP 10 onwards
 
 
 def ndcg_at_k(df: pd.DataFrame, score: str, k: int = 3) -> float:
     """Graded relevance from the assessor order (first recommendation most relevant)."""
     df = df.copy()
-    df["rel"] = np.where(df["assessor_recommended"], 1.0 / df["assessor_order"].astype(float).clip(lower=1), 0.0)
+    df["rel"] = np.where(
+        df["assessor_recommended"], 1.0 / df["assessor_order"].astype(float).clip(lower=1), 0.0
+    )
     df["rank"] = df.groupby("cert_id")[score].rank(ascending=False, method="first")
     df["ideal"] = df.groupby("cert_id")["rel"].rank(ascending=False, method="first")
-    disc = lambda r: 1 / np.log2(r + 1)
+
+    def disc(r):
+        return 1 / np.log2(r + 1)
+
     dcg = (df["rel"] * disc(df["rank"]) * (df["rank"] <= k)).groupby(df["cert_id"]).sum()
     idcg = (df["rel"] * disc(df["ideal"]) * (df["ideal"] <= k)).groupby(df["cert_id"]).sum()
     ok = idcg > 0
@@ -39,6 +45,7 @@ def ndcg_at_k(df: pd.DataFrame, score: str, k: int = 3) -> float:
 
 def main() -> None:
     import argparse
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="", help="comma-separated retrofits to (re)train")
     only = {x for x in ap.parse_args().only.split(",") if x}
@@ -51,8 +58,12 @@ def main() -> None:
 
     metrics, scored = {}, []
     retrofits = [r for r in F.RETROFITS if lab.loc[lab.retrofit == r, "assessor_recommended"].sum() > 0]
-    print("M2 recommender: models for", retrofits, "| no positives (no model):",
-          [r for r in F.RETROFITS if r not in retrofits])
+    print(
+        "M2 recommender: models for",
+        retrofits,
+        "| no positives (no model):",
+        [r for r in F.RETROFITS if r not in retrofits],
+    )
     if only:
         retrofits = [r for r in retrofits if r in only]
     for r in retrofits:
@@ -67,45 +78,82 @@ def main() -> None:
         Xtr, Xva, Xte = (F.recommender_features(certs.loc[x.cert_id].reset_index()) for x in (tr, va, te))
         ytr, yva, yte = (x["assessor_recommended"].astype(int).to_numpy() for x in (tr, va, te))
         print(f" {r}: train {len(tr):,} (pos {ytr.mean():.3f}) / val {len(va):,} / test {len(te):,}")
-        b = train_lgb(Xtr, ytr, Xva, yva, {"objective": "binary", "metric": "auc", "min_data_in_leaf": 200},
-                      rounds=2000)
-        pva, pte = b.predict(Xva, num_iteration=b.best_iteration), b.predict(Xte, num_iteration=b.best_iteration)
+        b = train_lgb(
+            Xtr, ytr, Xva, yva, {"objective": "binary", "metric": "auc", "min_data_in_leaf": 200}, rounds=2000
+        )
+        pva, pte = (
+            b.predict(Xva, num_iteration=b.best_iteration),
+            b.predict(Xte, num_iteration=b.best_iteration),
+        )
         grid = np.linspace(0.05, 0.95, 91)
         thr = float(grid[np.argmax([f1_score(yva, pva >= t) for t in grid])])
         # popularity baseline: train recommendation rate by property type
-        pop = tr.assign(pt=certs.loc[tr.cert_id, "property_type"].to_numpy()).groupby("pt")["assessor_recommended"].mean()
+        pop = (
+            tr.assign(pt=certs.loc[tr.cert_id, "property_type"].to_numpy())
+            .groupby("pt")["assessor_recommended"]
+            .mean()
+        )
         pop_te = certs.loc[te.cert_id, "property_type"].map(pop).fillna(ytr.mean()).to_numpy()
-        m = {"threshold_val_maxF1": thr, "positive_rate_test": float(yte.mean()),
-             "roc_auc": float(roc_auc_score(yte, pte)), "pr_auc": float(average_precision_score(yte, pte)),
-             "precision": float(precision_score(yte, pte >= thr)), "recall": float(recall_score(yte, pte >= thr)),
-             "f1": float(f1_score(yte, pte >= thr)),
-             "baseline_recommend_all_feasible": {"precision": float(yte.mean()), "recall": 1.0,
-                                                 "f1": float(2 * yte.mean() / (1 + yte.mean()))},
-             "baseline_popularity_by_type": {"roc_auc": float(roc_auc_score(yte, pop_te)),
-                                             "pr_auc": float(average_precision_score(yte, pop_te))}}
+        m = {
+            "threshold_val_maxF1": thr,
+            "positive_rate_test": float(yte.mean()),
+            "roc_auc": float(roc_auc_score(yte, pte)),
+            "pr_auc": float(average_precision_score(yte, pte)),
+            "precision": float(precision_score(yte, pte >= thr)),
+            "recall": float(recall_score(yte, pte >= thr)),
+            "f1": float(f1_score(yte, pte >= thr)),
+            "baseline_recommend_all_feasible": {
+                "precision": float(yte.mean()),
+                "recall": 1.0,
+                "f1": float(2 * yte.mean() / (1 + yte.mean())),
+            },
+            "baseline_popularity_by_type": {
+                "roc_auc": float(roc_auc_score(yte, pop_te)),
+                "pr_auc": float(average_precision_score(yte, pop_te)),
+            },
+        }
         metrics[r] = m
-        print(f"   AUC {m['roc_auc']:.3f} (popularity {m['baseline_popularity_by_type']['roc_auc']:.3f}) | "
-              f"F1 {m['f1']:.3f} vs recommend-all {m['baseline_recommend_all_feasible']['f1']:.3f}")
+        print(
+            f"   AUC {m['roc_auc']:.3f} (popularity {m['baseline_popularity_by_type']['roc_auc']:.3f}) | "
+            f"F1 {m['f1']:.3f} vs recommend-all {m['baseline_recommend_all_feasible']['f1']:.3f}"
+        )
         te_out = te[["cert_id", "property_id", "retrofit", "assessor_recommended", "assessor_order"]].copy()
         te_out["p"], te_out["p_popularity"] = pte, pop_te
         scored.append(te_out)
         imp = pd.Series(b.feature_importance("gain"), index=Xtr.columns)
-        save_model(f"recommender/{r}", b, Xtr, [0] * Xtr.shape[1], m,
-                   {"target": "assessor_recommended (EPC recommendations)", "trained_on": "rule-feasible certificates",
-                    "feature_importance_gain": (imp / imp.sum()).round(4).sort_values(ascending=False).to_dict()})
+        save_model(
+            f"recommender/{r}",
+            b,
+            Xtr,
+            [0] * Xtr.shape[1],
+            m,
+            {
+                "target": "assessor_recommended (EPC recommendations)",
+                "trained_on": "rule-feasible certificates",
+                "feature_importance_gain": (imp / imp.sum()).round(4).sort_values(ascending=False).to_dict(),
+            },
+        )
 
     if only:
         print("partial run (--only): NDCG/summary tables not rewritten")
         return
     S = pd.concat(scored)
-    nd = {"model": ndcg_at_k(S, "p"), "popularity_by_type": ndcg_at_k(S, "p_popularity"),
-          "random_order": ndcg_at_k(S.assign(rnd=rng.random(len(S))), "rnd")}
+    nd = {
+        "model": ndcg_at_k(S, "p"),
+        "popularity_by_type": ndcg_at_k(S, "p_popularity"),
+        "random_order": ndcg_at_k(S.assign(rnd=rng.random(len(S))), "rnd"),
+    }
     metrics["ndcg@3_test"] = nd
     print("NDCG@3 (test, vs assessor order):", {k: round(v, 3) for k, v in nd.items()})
     S["predicted_suitability_input"] = S["p"].round(4)
-    S.to_csv(PRED / "recommender_test.csv", index=False)
-    tab = pd.DataFrame({r: {k: v for k, v in m.items() if not isinstance(v, dict)} for r, m in metrics.items()
-                        if r in retrofits}).T
+    S.to_csv(PRED / "recommender_test.csv.gz", index=False)
+    tab = pd.DataFrame(
+        {
+            r: {k: v for k, v in m.items() if not isinstance(v, dict)}
+            for r, m in metrics.items()
+            if r in retrofits
+        }
+    ).T
     tab["popularity_auc"] = [metrics[r]["baseline_popularity_by_type"]["roc_auc"] for r in tab.index]
     tab["recommend_all_f1"] = [metrics[r]["baseline_recommend_all_feasible"]["f1"] for r in tab.index]
     tab.round(3).to_csv(REPORTS / "recommender_metrics.csv")

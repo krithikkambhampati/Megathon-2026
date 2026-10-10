@@ -10,24 +10,29 @@ MAINHEAT_ENERGY_EFF label is "Good" for ~99.6% of gas boilers, so it cannot be u
 recommending improvement 20 ("Replace boiler with new condensing boiler") is direct evidence that
 the existing gas boiler is non-condensing, so we use it to set heating_system = gas_boiler_old.
 """
+
 from __future__ import annotations
 
 import pandas as pd
 
 ID_TO_RETROFIT = {
-    "5": "loft_insulation",              # Increase loft insulation to 270 mm
-    "46": "loft_insulation",             # Room-in-roof insulation
-    "6": "cavity_wall_insulation",       # Cavity wall insulation
-    "7": "solid_wall_insulation",        # 50 mm internal or external wall insulation
-    "8": "double_glazing",               # Replace single glazed windows with low-E double glazing
-    "56": "double_glazing",              # Replacement glazing units
-    "11": "smart_thermostat", "12": "smart_thermostat", "13": "smart_thermostat",
-    "14": "smart_thermostat", "15": "smart_thermostat", "17": "smart_thermostat",
-    "18": "smart_thermostat",            # Upgrade heating controls (variants)
-    "16": "smart_thermostat",            # Time and temperature zone control
-    "34": "solar_pv",                    # Solar photovoltaic panels
+    "5": "loft_insulation",  # Increase loft insulation to 270 mm
+    "46": "loft_insulation",  # Room-in-roof insulation
+    "6": "cavity_wall_insulation",  # Cavity wall insulation
+    "7": "solid_wall_insulation",  # 50 mm internal or external wall insulation
+    "8": "double_glazing",  # Replace single glazed windows with low-E double glazing
+    "56": "double_glazing",  # Replacement glazing units
+    "11": "smart_thermostat",
+    "12": "smart_thermostat",
+    "13": "smart_thermostat",
+    "14": "smart_thermostat",
+    "15": "smart_thermostat",
+    "17": "smart_thermostat",
+    "18": "smart_thermostat",  # Upgrade heating controls (variants)
+    "16": "smart_thermostat",  # Time and temperature zone control
+    "34": "solar_pv",  # Solar photovoltaic panels
 }
-OLD_BOILER_IDS = {"20"}                  # Replace boiler with new condensing boiler
+OLD_BOILER_IDS = {"20"}  # Replace boiler with new condensing boiler
 TEXT_FALLBACK = [
     (r"air source heat pump|ground source heat pump|heat pump", "air_source_heat_pump"),
     (r"solar photovoltaic|\bpv\b", "solar_pv"),
@@ -57,8 +62,13 @@ def build_labels(rec: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     rec = rec.copy()
     rec["retrofit"] = map_retrofit(rec)
     rec["order"] = pd.to_numeric(rec["IMPROVEMENT_ITEM"], errors="coerce")
-    old_boiler = rec.loc[rec["IMPROVEMENT_ID"].astype("string").isin(OLD_BOILER_IDS), "CERT_ID"].drop_duplicates()
-    lab = (rec.dropna(subset=["retrofit"]).sort_values("order")
-              .groupby(["CERT_ID", "retrofit"], as_index=False)
-              .agg(assessor_order=("order", "min"), indicative_cost=("INDICATIVE_COST", "first")))
+    old_boiler = rec.loc[
+        rec["IMPROVEMENT_ID"].astype("string").isin(OLD_BOILER_IDS), "CERT_ID"
+    ].drop_duplicates()
+    lab = (
+        rec.dropna(subset=["retrofit"])
+        .sort_values("order")
+        .groupby(["CERT_ID", "retrofit"], as_index=False)
+        .agg(assessor_order=("order", "min"), indicative_cost=("INDICATIVE_COST", "first"))
+    )
     return lab, old_boiler

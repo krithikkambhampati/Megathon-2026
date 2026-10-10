@@ -11,6 +11,7 @@ Outputs (git-ignored, contain addresses):
   data/interim/epc_certificates.parquet
   data/interim/epc_recommendations.parquet
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -30,18 +31,60 @@ CFG = yaml.safe_load((ROOT / "config" / "data_pipeline.yaml").read_text())
 TARGET_LAS = set(CFG["target_local_authorities"])
 
 CERT_COLS = [
-    "CERT_ID", "UPRN", "ADDRESS1", "ADDRESS2", "ADDRESS3", "ADDRESS", "POSTCODE", "LOCAL_AUTHORITY",
-    "LODGEMENT_DATE", "INSPECTION_DATE", "TRANSACTION_TYPE", "TENURE",
-    "CURRENT_ENERGY_RATING", "CURRENT_ENERGY_EFFICIENCY", "POTENTIAL_ENERGY_RATING", "POTENTIAL_ENERGY_EFFICIENCY",
-    "PROPERTY_TYPE", "BUILT_FORM", "CONSTRUCTION_AGE_BAND", "TOTAL_FLOOR_AREA", "NUMBER_HABITABLE_ROOMS",
-    "NUMBER_HEATED_ROOMS", "MAIN_FUEL", "MAINS_GAS_FLAG", "MAINHEAT_DESCRIPTION", "MAINHEAT_ENERGY_EFF",
-    "MAINHEATCONT_DESCRIPTION", "MAINHEATC_ENERGY_EFF", "SECONDHEAT_DESCRIPTION", "WALLS_DESCRIPTION",
-    "WALLS_ENERGY_EFF", "ROOF_DESCRIPTION", "ROOF_ENERGY_EFF", "WINDOWS_DESCRIPTION", "WINDOWS_ENERGY_EFF",
-    "GLAZED_TYPE", "MULTI_GLAZE_PROPORTION", "HOTWATER_DESCRIPTION", "FLOOR_DESCRIPTION", "LIGHTING_DESCRIPTION",
-    "PHOTO_SUPPLY", "SOLAR_WATER_HEATING_FLAG", "WIND_TURBINE_COUNT", "FLOOR_LEVEL", "FLAT_TOP_STOREY",
-    "FLAT_STOREY_COUNT", "ENERGY_TARIFF", "MECHANICAL_VENTILATION", "REPORT_TYPE",
+    "CERT_ID",
+    "UPRN",
+    "ADDRESS1",
+    "ADDRESS2",
+    "ADDRESS3",
+    "ADDRESS",
+    "POSTCODE",
+    "LOCAL_AUTHORITY",
+    "LODGEMENT_DATE",
+    "INSPECTION_DATE",
+    "TRANSACTION_TYPE",
+    "TENURE",
+    "CURRENT_ENERGY_RATING",
+    "CURRENT_ENERGY_EFFICIENCY",
+    "POTENTIAL_ENERGY_RATING",
+    "POTENTIAL_ENERGY_EFFICIENCY",
+    "PROPERTY_TYPE",
+    "BUILT_FORM",
+    "CONSTRUCTION_AGE_BAND",
+    "TOTAL_FLOOR_AREA",
+    "NUMBER_HABITABLE_ROOMS",
+    "NUMBER_HEATED_ROOMS",
+    "MAIN_FUEL",
+    "MAINS_GAS_FLAG",
+    "MAINHEAT_DESCRIPTION",
+    "MAINHEAT_ENERGY_EFF",
+    "MAINHEATCONT_DESCRIPTION",
+    "MAINHEATC_ENERGY_EFF",
+    "SECONDHEAT_DESCRIPTION",
+    "WALLS_DESCRIPTION",
+    "WALLS_ENERGY_EFF",
+    "ROOF_DESCRIPTION",
+    "ROOF_ENERGY_EFF",
+    "WINDOWS_DESCRIPTION",
+    "WINDOWS_ENERGY_EFF",
+    "GLAZED_TYPE",
+    "MULTI_GLAZE_PROPORTION",
+    "HOTWATER_DESCRIPTION",
+    "FLOOR_DESCRIPTION",
+    "LIGHTING_DESCRIPTION",
+    "PHOTO_SUPPLY",
+    "SOLAR_WATER_HEATING_FLAG",
+    "WIND_TURBINE_COUNT",
+    "FLOOR_LEVEL",
+    "FLAT_TOP_STOREY",
+    "FLAT_STOREY_COUNT",
+    "ENERGY_TARIFF",
+    "MECHANICAL_VENTILATION",
+    "REPORT_TYPE",
     # SAP-derived outputs: kept in interim ONLY for the data report; never model features (leakage)
-    "ENERGY_CONSUMPTION_CURRENT", "CO2_EMISSIONS_CURRENT", "HEATING_COST_CURRENT", "HOT_WATER_COST_CURRENT",
+    "ENERGY_CONSUMPTION_CURRENT",
+    "CO2_EMISSIONS_CURRENT",
+    "HEATING_COST_CURRENT",
+    "HOT_WATER_COST_CURRENT",
     "LIGHTING_COST_CURRENT",
 ]
 # the long IMPROVEMENT_DESCR_TEXT paragraph is not needed (summary text + id identify the measure)
@@ -58,6 +101,7 @@ def iter_csv_files(only: str | None = None):
     Zip members are unpacked to a temp file, filtered, then deleted, so disk use stays bounded by
     the largest single member (the national zip is ~8 GB compressed, ~30+ GB unpacked).
     """
+
     def wanted(name: str) -> bool:
         n = name.lower()
         k = "rec" if "recommendation" in n else "cert"
@@ -81,8 +125,9 @@ def iter_csv_files(only: str | None = None):
 
 
 def scan(path: Path) -> pl.LazyFrame:
-    lf = pl.scan_csv(path, infer_schema_length=0, encoding="utf8-lossy", ignore_errors=True,
-                     truncate_ragged_lines=True)
+    lf = pl.scan_csv(
+        path, infer_schema_length=0, encoding="utf8-lossy", ignore_errors=True, truncate_ragged_lines=True
+    )
     names = lf.collect_schema().names()
     lf = lf.rename({c: norm_col(c) for c in names})
     cols = [norm_col(c) for c in names]
@@ -119,7 +164,9 @@ def main() -> None:
             out = CHUNKS / f"cert_{k:04d}.parquet"
             select_cols(lf, CERT_COLS).filter(pl.col("LOCAL_AUTHORITY").is_in(TARGET_LAS)).sink_parquet(out)
             n_cert += 1
-            print(f"cert {name}: {pl.scan_parquet(out).select(pl.len()).collect().item():,} rows in target LAs")
+            print(
+                f"cert {name}: {pl.scan_parquet(out).select(pl.len()).collect().item():,} rows in target LAs"
+            )
         if cleanup:
             path.unlink()
     if not n_cert:

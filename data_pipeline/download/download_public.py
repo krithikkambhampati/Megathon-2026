@@ -6,6 +6,7 @@ the data report can cite exactly what was used.
 
 Usage:  python -m data_pipeline.download.download_public [--only ppd,need]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -13,7 +14,7 @@ import hashlib
 import json
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import requests
@@ -37,8 +38,9 @@ def fetch(url: str, dest: Path, retries: int = 3) -> None:
     tmp = dest.with_suffix(dest.suffix + ".part")
     for attempt in range(1, retries + 1):
         try:
-            with requests.get(url, stream=True, timeout=120,
-                              headers={"User-Agent": "greenhome-megathon/1.0"}) as r:
+            with requests.get(
+                url, stream=True, timeout=120, headers={"User-Agent": "greenhome-megathon/1.0"}
+            ) as r:
                 r.raise_for_status()
                 with tmp.open("wb") as f:
                     for chunk in r.iter_content(1 << 20):
@@ -77,7 +79,7 @@ def main() -> None:
                 "url": item["url"],
                 "bytes": dest.stat().st_size,
                 "sha256": sha256(dest),
-                "accessed_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                "accessed_at": datetime.now(UTC).isoformat(timespec="seconds"),
                 "licence": spec.get("licence", ""),
             }
             LOG.write_text(json.dumps(log, indent=2))

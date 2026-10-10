@@ -12,13 +12,14 @@ For a package S applied to home p (README P1.9):
        adds generation, and self-consumption cuts grid imports; underlying demand is unchanged.
 Cooking gas stays after a heat pump (the gas meter remains), so gas rarely reaches exactly 0.
 """
+
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 
 from data_pipeline import physics as ph
-from data_pipeline.kernels_tmp import apply_retrofits
+from data_pipeline.kernels import apply_frame as apply_retrofits
 
 SPACE_HEAT_RETROFITS = {
     "loft_insulation": "roof_insulation",
@@ -45,7 +46,7 @@ def simulate(p: pd.DataFrame, h: pd.DataFrame, cal_sh, cal_el, package: frozense
     for r in package & SPACE_HEAT_RETROFITS.keys():
         keep *= 1.0 - effect_fraction(p, h, r)
     q = apply_retrofits(p, package)
-    eu1 = ph.end_uses(q, h, cal_sh, cal_el)      # recomputed only for PV generation
+    eu1 = ph.end_uses(q, h, cal_sh, cal_el)  # recomputed only for PV generation
     eu1["space_heat"] = eu0["space_heat"].to_numpy() * keep
     eu1["hot_water"] = eu0["hot_water"].to_numpy()
     eu1["appliances"] = eu0["appliances"].to_numpy()

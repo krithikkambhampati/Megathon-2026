@@ -15,6 +15,7 @@ NEED's cell targets are sample-size-weighted means of its finer cell medians/qua
 approximation). We iterate multiplicative updates until each cell's simulated median is within 2%
 of target, and report the fit plus how well our dispersion (IQR) matches NEED.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -27,14 +28,34 @@ from data_pipeline import physics as ph
 ROOT = Path(__file__).resolve().parents[1]
 REF = ROOT / "data" / "processed" / "reference"
 
-AGE_GROUP_OURS = {"pre_1900": "pre_1945", "1900_1929": "pre_1945", "1930_1949": "pre_1945",
-                  "1950_1966": "1945_1982", "1967_1982": "1945_1982",
-                  "1983_1995": "post_1982", "1996_2006": "post_1982", "2007_onwards": "post_1982"}
-AGE_GROUP_NEED = {"Pre 1919": "pre_1945", "1919 - 1944": "pre_1945", "1945 - 1964": "1945_1982",
-                  "1965 - 1982": "1945_1982", "1983 - 1992": "post_1982", "1993 - 1999": "post_1982",
-                  "2000 - 2011": "post_1982", "2012 onwards": "post_1982"}
-PTYPE_GROUP = {"detached": "detached", "semi_detached": "semi_detached", "terraced": "terraced",
-               "bungalow": "bungalow", "flat": "flat", "maisonette": "flat"}
+AGE_GROUP_OURS = {
+    "pre_1900": "pre_1945",
+    "1900_1929": "pre_1945",
+    "1930_1949": "pre_1945",
+    "1950_1966": "1945_1982",
+    "1967_1982": "1945_1982",
+    "1983_1995": "post_1982",
+    "1996_2006": "post_1982",
+    "2007_onwards": "post_1982",
+}
+AGE_GROUP_NEED = {
+    "Pre 1919": "pre_1945",
+    "1919 - 1944": "pre_1945",
+    "1945 - 1964": "1945_1982",
+    "1965 - 1982": "1945_1982",
+    "1983 - 1992": "post_1982",
+    "1993 - 1999": "post_1982",
+    "2000 - 2011": "post_1982",
+    "2012 onwards": "post_1982",
+}
+PTYPE_GROUP = {
+    "detached": "detached",
+    "semi_detached": "semi_detached",
+    "terraced": "terraced",
+    "bungalow": "bungalow",
+    "flat": "flat",
+    "maisonette": "flat",
+}
 
 
 def beds_group(b: pd.Series) -> pd.Series:
@@ -54,17 +75,28 @@ def need_targets() -> tuple[pd.DataFrame, pd.DataFrame]:
         return pd.Series({c: np.average(g[c], weights=w) for c in cols} | {"n_need": w.sum()})
 
     gas_rows = m[m["gas_present"] & (m["electricity_type"] == "Standard")]
-    gas = gas_rows.groupby(["ptype", "age_group"]).apply(
-        wavg, cols=["gas_q25", "gas_median", "gas_q75"], include_groups=False).reset_index()
-    el = gas_rows.groupby(["ptype", "beds"]).apply(
-        wavg, cols=["elec_q25", "elec_median", "elec_q75"], include_groups=False).reset_index()
+    gas = (
+        gas_rows.groupby(["ptype", "age_group"])
+        .apply(wavg, cols=["gas_q25", "gas_median", "gas_q75"], include_groups=False)
+        .reset_index()
+    )
+    el = (
+        gas_rows.groupby(["ptype", "beds"])
+        .apply(wavg, cols=["elec_q25", "elec_median", "elec_q75"], include_groups=False)
+        .reset_index()
+    )
     return gas, el
 
 
 def need_band_targets() -> pd.Series:
     h = pd.read_parquet(REF / "need_headline.parquet")
-    t = h[(h.fuel == "gas_per_m2") & (h.dimension == "epc_band") & (h.metric == "median")
-          & (h.year == h.year.max()) & h.category.isin(list("ABCDEFG"))]
+    t = h[
+        (h.fuel == "gas_per_m2")
+        & (h.dimension == "epc_band")
+        & (h.metric == "median")
+        & (h.year == h.year.max())
+        & h.category.isin(list("ABCDEFG"))
+    ]
     return t.set_index("category")["value"]
 
 
@@ -104,7 +136,11 @@ def calibrate(p: pd.DataFrame, h: pd.DataFrame, iters: int = 12, tol: float = 0.
         sim_gas = fuel.loc[gas_homes, "gas_kwh"].groupby(gas_cell[gas_homes]).median()
         # NEED electricity for gas homes = appliances + lighting (+ any PV effect, small)
         sim_el = fuel.loc[gas_homes, "electricity_kwh"].groupby(el_cell[gas_homes]).median()
-        sim_band = (fuel.loc[gas_houses, "gas_kwh"] / p.loc[gas_houses, "floor_area_m2"]).groupby(band[gas_houses]).median()
+        sim_band = (
+            (fuel.loc[gas_houses, "gas_kwh"] / p.loc[gas_houses, "floor_area_m2"])
+            .groupby(band[gas_houses])
+            .median()
+        )
         n_band = band[gas_houses].value_counts()
         r_gas = (gas_target / sim_gas).dropna()
         r_el = (el_target / sim_el).dropna()
@@ -120,27 +156,53 @@ def calibrate(p: pd.DataFrame, h: pd.DataFrame, iters: int = 12, tol: float = 0.
         if worst < tol:
             break
         # gas = heat/eff + cooking: scaling space heat moves gas less than 1:1 -> damped update
-        k_band.loc[r_band.index] *= r_band ** 1.3
+        k_band.loc[r_band.index] *= r_band**1.3
         k_band = _fill_small_bands(k_band, big)
-        k_sh.loc[r_gas.index] *= r_gas ** 1.3
+        k_sh.loc[r_gas.index] *= r_gas**1.3
         k_el.loc[r_el.index] *= r_el
 
     cal_sh = gas_cell.map(k_sh).fillna(k_sh.median()) * band.map(k_band).fillna(1.0)
     cal_el = el_cell.map(k_el).fillna(k_el.median())
     fuel = ph.delivered(p, h, ph.end_uses(p, h, cal_sh, cal_el))
     g = fuel.loc[gas_homes, "gas_kwh"].groupby(gas_cell[gas_homes])
-    rep_gas = pd.DataFrame({"sim_q25": g.quantile(0.25), "sim_median": g.median(), "sim_q75": g.quantile(0.75),
-                            "n_sim": g.size()}).join(gas_t.set_index("cell")[["gas_q25", "gas_median", "gas_q75", "n_need"]])
+    rep_gas = pd.DataFrame(
+        {
+            "sim_q25": g.quantile(0.25),
+            "sim_median": g.median(),
+            "sim_q75": g.quantile(0.75),
+            "n_sim": g.size(),
+        }
+    ).join(gas_t.set_index("cell")[["gas_q25", "gas_median", "gas_q75", "n_need"]])
     e = fuel.loc[gas_homes, "electricity_kwh"].groupby(el_cell[gas_homes])
-    rep_el = pd.DataFrame({"sim_q25": e.quantile(0.25), "sim_median": e.median(), "sim_q75": e.quantile(0.75),
-                           "n_sim": e.size()}).join(el_t.set_index("cell")[["elec_q25", "elec_median", "elec_q75", "n_need"]])
-    sb = (fuel.loc[gas_houses, "gas_kwh"] / p.loc[gas_houses, "floor_area_m2"]).groupby(band[gas_houses]).median()
-    rep_band = pd.DataFrame({"sim_gas_per_m2": sb, "need_gas_per_m2": band_t,
-                             "n_sim": band[gas_houses].value_counts(), "prebound_factor": k_band})
+    rep_el = pd.DataFrame(
+        {
+            "sim_q25": e.quantile(0.25),
+            "sim_median": e.median(),
+            "sim_q75": e.quantile(0.75),
+            "n_sim": e.size(),
+        }
+    ).join(el_t.set_index("cell")[["elec_q25", "elec_median", "elec_q75", "n_need"]])
+    sb = (
+        (fuel.loc[gas_houses, "gas_kwh"] / p.loc[gas_houses, "floor_area_m2"])
+        .groupby(band[gas_houses])
+        .median()
+    )
+    rep_band = pd.DataFrame(
+        {
+            "sim_gas_per_m2": sb,
+            "need_gas_per_m2": band_t,
+            "n_sim": band[gas_houses].value_counts(),
+            "prebound_factor": k_band,
+        }
+    )
     rep_band["sim_relative_to_D"] = rep_band["sim_gas_per_m2"] / rep_band.loc["D", "sim_gas_per_m2"]
     rep_band["need_relative_to_D"] = rep_band["need_gas_per_m2"] / rep_band.loc["D", "need_gas_per_m2"]
     rep_gas.attrs["band"] = rep_band
-    factors = pd.concat([k_sh.rename("factor").to_frame().assign(kind="space_heat"),
-                         k_el.rename("factor").to_frame().assign(kind="appliances"),
-                         k_band.rename("factor").to_frame().assign(kind="prebound_band")])
+    factors = pd.concat(
+        [
+            k_sh.rename("factor").to_frame().assign(kind="space_heat"),
+            k_el.rename("factor").to_frame().assign(kind="appliances"),
+            k_band.rename("factor").to_frame().assign(kind="prebound_band"),
+        ]
+    )
     return cal_sh, cal_el, rep_gas, rep_el, factors

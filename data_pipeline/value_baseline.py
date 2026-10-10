@@ -8,6 +8,7 @@ a sale price, and it is kept separate from sales_history (PS2 section 9):
 HPI type: flat/maisonette -> F, terraced -> T, semi_detached -> S, detached/bungalow -> D;
 falls back to the LA all-types index when the type index is missing.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -22,8 +23,14 @@ PROCESSED = ROOT / "data" / "processed"
 REF = PROCESSED / "reference"
 REPORTS = ROOT / "reports"
 CFG = yaml.safe_load((ROOT / "config" / "data_pipeline.yaml").read_text())
-HPI_TYPE = {"flat": "F", "maisonette": "F", "terraced": "T", "semi_detached": "S",
-            "detached": "D", "bungalow": "D"}
+HPI_TYPE = {
+    "flat": "F",
+    "maisonette": "F",
+    "terraced": "T",
+    "semi_detached": "S",
+    "detached": "D",
+    "bungalow": "D",
+}
 
 
 def hpi_lookup() -> pd.Series:
@@ -33,9 +40,11 @@ def hpi_lookup() -> pd.Series:
 
 def index_factor(hpi: pd.Series, la: pd.Series, t: pd.Series, month: pd.Series, as_of: str) -> pd.Series:
     """HPI(as_of)/HPI(month) per row; type-specific with all-types fallback."""
+
     def get(code, typ, m):
-        keys = list(zip(code, typ, m))
+        keys = list(zip(code, typ, m, strict=False))
         return pd.Series(hpi.reindex(keys).to_numpy(), index=la.index)
+
     now_t, then_t = get(la, t, [as_of] * len(la)), get(la, t, month)
     now_a, then_a = get(la, ["ALL"] * len(la), [as_of] * len(la)), get(la, ["ALL"] * len(la), month)
     f = now_t / then_t
@@ -48,8 +57,10 @@ def main() -> None:
     props = pd.read_parquet(INTERIM / "properties_pre_value.parquet")
     sales = pd.read_parquet(PROCESSED / "sales_history.parquet")
     splits = pd.read_parquet(PROCESSED / "splits.parquet")
-    certs = pd.read_parquet(PROCESSED / "epc_certificates_model.parquet",
-                            columns=["property_id", "local_authority_code", "property_type", "floor_area_m2"])
+    certs = pd.read_parquet(
+        PROCESSED / "epc_certificates_model.parquet",
+        columns=["property_id", "local_authority_code", "property_type", "floor_area_m2"],
+    )
     certs = certs.drop_duplicates("property_id", keep="last")
 
     # index every real sale to as_of
@@ -66,16 +77,21 @@ def main() -> None:
     per_m2 = train.groupby(["local_authority_code", "property_type"])["indexed_per_m2"].median()
 
     p = props.merge(last[["property_id", "indexed_price"]], on="property_id", how="left")
-    model_val = p.set_index(["local_authority_code", "property_type"]).index.map(per_m2).to_numpy() \
+    model_val = (
+        p.set_index(["local_authority_code", "property_type"]).index.map(per_m2).to_numpy()
         * p["floor_area_m2"].to_numpy()
+    )
     p["current_value_gbp"] = np.where(p["indexed_price"].notna(), p["indexed_price"], model_val).round(-2)
-    p["current_value_source"] = np.where(p["indexed_price"].notna(), "ppd_indexed",
-                                         np.where(np.isfinite(model_val), "area_model", None))
+    p["current_value_source"] = np.where(
+        p["indexed_price"].notna(), "ppd_indexed", np.where(np.isfinite(model_val), "area_model", None)
+    )
     p = p.drop(columns=["indexed_price"])
     PROCESSED.mkdir(parents=True, exist_ok=True)
     p.to_parquet(PROCESSED / "properties.parquet", index=False)
 
-    rep = p.groupby("current_value_source", dropna=False)["current_value_gbp"].describe(percentiles=[.1, .5, .9])
+    rep = p.groupby("current_value_source", dropna=False)["current_value_gbp"].describe(
+        percentiles=[0.1, 0.5, 0.9]
+    )
     rep.to_csv(REPORTS / "current_value_summary.csv")
     print(rep.round(0).to_string())
     print("sales indexed with a valid HPI factor:", f"{s['factor'].notna().mean():.1%}")

@@ -12,6 +12,7 @@ put EPC_API_TOKEN=... in Megathon-2026/.env (git-ignored). The token is never pr
 Usage: python -m data_pipeline.download.epc_bulk [--workers 16]
 Output: data/raw/epc/domestic-csv.zip
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,11 +57,16 @@ class SignedUrl:
         with self.lock:
             if stale is not None and self.url != stale:
                 return
-            r = requests.get(API, allow_redirects=False, timeout=180,
-                             headers={"Authorization": f"Bearer {self.token}", "Accept": "application/json"})
+            r = requests.get(
+                API,
+                allow_redirects=False,
+                timeout=180,
+                headers={"Authorization": f"Bearer {self.token}", "Accept": "application/json"},
+            )
             if r.status_code != 302 or "location" not in r.headers:
-                raise SystemExit(f"API did not return a download link (HTTP {r.status_code}). "
-                                 "Check the token is current.")
+                raise SystemExit(
+                    f"API did not return a download link (HTTP {r.status_code}). Check the token is current."
+                )
             self.url = r.headers["location"]
 
 
@@ -88,10 +94,10 @@ def fetch_chunk(src: SignedUrl, i: int, start: int, end: int) -> int:
                 for b in r.iter_content(1 << 20):
                     f.write(b)
             if tmp.stat().st_size != want:
-                raise IOError(f"chunk {i}: got {tmp.stat().st_size} bytes, expected {want}")
+                raise OSError(f"chunk {i}: got {tmp.stat().st_size} bytes, expected {want}")
             tmp.rename(part)
             return want
-        except (requests.RequestException, IOError) as e:
+        except (OSError, requests.RequestException) as e:
             print(f"  chunk {i} attempt {attempt + 1}: {e}")
             time.sleep(3 * (attempt + 1))
     raise RuntimeError(f"chunk {i} failed repeatedly")

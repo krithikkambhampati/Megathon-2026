@@ -14,9 +14,10 @@ python -m training.model_sizes           # reports/model_sizes.csv
 python -m training.evaluation_report     # reports/evaluation.md
 ```
 CPU only (tested on 16 cores / 15 GB RAM). LightGBM 4.7, seed 42, deterministic mode.
-Trained artefacts stay on the build machine (`models/`, git-ignored). Each model folder holds
-`model.txt` (or `model_XX.txt`), `features.json` (ordered columns, categories, monotone constraints) and
-`manifest.json` (version, metrics, data manifest timestamp).
+Trained models are committed (deliverable C) as gzip-compressed LightGBM text models: each folder holds
+`model.txt.gz` (or `model_XX.txt.gz`), `features.json` (ordered columns, categories, monotone constraints) and
+`manifest.json` (version, metrics, data manifest timestamp). Held-out test predictions (deliverable I) are in
+`outputs/test_predictions/*.csv.gz`. `python -m training.compress_artifacts` converts plain artefacts.
 
 ## Use from the engine
 `config/global.yaml: models: real` makes `Engine.from_config()` call
@@ -67,12 +68,17 @@ saved column list is checked against `greenhome/ml/features.py`, so a feature mi
 - **Heat pumps in M2.** EPC software recommends heat pumps only from RdSAP 10 (2025). The model is trained on
   2025+ certificates only and has learned that assessors recommend heat pumps for electrically heated homes.
 - **Smart controls.** EPC has almost no "smart thermostat" level, so for model features it counts as zone control.
-- **Value is associational.** M3 is a hedonic model; the uplift is a range from 20 bootstrap members and is
-  presented as indicative, never causal. Location is region-level because that is what the app receives.
+- **Value is associational, and a retrofit acts only through the rating.** M3 sees structure, location,
+  rating and market conditions only, never retrofit-changeable fields (heating system, insulation, glazing,
+  controls, renewables). Seen directly, those carried confounded premiums from sales data (heat-pump homes are
+  newer and pricier), which made e.g. a C->C package show +10% value. The uplift is a range from 20 bootstrap
+  members and is presented as indicative, never causal. Location is region-level because that is what the app
+  receives.
 
 ## Features (`greenhome/ml/features.py`)
 Home: property type, region, wall type, roof type, heating system, main fuel (not in M4), age (ordinal), floor
 area (+ log), bedrooms, ordinals for roof/wall insulation, glazing, controls, renewables, roof exposed, gas
 connected, regional HDD factor and PV yield.
 M1 adds: log baseline electricity and gas, electricity share, baseline intensity, 7 retrofit flags.
-M2 adds: current rating. M3 adds: rating, months since 2015-01, regional UK HPI at the valuation month.
+M2 adds: current rating. M3 drops retrofit-changeable fields and adds: rating, months since 2015-01,
+regional UK HPI at the valuation month.
