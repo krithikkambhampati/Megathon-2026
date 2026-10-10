@@ -1,0 +1,132 @@
+# Retrofit catalogue (Part 1 authors the values; Part 2 owns the schema; README section 7.4).
+# This catalogue takes precedence over the PS2 illustrative table, as PS2 section 4 allows.
+#
+# Field meanings
+#   stage              ordering stage: fabric -> glazing -> controls -> heating -> generation
+#   applies_to         which end use the effect acts on in the simulator (Part 1 physics.py)
+#   effect_range_frac  [low, high] fractional REDUCTION of that end use, keyed by the home's
+#                      STARTING state; a per-home draw within the range is a hidden simulator factor
+#   cost_gbp           indicative installed cost range for a typical semi-detached home (scaled by
+#                      floor area in the engine where noted), before grants
+#   observed_need      gas saving actually observed in NEED for real installs (performance-gap check)
+#   source_status      verified_cost = cost read directly from the official EST page; secondary = official
+#                      figure quoted by a secondary source; engineering = our documented engineering assumption
+#
+# Sources (accessed 2026-10-10):
+#   PS2   Lloyds Megathon PS2 brief, section 4 illustrative impacts
+#   EST   Energy Saving Trust advice pages (figures quoted via MoneySuperMarket/ExpertSure/E.ON Next 2025-26)
+#   NEED15 DECC NEED summary of analysis 2015 (observed gas savings, 2011/2012 installs)
+#   NEED21 BEIS NEED report 2021 (persistence of savings)
+#   EoH   Energy Systems Catapult, Electrification of Heat demonstration project (median ASHP SPF 2.80)
+#   BUS   Boiler Upgrade Scheme (Ofgem/DESNZ): GBP 7,500 ASHP grant, England & Wales
+#   DESNZ_PV  DESNZ solar PV cost data 2024/25 (median 4 kWp domestic system ~GBP 7,500)
+#   EST_SWI   EST "Solid wall insulation" page, updated 18 Jun 2026 (read 2026-10-10): internal ~GBP 12,000,
+#             external ~GBP 15,000; ~33% of heat lost in uninsulated homes escapes through walls
+#   EST_WIN   EST "Energy efficient windows and doors", updated 20 May 2026: A-rated windows for a
+#             semi ~GBP 4,800; single -> A-rated double glazing saves ~GBP 85/yr in GB
+#   EST_ASHP  EST "Air source heat pumps", updated 23 Sep 2026: typical install ~GBP 12,000; BUS GBP 7,500
+#   EST_CTRL  EST "Heating controls" (/advice/thermostats-and-heating-controls/), updated 28 Sep 2026:
+#             programmer + thermostat + TRVs from none ~GBP 600; TRVs added to existing ~GBP 370;
+#             installing and using controls well saves ~GBP 100/yr in GB
+
+- retrofit: loft_insulation
+  stage: fabric
+  applies_to: space_heating
+  effect_range_frac: {none: [0.15, 0.20], low: [0.08, 0.12], medium: [0.02, 0.05]}
+  cost_gbp: [400, 1000]
+  cost_scales_with_floor_area: true
+  lifetime_years: 40
+  prerequisites: []
+  soft_after: []
+  observed_need: {gas_saving_frac: [0.026, 0.028], source: "NEED15"}
+  source: "PS2 (12-18% of space-heating demand, overall); EST via secondary (semi ~GBP 825-930 for 270mm; top-ups GBP 400-900)"
+  source_status: secondary
+  notes: "Starting-state ranges bracket the PS2 12-18% figure: none->full gets the upper end, top-ups much less."
+
+- retrofit: cavity_wall_insulation
+  stage: fabric
+  applies_to: space_heating
+  effect_range_frac: {none: [0.15, 0.25], partial: [0.06, 0.10]}
+  cost_gbp: [1800, 4600]
+  cost_scales_with_floor_area: true
+  lifetime_years: 40
+  prerequisites: []
+  soft_after: []
+  observed_need: {gas_saving_frac: [0.084, 0.092], source: "NEED15; 10.5% in Hamilton et al. 2016, Energy Efficiency, doi:10.1007/s12053-015-9418-3"}
+  source: "EST via secondary (semi ~GBP 2,700, detached ~GBP 4,600); engineering range for unfilled cavity"
+  source_status: secondary
+
+- retrofit: solid_wall_insulation
+  stage: fabric
+  applies_to: space_heating
+  effect_range_frac: {none: [0.20, 0.30], partial: [0.08, 0.12]}
+  cost_gbp: [12000, 15000]        # EST_SWI typical: internal ~12k, external ~15k (semi)
+  cost_scales_with_floor_area: true
+  lifetime_years: 36
+  prerequisites: []
+  soft_after: []
+  observed_need: null
+  source: "EST_SWI (internal GBP 12,000 / external GBP 15,000; walls ~33% of heat loss); effect range is our engineering assumption"
+  source_status: verified_cost
+  notes: "Internal insulation only for listed/conservation homes (feasibility rule, Part 2)."
+
+- retrofit: double_glazing
+  stage: glazing
+  applies_to: space_heating
+  effect_range_frac: {single: [0.08, 0.12], partial_double: [0.03, 0.06], secondary: [0.02, 0.04]}
+  cost_gbp: [3800, 6000]          # EST_WIN typical semi GBP 4,800, range widened for house size
+  cost_scales_with_floor_area: true
+  lifetime_years: 25
+  prerequisites: []
+  soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation]
+  observed_need: null
+  source: "PS2 (8-12% of space-heating demand); EST_WIN (semi GBP 4,800; saves ~GBP 85/yr from all-single glazing)"
+  source_status: verified_cost
+
+- retrofit: smart_thermostat
+  stage: controls
+  applies_to: space_heating
+  effect_range_frac: {none: [0.08, 0.10], timer_only: [0.06, 0.09], programmer_thermostat: [0.05, 0.07],
+                      programmer_thermostat_trvs: [0.03, 0.05]}
+  cost_gbp: [370, 600]            # EST_CTRL: TRV top-up ~370, full controls from none ~600
+  cost_scales_with_floor_area: false
+  lifetime_years: 12
+  prerequisites: []
+  soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation, double_glazing]
+  observed_need: null
+  source: "PS2 (5-10% of heating energy use); EST_CTRL (GBP 370-600; ~GBP 100/yr). EST gives no standalone smart-thermostat price, so the retrofit is costed as a full controls upgrade"
+  source_status: verified_cost
+
+- retrofit: air_source_heat_pump
+  stage: heating
+  applies_to: heat_supply          # replaces the heating appliance; moves space heat + hot water to electricity
+  scop_range: [2.4, 3.2]           # EoH median SPF 2.80 (cold-day median 2.44); lower end for poor fabric
+  scop_poor_fabric_penalty: 0.3    # subtracted when insulation sub-score < 50 (high flow temperatures)
+  cost_gbp: [10000, 14000]        # EST_ASHP typical ~GBP 12,000 before grant
+  grant_gbp: 7500                  # BUS standard rate (temporary GBP 9,000 for some off-gas homes from 21 Jul 2026)
+  cost_scales_with_floor_area: true
+  lifetime_years: 20
+  prerequisites: [{insulation_sub_score_min: 50, or_in_package_any: [loft_insulation, cavity_wall_insulation, solid_wall_insulation]}]
+  soft_after: [loft_insulation, cavity_wall_insulation, solid_wall_insulation, double_glazing, smart_thermostat]
+  observed_need: null
+  source: "EoH (median ASHP SPF 2.80); EST_ASHP (typical ~GBP 12,000, BUS grant GBP 7,500)"
+  source_status: verified_cost
+  notes: >
+    PS2's illustrative 15-25% purchased-energy reduction is far below physics: replacing a 75-88% efficient
+    gas boiler with an SCOP ~2.8 heat pump cuts purchased heating kWh by ~70%. We model physics and
+    document the deviation (README section 2.2). Electricity use RISES while gas falls; cooking gas remains.
+
+- retrofit: solar_pv
+  stage: generation
+  applies_to: grid_import          # reduces grid imports via self-consumption, not underlying demand
+  kwp_by_property_type: {detached: 4.0, semi_detached: 3.5, terraced: 3.0, bungalow: 3.5}
+  self_consumption_frac_range: [0.30, 0.50]
+  self_consumption_bonus_with_heat_pump: 0.05
+  cost_gbp: [5500, 8500]
+  cost_scales_with_floor_area: false
+  lifetime_years: 25
+  prerequisites: []
+  soft_after: [air_source_heat_pump]
+  observed_need: null
+  source: "PS2 (20-35% grid-import reduction); DESNZ_PV median 4 kWp ~GBP 7,500; yield from PVGIS per region (config/regions.yaml)"
+  source_status: secondary

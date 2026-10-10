@@ -1,0 +1,46 @@
+# Green Home Score [P2]. All tables documented in docs/SCORING.md.
+method_version: "score-v1"
+weights: {energy_efficiency: 0.25, consumption_intensity: 0.20, insulation: 0.15,
+          heating: 0.15, glazing: 0.10, renewables: 0.10, smart_controls: 0.05}
+classes:  # inclusive lower bounds on the ROUNDED score
+  - {class: highly_efficient, min: 80}
+  - {class: good, min: 65}
+  - {class: moderate, min: 50}
+  - {class: poor, min: 30}
+  - {class: very_poor, min: 0}
+energy_efficiency: {A: 100, B: 86, C: 75, D: 62, E: 47, F: 30, G: 10}
+intensity_bounds_file: config/generated/intensity_bounds.yaml   # {i_best: .., i_worst: ..}
+insulation:
+  roof_weight: 0.4
+  wall_weight: 0.6
+  roof: {none: 0, low: 35, medium: 65, full: 100}        # roof_type dwelling_above → excluded
+  wall:
+    none: {solid: 0, cavity: 20, timber_or_system: 30}
+    partial: 60
+    full: 100
+heating: {heat_pump: 100, gas_boiler_condensing: 65, gas_boiler_old: 35,
+          other_fuel_boiler: 30, electric_storage: 25, electric_direct: 10}
+glazing: {single: 0, partial_double: 40, secondary: 50, double: 80, triple: 100}
+renewables: {none: 0, solar_thermal: 40, solar_pv: 80, solar_pv_battery: 100}
+smart_controls: {none: 0, timer_only: 25, programmer_thermostat: 50,
+                 programmer_thermostat_trvs: 65, smart_thermostat: 85, smart_zoned: 100}
+min_info:      # README P2.5
+  max_unknown_feature_fields: 3
+score_range:
+  rating_band_spread: 1      # an imputed rating may be this many bands either side
+suitability:   # README P2.8; thresholds tuned on val by P3 (D13)
+  # u = assessor·p + saving_share·norm(share) + cost_eff·norm(kWh per £1k). CustomerContext.priority picks
+  # the row (CR-6); it changes ranking and suitability only, never a number. balanced = README default.
+  priority_weights:
+    balanced: {assessor: 0.4, saving_share: 0.4, cost_eff: 0.2}
+    carbon:   {assessor: 0.3, saving_share: 0.5, cost_eff: 0.2}
+    bills:    {assessor: 0.3, saving_share: 0.3, cost_eff: 0.4}
+    value:    {assessor: 0.4, saving_share: 0.4, cost_eff: 0.2}   # no per-retrofit value model yet
+  high: 0.6
+  medium: 0.35
+  reasons:
+    high_saving_share: 0.10        # standalone net saving ≥ 10% of baseline purchased → HIGH_SAVING
+    low_saving_share: 0.03         # with cost_mid ≥ high_cost_gbp → HIGH_COST_LOW_SAVING
+    high_cost_gbp: 5000
+    quick_win_cost_max_gbp: 1500   # cost_high ≤ this and saving > 0 → QUICK_WIN_LOW_COST
+    assessor_often: 0.6            # p ≥ this → ASSESSORS_OFTEN_RECOMMEND

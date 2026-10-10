@@ -1,0 +1,25 @@
+{
+  "property_id": "P90002",
+  "property_type": "flat",
+  "age_band": "1967_1982",
+  "floor_area_m2": 60.0,
+  "bedrooms": 2,
+  "region": "london",
+  "current_value_gbp": 300000.0,
+  "energy_rating": "D",
+  "roof_type": "dwelling_above",
+  "roof_insulation": null,
+  "wall_type": "cavity",
+  "wall_insulation": "full",
+  "glazing": "double",
+  "heating_system": "electric_storage",
+  "main_fuel": "electricity",
+  "renewables": "none",
+  "smart_controls": "timer_only",
+  "listed_or_conservation": "no",
+  "outdoor_space": null,
+  "energy": {
+    "annual_electricity_kwh": 5200.0,
+    "annual_gas_kwh": 0.0
+  }
+}

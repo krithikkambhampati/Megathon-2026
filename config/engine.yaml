@@ -1,0 +1,31 @@
+# Engine rules [P2]: validation, annualisation, issues and value thresholds (README P2.2–P2.8).
+sap_bands: {A: [92, 100], B: [81, 91], C: [69, 80], D: [55, 68], E: [39, 54], F: [21, 38], G: [1, 20]}
+floor_area_band_edges: [50, 90, 130, 200]   # → lt50, 50_90, 90_130, 130_200, gt200
+stage_order: [fabric, glazing, controls, heating, generation]
+annualise:
+  months_window: 12
+  coverage_ok: 0.75
+  coverage_min: 0.5
+  conflict_rel_diff: 0.15
+validation:
+  score_feature_fields: [roof_type, roof_insulation, wall_type, wall_insulation, glazing,
+                         heating_system, renewables, smart_controls]
+  gas_heating_min_gas_kwh: 2000
+  non_gas_heating_max_gas_kwh: 3000
+  area_per_bedroom_min: 8
+  area_per_bedroom_max: 150
+  intensity_min_kwh_m2: 10
+  intensity_max_peer_p90_multiple: 3
+  value_min_gbp: 30000
+  value_max_gbp: 10000000
+value:
+  quantiles: [10, 50, 90]
+  min_half_width_pct: 0.5     # range widened to at least ±0.5 pp around mid
+# Placeholder peer percentiles of intensity (kWh/m²/yr) by floor-area band, used until P1 writes
+# config/generated/peer_percentiles.parquet (train split only). TODO_SOURCE (P1).
+peers_fallback:
+  lt50:    {p10: 110, p50: 175, p75: 215, p90: 260}
+  "50_90":   {p10: 105, p50: 165, p75: 205, p90: 250}
+  "90_130":  {p10: 95,  p50: 150, p75: 190, p90: 230}
+  "130_200": {p10: 85,  p50: 135, p75: 170, p90: 210}
+  gt200:   {p10: 75,  p50: 120, p75: 155, p90: 195}

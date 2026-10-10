@@ -1,0 +1,748 @@
+{
+  "contract_version": "1.1.0",
+  "analysis_id": "ec2043721c4ff1824341cd29f3da8d168f25d83a3104991e4382584acbec5174",
+  "model_versions": {
+    "energy": "stub-0",
+    "rating": "stub-0",
+    "recommender": "stub-0",
+    "value": "stub-0"
+  },
+  "home": {
+    "home": {
+      "property_id": "P90003",
+      "customer_id": null,
+      "property_type": null,
+      "age_band": null,
+      "floor_area_m2": 70.0,
+      "bedrooms": 2,
+      "region": "north_west",
+      "current_value_gbp": null,
+      "energy_rating": "C",
+      "roof_type": "pitched_loft",
+      "roof_insulation": "medium",
+      "wall_type": "cavity",
+      "wall_insulation": "full",
+      "glazing": "double",
+      "heating_system": "gas_boiler_condensing",
+      "main_fuel": "mains_gas",
+      "renewables": "none",
+      "smart_controls": "programmer_thermostat",
+      "listed_or_conservation": null,
+      "outdoor_space": null,
+      "energy": {
+        "annual_electricity_kwh": null,
+        "annual_gas_kwh": null,
+        "monthly": null
+      }
+    },
+    "provenance": {
+      "property_type": "assumed",
+      "age_band": "assumed",
+      "floor_area_m2": "imputed",
+      "bedrooms": "user",
+      "region": "user",
+      "energy_rating": "imputed",
+      "roof_type": "imputed",
+      "roof_insulation": "imputed",
+      "wall_type": "imputed",
+      "wall_insulation": "imputed",
+      "glazing": "imputed",
+      "heating_system": "imputed",
+      "main_fuel": "imputed",
+      "renewables": "imputed",
+      "smart_controls": "imputed",
+      "listed_or_conservation": "assumed",
+      "outdoor_space": "assumed",
+      "electricity_kwh": "imputed",
+      "gas_kwh": "imputed"
+    },
+    "energy": {
+      "electricity_kwh": 2700.0,
+      "gas_kwh": 10500.0,
+      "purchased_kwh": 13200.0,
+      "electricity_coverage": null,
+      "gas_coverage": null,
+      "source": "imputed"
+    },
+    "intensity_kwh_m2": 188.57142857142858,
+    "sap_estimate": 70.5,
+    "flags": [
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "property_type",
+        "message": "property_type was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "age_band",
+        "message": "age_band was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "floor_area_m2",
+        "message": "floor_area_m2 was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "energy_rating",
+        "message": "energy_rating was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "roof_type",
+        "message": "roof_type was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "roof_insulation",
+        "message": "roof_insulation was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "wall_type",
+        "message": "wall_type was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "wall_insulation",
+        "message": "wall_insulation was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "glazing",
+        "message": "glazing was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "heating_system",
+        "message": "heating_system was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "main_fuel",
+        "message": "main_fuel was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "renewables",
+        "message": "renewables was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "smart_controls",
+        "message": "smart_controls was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "listed_or_conservation",
+        "message": "listed_or_conservation was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "MISSING_FIELD",
+        "severity": "info",
+        "field": "outdoor_space",
+        "message": "outdoor_space was not provided.",
+        "evidence": {}
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "floor_area_m2",
+        "message": "floor_area_m2 estimated as 70.0.",
+        "evidence": {
+          "value": 70.0,
+          "method": "median_by_property_type_and_bedrooms"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "roof_type",
+        "message": "roof_type estimated as pitched_loft.",
+        "evidence": {
+          "value": "pitched_loft",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "roof_insulation",
+        "message": "roof_insulation estimated as medium.",
+        "evidence": {
+          "value": "medium",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "wall_type",
+        "message": "wall_type estimated as cavity.",
+        "evidence": {
+          "value": "cavity",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "wall_insulation",
+        "message": "wall_insulation estimated as full.",
+        "evidence": {
+          "value": "full",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "glazing",
+        "message": "glazing estimated as double.",
+        "evidence": {
+          "value": "double",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "heating_system",
+        "message": "heating_system estimated as gas_boiler_condensing.",
+        "evidence": {
+          "value": "gas_boiler_condensing",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "renewables",
+        "message": "renewables estimated as none.",
+        "evidence": {
+          "value": "none",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "smart_controls",
+        "message": "smart_controls estimated as programmer_thermostat.",
+        "evidence": {
+          "value": "programmer_thermostat",
+          "method": "mode_by_age_band_and_property_type"
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "main_fuel",
+        "message": "main_fuel estimated as mains_gas.",
+        "evidence": {
+          "value": "mains_gas",
+          "method": "from_heating_system"
+        }
+      },
+      {
+        "code": "ENERGY_FROM_TYPICAL_HOMES",
+        "severity": "warning",
+        "field": null,
+        "message": "Energy use estimated from typical similar homes.",
+        "evidence": {
+          "fuels": [
+            "electricity_kwh",
+            "gas_kwh"
+          ],
+          "main_fuel": "mains_gas",
+          "floor_area_band": "50_90",
+          "electricity_kwh": 2700.0,
+          "gas_kwh": 10500.0
+        }
+      },
+      {
+        "code": "IMPUTED_FIELD",
+        "severity": "info",
+        "field": "energy_rating",
+        "message": "energy_rating estimated as C.",
+        "evidence": {
+          "value": "C",
+          "method": "rating_model"
+        }
+      }
+    ],
+    "in_savings_scope": true
+  },
+  "score": {
+    "status": "insufficient",
+    "score": null,
+    "score_raw": null,
+    "score_class": null,
+    "score_range": null,
+    "components": [],
+    "method_version": "score-v1"
+  },
+  "issues": [],
+  "is_poor": null,
+  "recommendations": [
+    {
+      "retrofit": "loft_insulation",
+      "rank": 1,
+      "feasibility": "needs_survey",
+      "suitability": null,
+      "reasons": [
+        "UNKNOWN_INPUT_SURVEY"
+      ],
+      "depends_on": [],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 400.0,
+      "cost_high_gbp": 1000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "cavity_wall_insulation",
+      "rank": 2,
+      "feasibility": "needs_survey",
+      "suitability": null,
+      "reasons": [
+        "UNKNOWN_INPUT_SURVEY"
+      ],
+      "depends_on": [],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 1800.0,
+      "cost_high_gbp": 4600.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "solid_wall_insulation",
+      "rank": 3,
+      "feasibility": "needs_survey",
+      "suitability": null,
+      "reasons": [
+        "UNKNOWN_INPUT_SURVEY"
+      ],
+      "depends_on": [],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 12000.0,
+      "cost_high_gbp": 15000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "double_glazing",
+      "rank": 4,
+      "feasibility": "needs_survey",
+      "suitability": null,
+      "reasons": [
+        "UNKNOWN_INPUT_SURVEY"
+      ],
+      "depends_on": [
+        "loft_insulation",
+        "cavity_wall_insulation",
+        "solid_wall_insulation"
+      ],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 3800.0,
+      "cost_high_gbp": 6000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "smart_thermostat",
+      "rank": 5,
+      "feasibility": "needs_survey",
+      "suitability": null,
+      "reasons": [
+        "UNKNOWN_INPUT_SURVEY"
+      ],
+      "depends_on": [
+        "loft_insulation",
+        "cavity_wall_insulation",
+        "solid_wall_insulation",
+        "double_glazing"
+      ],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 370.0,
+      "cost_high_gbp": 600.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "air_source_heat_pump",
+      "rank": 6,
+      "feasibility": "needs_survey",
+      "suitability": null,
+      "reasons": [
+        "UNKNOWN_INPUT_SURVEY",
+        "NEEDS_OUTDOOR_SPACE_CHECK"
+      ],
+      "depends_on": [
+        "loft_insulation",
+        "cavity_wall_insulation",
+        "solid_wall_insulation",
+        "double_glazing",
+        "smart_thermostat"
+      ],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 10000.0,
+      "cost_high_gbp": 14000.0,
+      "assessor_likelihood": 0.5
+    },
+    {
+      "retrofit": "solar_pv",
+      "rank": 7,
+      "feasibility": "needs_survey",
+      "suitability": null,
+      "reasons": [
+        "UNKNOWN_INPUT_SURVEY"
+      ],
+      "depends_on": [
+        "air_source_heat_pump"
+      ],
+      "standalone_saving": null,
+      "incremental_saving": null,
+      "standalone_carbon_kg": null,
+      "cost_low_gbp": 5500.0,
+      "cost_high_gbp": 8500.0,
+      "assessor_likelihood": 0.5
+    }
+  ],
+  "scenario": {
+    "name": "recommended",
+    "mode": "recommended",
+    "retrofits": [],
+    "overrides": {}
+  },
+  "rejected": [],
+  "savings": {
+    "status": "insufficient",
+    "retrofits": [
+      "loft_insulation",
+      "cavity_wall_insulation",
+      "solid_wall_insulation",
+      "double_glazing",
+      "smart_thermostat",
+      "air_source_heat_pump",
+      "solar_pv"
+    ],
+    "baseline": {
+      "electricity_kwh": 2700.0,
+      "gas_kwh": 10500.0,
+      "purchased_kwh": 13200.0
+    },
+    "after": null,
+    "saving": null,
+    "improvement_potential_pct": null,
+    "saving_low": null,
+    "saving_high": null
+  },
+  "carbon": null,
+  "value": {
+    "status": "insufficient",
+    "current_value_gbp": null,
+    "current_value_source": null,
+    "rating_before": "C",
+    "rating_after": "B",
+    "sap_before": 70.5,
+    "sap_after": 87.0,
+    "uplift_pct_low": null,
+    "uplift_pct_mid": null,
+    "uplift_pct_high": null,
+    "value_low_gbp": null,
+    "value_high_gbp": null,
+    "caveat_code": "indicative_not_causal"
+  },
+  "score_after": null,
+  "flags": [
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "property_type",
+      "message": "property_type was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "age_band",
+      "message": "age_band was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "floor_area_m2",
+      "message": "floor_area_m2 was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "energy_rating",
+      "message": "energy_rating was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "roof_type",
+      "message": "roof_type was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "roof_insulation",
+      "message": "roof_insulation was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "wall_type",
+      "message": "wall_type was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "wall_insulation",
+      "message": "wall_insulation was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "glazing",
+      "message": "glazing was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "heating_system",
+      "message": "heating_system was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "main_fuel",
+      "message": "main_fuel was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "renewables",
+      "message": "renewables was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "smart_controls",
+      "message": "smart_controls was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "listed_or_conservation",
+      "message": "listed_or_conservation was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "MISSING_FIELD",
+      "severity": "info",
+      "field": "outdoor_space",
+      "message": "outdoor_space was not provided.",
+      "evidence": {}
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "floor_area_m2",
+      "message": "floor_area_m2 estimated as 70.0.",
+      "evidence": {
+        "value": 70.0,
+        "method": "median_by_property_type_and_bedrooms"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "roof_type",
+      "message": "roof_type estimated as pitched_loft.",
+      "evidence": {
+        "value": "pitched_loft",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "roof_insulation",
+      "message": "roof_insulation estimated as medium.",
+      "evidence": {
+        "value": "medium",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "wall_type",
+      "message": "wall_type estimated as cavity.",
+      "evidence": {
+        "value": "cavity",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "wall_insulation",
+      "message": "wall_insulation estimated as full.",
+      "evidence": {
+        "value": "full",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "glazing",
+      "message": "glazing estimated as double.",
+      "evidence": {
+        "value": "double",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "heating_system",
+      "message": "heating_system estimated as gas_boiler_condensing.",
+      "evidence": {
+        "value": "gas_boiler_condensing",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "renewables",
+      "message": "renewables estimated as none.",
+      "evidence": {
+        "value": "none",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "smart_controls",
+      "message": "smart_controls estimated as programmer_thermostat.",
+      "evidence": {
+        "value": "programmer_thermostat",
+        "method": "mode_by_age_band_and_property_type"
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "main_fuel",
+      "message": "main_fuel estimated as mains_gas.",
+      "evidence": {
+        "value": "mains_gas",
+        "method": "from_heating_system"
+      }
+    },
+    {
+      "code": "ENERGY_FROM_TYPICAL_HOMES",
+      "severity": "warning",
+      "field": null,
+      "message": "Energy use estimated from typical similar homes.",
+      "evidence": {
+        "fuels": [
+          "electricity_kwh",
+          "gas_kwh"
+        ],
+        "main_fuel": "mains_gas",
+        "floor_area_band": "50_90",
+        "electricity_kwh": 2700.0,
+        "gas_kwh": 10500.0
+      }
+    },
+    {
+      "code": "IMPUTED_FIELD",
+      "severity": "info",
+      "field": "energy_rating",
+      "message": "energy_rating estimated as C.",
+      "evidence": {
+        "value": "C",
+        "method": "rating_model"
+      }
+    },
+    {
+      "code": "INSUFFICIENT_INFO_SCORE",
+      "severity": "warning",
+      "field": null,
+      "message": "Not enough information to score this home.",
+      "evidence": {}
+    },
+    {
+      "code": "INSUFFICIENT_INFO_SAVINGS",
+      "severity": "warning",
+      "field": null,
+      "message": "Not enough information to estimate savings.",
+      "evidence": {}
+    },
+    {
+      "code": "INSUFFICIENT_INFO_VALUE",
+      "severity": "warning",
+      "field": null,
+      "message": "Not enough information to estimate value change.",
+      "evidence": {}
+    }
+  ],
+  "peer": null
+}

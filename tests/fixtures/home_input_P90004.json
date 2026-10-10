@@ -1,0 +1,85 @@
+{
+  "property_id": "P90004",
+  "property_type": "terraced",
+  "age_band": "1900_1929",
+  "floor_area_m2": 78.0,
+  "bedrooms": 3,
+  "region": "north_west",
+  "current_value_gbp": null,
+  "energy_rating": "E",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "medium",
+  "wall_type": "solid",
+  "wall_insulation": "none",
+  "glazing": "double",
+  "heating_system": "gas_boiler_old",
+  "main_fuel": "mains_gas",
+  "renewables": "none",
+  "smart_controls": "programmer_thermostat",
+  "listed_or_conservation": "no",
+  "outdoor_space": "yes",
+  "energy": {
+    "monthly": [
+      {
+        "month": "2023-12",
+        "electricity_kwh": 367.2,
+        "gas_kwh": null
+      },
+      {
+        "month": "2024-01",
+        "electricity_kwh": 342.0,
+        "gas_kwh": null
+      },
+      {
+        "month": "2024-02",
+        "electricity_kwh": 313.2,
+        "gas_kwh": null
+      },
+      {
+        "month": "2024-03",
+        "electricity_kwh": 313.2,
+        "gas_kwh": 1440.0
+      },
+      {
+        "month": "2024-04",
+        "electricity_kwh": 288.0,
+        "gas_kwh": 960.0
+      },
+      {
+        "month": "2024-05",
+        "electricity_kwh": 277.2,
+        "gas_kwh": 600.0
+      },
+      {
+        "month": "2024-06",
+        "electricity_kwh": 259.2,
+        "gas_kwh": 360.0
+      },
+      {
+        "month": "2024-07",
+        "electricity_kwh": 262.8,
+        "gas_kwh": 300.0
+      },
+      {
+        "month": "2024-08",
+        "electricity_kwh": 266.4,
+        "gas_kwh": 300.0
+      },
+      {
+        "month": "2024-09",
+        "electricity_kwh": 273.6,
+        "gas_kwh": 420.0
+      },
+      {
+        "month": "2024-10",
+        "electricity_kwh": 306.0,
+        "gas_kwh": 840.0
+      },
+      {
+        "month": "2024-11",
+        "electricity_kwh": 331.2,
+        "gas_kwh": 1320.0
+      }
+    ]
+  }
+}
