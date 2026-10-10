@@ -161,8 +161,9 @@ flowchart LR
 ```
 
 Everything runs on one laptop (RTX 4050 6 GB): no cloud services and no personal data. Models and the LLM
-client are loaded once at start-up, never per request. The model choice is `config/global.yaml: models`
-(`stub` until the trained models are present, then `real`).
+client are loaded once at start-up, never per request. The trained models are committed under `models/`
+(compressed, 59 MB) and used by default (`config/global.yaml: models: real`); the test suite pins stand-in
+models with `GREENHOME_MODELS=stub`, so tests don't depend on training.
 
 ## 7. Reproducibility
 
