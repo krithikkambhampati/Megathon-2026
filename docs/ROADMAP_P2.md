@@ -208,6 +208,7 @@ class Engine:
   wrappers compare each model's saved columns with their builder at predict time and raise on mismatch.
 - Floor-area bands are upper-edge inclusive (≤50, 50–90, …) to match P1's `pd.cut`; P1's peer labels
   (`50-90`) map to the contract's (`50_90`).
-- `format.py` adds `fmt_points` (1 dp) and `fmt_intensity` (whole kWh/m²/year) for P5's UI.
+- `format.py` adds `fmt_points` (1 dp) and `fmt_intensity` (whole kWh/m²/year) for P5's UI, and `fmt_area`
+  (whole m²) for P4's explanations.
 - In every result, `rank` and `incremental_saving` describe the reported package (recommended, custom or
   none), so incremental savings always sum to `savings.saving` (IT3).

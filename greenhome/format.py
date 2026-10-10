@@ -91,6 +91,11 @@ def fmt_intensity(x: float | None) -> str:
     return UNKNOWN if x is None else f"{_num(x, 1)} kWh/m²/year"
 
 
+def fmt_area(x: float | None) -> str:
+    """Floor area, whole m²."""
+    return UNKNOWN if x is None else f"{_num(x, 1)} m²"
+
+
 def fmt_score(x: float | None) -> str:
     return UNKNOWN if x is None else str(round_score(x))
 
