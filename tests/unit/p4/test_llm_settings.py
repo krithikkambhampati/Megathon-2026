@@ -44,8 +44,19 @@ def test_provider_in_yaml_is_ignored(tmp_path: Path) -> None:
     assert load_llm_settings(p, env={}).provider is None
 
 
-def test_env_example_placeholders_count_as_unset() -> None:
-    s = load_llm_settings(env={"LLM_PROVIDER": "ollama", "LLM_MODEL": "<exact ollama tag>"})
+def _unpinned_config(tmp_path: Path) -> Path:
+    """config/llm.yaml as it is before `make llm-bench` pins a model (the real file may be pinned)."""
+    import re
+
+    p = tmp_path / "llm.yaml"
+    p.write_text(re.sub(r"^model: .*$", f"model: {UNPINNED}", CONFIG_PATH.read_text(), count=1, flags=re.M))
+    return p
+
+
+def test_env_example_placeholders_count_as_unset(tmp_path: Path) -> None:
+    s = load_llm_settings(
+        _unpinned_config(tmp_path), env={"LLM_PROVIDER": "ollama", "LLM_MODEL": "<exact ollama tag>"}
+    )
     assert s.model == UNPINNED and not s.enabled
 
 
@@ -55,9 +66,15 @@ def test_per_prompt_caps_never_exceed_the_call_timeout() -> None:
     assert s.min_call_s < s.min_retry_s < s.answer_budget_s
 
 
-def test_unpinned_model_means_off() -> None:
-    s = load_llm_settings(env={"LLM_PROVIDER": "ollama"})
+def test_unpinned_model_means_off(tmp_path: Path) -> None:
+    s = load_llm_settings(_unpinned_config(tmp_path), env={"LLM_PROVIDER": "ollama"})
     assert s.model == UNPINNED and not s.enabled
+
+
+def test_pinned_model_with_provider_means_on() -> None:
+    s = load_llm_settings(env={"LLM_PROVIDER": "ollama"})
+    if s.model != UNPINNED:  # the committed config pins the benchmark winner
+        assert s.enabled
 
 
 def test_bad_provider_rejected() -> None:

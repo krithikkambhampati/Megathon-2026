@@ -96,7 +96,8 @@ def test_llm_errors_fall_back_to_the_template(p10001, error, reason) -> None:
 def test_no_retry_without_enough_budget_left(p10001) -> None:
     clock = FakeClock()
     llm = ScriptedClient([Slow(BAD, 10)], clock=clock)
-    t = _trace(p10001, llm, seconds=17, clock=clock)  # 17 − 10 = 7 s left < min_retry_s (8): no retry
+    left = SETTINGS.min_retry_s - 1  # less than min_retry_s remains after the 10 s first attempt: no retry
+    t = _trace(p10001, llm, seconds=10 + left, clock=clock)
     assert t.check.fallback_used and t.check.attempts == 1 and len(llm.calls) == 1
 
 

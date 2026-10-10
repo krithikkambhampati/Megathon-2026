@@ -3,7 +3,7 @@
 # The provider is NOT set here on purpose: it comes from env LLM_PROVIDER only (ollama | openai_compat), so
 # tests and machines without a .env run on templates.
 
-model: TODO_PIN_AFTER_BENCH       # env LLM_MODEL overrides. Pinned after `make llm-bench` on the demo laptop
+model: qwen2.5:7b-instruct-q4_K_M   # env LLM_MODEL overrides. Pinned from reports/llm_bench_cachyos-x8664.md (demo laptop, RTX 4050 6 GB)
 base_url: http://localhost:11434  # env LLM_BASE_URL (openai_compat: the endpoint's /v1 base URL)
 
 # `make llm-bench` candidates (exact tags confirmed with `ollama pull` on the demo laptop).
@@ -28,7 +28,7 @@ call_cap_s:                       # per-prompt caps inside the budget
   memory_parse: 6
   answer: 12
 min_call_s: 3                     # don't start an LLM call with less than this left
-min_retry_s: 8                    # TODO_BENCH: set to the bench's p95 answer time; retry only with this left
+min_retry_s: 7                    # p95 time of one LLM attempt on the demo laptop (llm_bench); retry only with this left
 connect_timeout_s: 2              # reachability check
 warmup_timeout_s: 120             # cold model load (runs in a background thread)
 
