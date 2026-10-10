@@ -7,7 +7,9 @@ import httpx
 
 BASE_URL = os.environ.get("GREENHOME_API_URL", "http://localhost:8000").rstrip("/")
 DEFAULT_TIMEOUT_S = 15
-CHAT_TIMEOUT_S = 60
+# P4 caps a whole explain/chat answer at LLM_ANSWER_BUDGET_S (25 s) and then answers from templates
+EXPLAIN_TIMEOUT_S = 30
+CHAT_TIMEOUT_S = 30
 HEALTH_TIMEOUT_S = 5
 
 
@@ -21,8 +23,14 @@ class APIError(Exception):
         self.message = message
 
 
-def _request(method: str, path: str, *, json: Any = None, params: dict | None = None,
-             timeout: float = DEFAULT_TIMEOUT_S) -> Any:
+def _request(
+    method: str,
+    path: str,
+    *,
+    json: Any = None,
+    params: dict | None = None,
+    timeout: float = DEFAULT_TIMEOUT_S,
+) -> Any:
     try:
         r = httpx.request(method, f"{BASE_URL}{path}", json=json, params=params, timeout=timeout)
     except httpx.HTTPError as exc:
@@ -65,3 +73,17 @@ def diff(base_analysis_id: str, new_analysis_id: str) -> dict:
 
 def methodology() -> dict:
     return _request("GET", "/v1/methodology")
+
+
+def explain(analysis_id: str, section: str) -> dict:
+    return _request(
+        "POST",
+        "/v1/explain",
+        json={"analysis_id": analysis_id, "section": section},
+        timeout=EXPLAIN_TIMEOUT_S,
+    )
+
+
+def chat(request: dict) -> dict:
+    """`request` is a ChatRequest: session_id, home, message, current_scenario, customer_id."""
+    return _request("POST", "/v1/chat", json=request, timeout=CHAT_TIMEOUT_S)

@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.main import create_app
-from greenhome.contracts import CONTRACT_VERSION, CheckReport, DiffKey, HomeInput
+from greenhome.contracts import CONTRACT_VERSION, ChatResponse, CheckReport, DiffKey, HomeInput, Scenario
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
 HOME_IDS = sorted(p.stem.removeprefix("home_input_") for p in FIXTURES.glob("home_input_*.json"))
@@ -173,8 +173,14 @@ def fake_explainer(monkeypatch):
     module = types.ModuleType("greenhome.llm.explainer")
 
     def explain(result, section, llm):
-        check = CheckReport(passed=True, numbers_found=[], unsupported=[], banned_phrases=[],
-                            attempts=1, fallback_used=llm is None)
+        check = CheckReport(
+            passed=True,
+            numbers_found=[],
+            unsupported=[],
+            banned_phrases=[],
+            attempts=1,
+            fallback_used=llm is None,
+        )
         return f"{section} explanation for {result.analysis_id[:8]}", check
 
     module.explain = explain
@@ -211,3 +217,93 @@ def test_methodology(fixture_client):
     assert {ef["fuel"] for ef in body["emission_factors"]} == {"electricity", "gas"}
     assert [c["class"] for c in body["classes"]][0] == "highly_efficient"
     _no_nan(r.text)
+
+
+# ---------- chat ----------
+def _chat_body(pid="P10001", message="What if I only install solar panels?", scenario=None):
+    return {"session_id": "s1", "home": _home(pid), "message": message, "current_scenario": scenario}
+
+
+def test_chat_unavailable_without_p4_module(fixture_client, monkeypatch):
+    monkeypatch.setitem(sys.modules, "greenhome.llm.chat", None)
+    r = fixture_client.post("/v1/chat", json=_chat_body())
+    assert r.status_code == 503
+    assert r.json()["error"]["code"] == "explanation_unavailable"
+
+
+def test_chat_calls_p4_with_cr7_arguments_and_caches(fixture_client, monkeypatch):
+    seen = {}
+    module = types.ModuleType("greenhome.llm.chat")
+
+    def chat(req, engine, llm, ctx, base):
+        seen.update(req=req, llm=llm, ctx=ctx, base=base)
+        result = engine.run_scenario(req.home, Scenario(mode="custom", retrofits=["solar_pv"]), ctx)
+        check = CheckReport(
+            passed=True, numbers_found=[], unsupported=[], banned_phrases=[], attempts=1, fallback_used=True
+        )
+        return ChatResponse(
+            answer="ok",
+            intent="whatif",
+            scenario=result.scenario,
+            result=result,
+            base_result_id=base.analysis_id,
+            check=check,
+        )
+
+    module.chat = chat
+    monkeypatch.setitem(sys.modules, "greenhome.llm.chat", module)
+    r = fixture_client.post("/v1/chat", json=_chat_body())
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert seen["ctx"] is None and seen["llm"] is None and seen["req"].message.startswith("What if")
+    # both results are cached, so the UI can diff and explain them
+    d = fixture_client.post(
+        "/v1/diff",
+        json={"base_analysis_id": body["base_result_id"], "new_analysis_id": body["result"]["analysis_id"]},
+    )
+    assert d.status_code == 200
+
+
+def test_chat_with_real_p4_code_and_no_llm(engine_client):
+    """End to end through P4's real chat with the LLM off: rules parse the question, template answers."""
+    r = engine_client.post("/v1/chat", json=_chat_body())
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["intent"] == "whatif"
+    assert body["scenario"]["retrofits"] == ["solar_pv"]
+    assert body["result"]["savings"]["retrofits"] == ["solar_pv"]
+    assert body["check"]["fallback_used"] is True
+    assert body["answer"]
+    _no_nan(r.text)
+
+
+def test_chat_validation_error(fixture_client):
+    r = fixture_client.post("/v1/chat", json={"session_id": "s1", "message": "hi"})  # no home
+    assert r.status_code == 422
+
+
+# ---------- live LLM check on /v1/health ----------
+class _FakeLLM:
+    def __init__(self, result):
+        self.result = result
+
+    def ping(self, timeout_s=2):
+        if isinstance(self.result, Exception):
+            raise self.result
+        return self.result
+
+
+@pytest.mark.parametrize(
+    "llm,expected",
+    [
+        (None, False),
+        (_FakeLLM(True), True),
+        (_FakeLLM(False), False),
+        (_FakeLLM(RuntimeError("down")), False),
+    ],
+)
+def test_health_llm_ping(fixture_client, llm, expected):
+    fixture_client.app.state.llm = llm
+    body = fixture_client.get("/v1/health").json()
+    assert body["llm_ok"] is expected
+    assert body["status"] == "degraded"  # fixture models are never "ok"

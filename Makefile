@@ -1,12 +1,15 @@
 # Owned by P5. Each part implements the module its target calls (roadmap.md §5.6).
 # Targets whose module does not exist yet print "TODO <owner>" instead of failing.
 
-.PHONY: setup data-raw data train portfolio eval test lint api api-fixture ui all
+.PHONY: setup data-raw data train portfolio eval llm-bench test lint api api-fixture ui all
+
+# .env (if present) holds LLM settings etc.; every target below loads it
+UV_ENV := $(if $(wildcard .env),--env-file .env,)
 
 # $(call run_mod,<module>,<args>,<owner>)
 define run_mod
 	@if uv run python -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('$(1)') else 1)" 2>/dev/null; \
-	then uv run python -m $(1) $(2); \
+	then uv run $(UV_ENV) python -m $(1) $(2); \
 	else echo "TODO $(3): module $(1) not implemented yet"; fi
 endef
 
@@ -37,13 +40,17 @@ eval:
 	$(call run_mod,training.evaluation_report,,P3)
 	$(call run_mod,evaluation.eval_llm,,P4)
 
+# P4's model benchmark: run on the demo laptop with Ollama running (writes reports/llm_bench_<host>.md)
+llm-bench:
+	$(call run_mod,evaluation.llm_bench,,P4)
+
 test:
 	uv run pytest -q
 
 lint:
 	uv run ruff check .
 
-# .env (if present) holds LLM settings etc.; uvicorn loads it (python-dotenv ships with uvicorn[standard])
+# uvicorn loads .env itself (python-dotenv ships with uvicorn[standard])
 ENV_FILE := $(if $(wildcard .env),--env-file .env,)
 
 api:

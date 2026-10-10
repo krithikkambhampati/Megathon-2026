@@ -2,6 +2,7 @@
 re-exports it and adds what only the screens need: colours and sort orders."""
 
 from greenhome.labels import (  # noqa: F401  (re-exported for the pages)
+    FIELD_LABEL,
     FLAG_TEXT,
     ISSUE_TEXT,
     LABELS,
