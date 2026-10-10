@@ -20,6 +20,13 @@ CASES = [
     ("Skip the solar panels", True, "whatif", None),
     ("without the heat pump", False, "whatif", None),
     ("everything please", True, "whatif", None),
+    ("everything except the heat pump", False, "whatif", None),  # P5 live test
+    ("everything but solar", False, "whatif", None),
+    ("all of them except loft", False, "whatif", None),
+    ("everything apart from solar panels", False, "whatif", None),
+    ("the lot minus the heat pump", False, "whatif", None),
+    ("everything", False, "whatif", None),
+    ("but why is the heat pump low?", True, "explain", "recommendations"),
     ("Add cavity wall insulation too", True, "whatif", None),
     ("suppose we only did the loft", False, "whatif", None),
     ("We installed loft insulation last year and we don't want a heat pump", False, "memory", None),

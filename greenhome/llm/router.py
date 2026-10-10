@@ -45,8 +45,12 @@ _EXPLAIN_ANY = re.compile(
     r"\b(?:why|how\s+come|how\s+much|how\s+does|explain|tell\s+me|show\s+me|what\s+is|"
     r"what's|what\s+are|what\s+does)\b"
 )
+_WHY = re.compile(r"\b(?:why|how|explain)\b")  # a why/how question stays an explanation
 _QUESTION = re.compile(r"\?\s*$|^(?:would|will|is|are|does|do|can|could|should|has|have|did)\b")
-_WEAK_WHATIF = re.compile(r"\b(?:only|just|without|skip|add|also|install|get|fit|instead\s+of)\b")
+_WEAK_WHATIF = re.compile(
+    r"\b(?:only|just|without|except|excluding|skip|minus|apart\s+from|other\s+than|aside\s+from|but|add|also|"
+    r"plus|install|get|fit|instead\s+of|drop|remove|leave\s+out)\b"
+)
 _CHANGE = re.compile(
     r"\b(?:go(?:es)?\s+up|went\s+up|go(?:es)?\s+down|drop(?:s|ped)?|chang\w*|differ\w*|"
     r"why\s+did|compared?)\b"
@@ -125,11 +129,14 @@ def route(
     if any(rx.search(text) for rx in _MEMORY) and not text.endswith("?") or _memory_question(text):
         return res("memory")
     if (_EXPLAIN_START.search(text) or _EXPLAIN_ANY.search(text)) and vocab.DOMAIN.search(text):
-        if _WEAK_WHATIF.search(text) and mentions and not text.startswith(("why", "how", "explain")):
+        if _WEAK_WHATIF.search(text) and mentions and not _WHY.search(text):
             return res("whatif")
         return res("explain")
-    if mentions and (_WEAK_WHATIF.search(text) or vocab.LEADING_AND.search(text) or has_scenario):
-        return res("whatif")
+    package_word = bool(vocab.EVERYTHING.search(text) or vocab.NOTHING.search(text))
+    if mentions and (
+        _WEAK_WHATIF.search(text) or vocab.LEADING_AND.search(text) or has_scenario or package_word
+    ):
+        return res("whatif")  # "everything except the heat pump", "everything", "skip solar"
     if not vocab.DOMAIN.search(text):
         return res("out_of_scope")
     if _QUESTION.search(text):  # "Would a heat pump cut my energy use?" → explain, not unclear

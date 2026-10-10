@@ -123,3 +123,9 @@ def test_bad_override_from_the_engine_becomes_a_question(home, base) -> None:
 
     r = _ask(Rejecting(), home, base, "What if I only install solar?")
     assert r.intent == "unclear" and "couldn't run that scenario" in r.answer
+
+
+def test_everything_except_the_heat_pump_works_without_the_llm(engine, home, base) -> None:
+    r = _ask(engine, home, base, "everything except the heat pump")
+    assert r.intent == "whatif" and "air_source_heat_pump" not in r.scenario.retrofits
+    assert r.result is not None and r.check.passed and r.check.fallback_used
