@@ -1,0 +1,1697 @@
+# Generated: imputation tables for 'not sure' answers (README P2.2).
+generated_by: data_pipeline/imputation_tables.py (do not edit by hand)
+basis: train split only; latest EPC per property for features; NEED 2024 medians for gas homes
+floor_area_by_type_bedrooms:
+  bungalow:
+    '1':
+      median_m2: 41.0
+      n: 6081
+    '2':
+      median_m2: 60.0
+      n: 31085
+    '3':
+      median_m2: 95.0
+      n: 22270
+    '4':
+      median_m2: 153.0
+      n: 3837
+    5+:
+      median_m2: 218.0
+      n: 579
+  detached:
+    '1':
+      median_m2: 89.0
+      n: 107
+    '2':
+      median_m2: 66.0
+      n: 2585
+    '3':
+      median_m2: 96.0
+      n: 29613
+    '4':
+      median_m2: 145.0
+      n: 39453
+    5+:
+      median_m2: 253.0
+      n: 8639
+  flat:
+    '1':
+      median_m2: 43.0
+      n: 175869
+    '2':
+      median_m2: 64.0
+      n: 186143
+    '3':
+      median_m2: 99.0
+      n: 21379
+    '4':
+      median_m2: 148.0
+      n: 1555
+    5+:
+      median_m2: 177.0
+      n: 233
+  maisonette:
+    '1':
+      median_m2: 46.0
+      n: 3707
+    '2':
+      median_m2: 69.0
+      n: 15701
+    '3':
+      median_m2: 98.0
+      n: 8694
+    '4':
+      median_m2: 155.0
+      n: 950
+    5+:
+      median_m2: 222.5
+      n: 156
+  semi_detached:
+    '1':
+      median_m2: 41.0
+      n: 456
+    '2':
+      median_m2: 65.0
+      n: 34004
+    '3':
+      median_m2: 87.0
+      n: 170938
+    '4':
+      median_m2: 149.0
+      n: 21122
+    5+:
+      median_m2: 222.0
+      n: 4099
+  terraced:
+    '1':
+      median_m2: 44.0
+      n: 3525
+    '2':
+      median_m2: 68.0
+      n: 107411
+    '3':
+      median_m2: 88.0
+      n: 199913
+    '4':
+      median_m2: 146.0
+      n: 25205
+    5+:
+      median_m2: 212.0
+      n: 4838
+feature_mode_by_age_type:
+  '1900_1929':
+    bungalow:
+      n: 1713
+      roof_type:
+        value: pitched_loft
+        share: 0.95
+      roof_insulation:
+        value: full
+        share: 0.52
+      wall_type:
+        value: solid
+        share: 0.56
+      wall_insulation:
+        value: none
+        share: 0.695
+      glazing:
+        value: double
+        share: 0.854
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.564
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.522
+      renewables:
+        value: none
+        share: 0.96
+      main_fuel:
+        value: mains_gas
+        share: 0.703
+      energy_rating:
+        value: D
+        share: 0.427
+    detached:
+      n: 5895
+      roof_type:
+        value: pitched_loft
+        share: 0.948
+      roof_insulation:
+        value: full
+        share: 0.389
+      wall_type:
+        value: solid
+        share: 0.765
+      wall_insulation:
+        value: none
+        share: 0.874
+      glazing:
+        value: double
+        share: 0.738
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.618
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.595
+      renewables:
+        value: none
+        share: 0.966
+      main_fuel:
+        value: mains_gas
+        share: 0.821
+      energy_rating:
+        value: E
+        share: 0.381
+    flat:
+      n: 65454
+      roof_type:
+        value: dwelling_above
+        share: 0.602
+      roof_insulation:
+        value: none
+        share: 0.374
+      wall_type:
+        value: solid
+        share: 0.862
+      wall_insulation:
+        value: none
+        share: 0.883
+      glazing:
+        value: double
+        share: 0.725
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.648
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.405
+      renewables:
+        value: none
+        share: 0.998
+      main_fuel:
+        value: mains_gas
+        share: 0.717
+      energy_rating:
+        value: D
+        share: 0.415
+    maisonette:
+      n: 5934
+      roof_type:
+        value: pitched_loft
+        share: 0.641
+      roof_insulation:
+        value: none
+        share: 0.441
+      wall_type:
+        value: solid
+        share: 0.903
+      wall_insulation:
+        value: none
+        share: 0.928
+      glazing:
+        value: double
+        share: 0.7
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.748
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.517
+      renewables:
+        value: none
+        share: 0.996
+      main_fuel:
+        value: mains_gas
+        share: 0.879
+      energy_rating:
+        value: D
+        share: 0.492
+    semi_detached:
+      n: 24561
+      roof_type:
+        value: pitched_loft
+        share: 0.961
+      roof_insulation:
+        value: full
+        share: 0.379
+      wall_type:
+        value: solid
+        share: 0.704
+      wall_insulation:
+        value: none
+        share: 0.798
+      glazing:
+        value: double
+        share: 0.837
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.749
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.62
+      renewables:
+        value: none
+        share: 0.98
+      main_fuel:
+        value: mains_gas
+        share: 0.953
+      energy_rating:
+        value: D
+        share: 0.53
+    terraced:
+      n: 111382
+      roof_type:
+        value: pitched_loft
+        share: 0.919
+      roof_insulation:
+        value: none
+        share: 0.354
+      wall_type:
+        value: solid
+        share: 0.88
+      wall_insulation:
+        value: none
+        share: 0.912
+      glazing:
+        value: double
+        share: 0.892
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.801
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.592
+      renewables:
+        value: none
+        share: 0.987
+      main_fuel:
+        value: mains_gas
+        share: 0.972
+      energy_rating:
+        value: D
+        share: 0.567
+  '1930_1949':
+    bungalow:
+      n: 6708
+      roof_type:
+        value: pitched_loft
+        share: 0.97
+      roof_insulation:
+        value: full
+        share: 0.5
+      wall_type:
+        value: cavity
+        share: 0.719
+      wall_insulation:
+        value: none
+        share: 0.518
+      glazing:
+        value: double
+        share: 0.927
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.625
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.588
+      renewables:
+        value: none
+        share: 0.97
+      main_fuel:
+        value: mains_gas
+        share: 0.804
+      energy_rating:
+        value: D
+        share: 0.515
+    detached:
+      n: 11151
+      roof_type:
+        value: pitched_loft
+        share: 0.967
+      roof_insulation:
+        value: full
+        share: 0.409
+      wall_type:
+        value: cavity
+        share: 0.558
+      wall_insulation:
+        value: none
+        share: 0.732
+      glazing:
+        value: double
+        share: 0.867
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.693
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.638
+      renewables:
+        value: none
+        share: 0.975
+      main_fuel:
+        value: mains_gas
+        share: 0.925
+      energy_rating:
+        value: D
+        share: 0.483
+    flat:
+      n: 25448
+      roof_type:
+        value: dwelling_above
+        share: 0.592
+      roof_insulation:
+        value: full
+        share: 0.358
+      wall_type:
+        value: cavity
+        share: 0.495
+      wall_insulation:
+        value: none
+        share: 0.649
+      glazing:
+        value: double
+        share: 0.827
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.723
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.51
+      renewables:
+        value: none
+        share: 0.998
+      main_fuel:
+        value: mains_gas
+        share: 0.772
+      energy_rating:
+        value: C
+        share: 0.535
+    maisonette:
+      n: 1631
+      roof_type:
+        value: pitched_loft
+        share: 0.607
+      roof_insulation:
+        value: none
+        share: 0.392
+      wall_type:
+        value: solid
+        share: 0.495
+      wall_insulation:
+        value: none
+        share: 0.753
+      glazing:
+        value: double
+        share: 0.858
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.73
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.54
+      renewables:
+        value: none
+        share: 0.995
+      main_fuel:
+        value: mains_gas
+        share: 0.861
+      energy_rating:
+        value: D
+        share: 0.468
+    semi_detached:
+      n: 87523
+      roof_type:
+        value: pitched_loft
+        share: 0.987
+      roof_insulation:
+        value: full
+        share: 0.44
+      wall_type:
+        value: cavity
+        share: 0.63
+      wall_insulation:
+        value: none
+        share: 0.572
+      glazing:
+        value: double
+        share: 0.933
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.742
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.628
+      renewables:
+        value: none
+        share: 0.986
+      main_fuel:
+        value: mains_gas
+        share: 0.973
+      energy_rating:
+        value: D
+        share: 0.579
+    terraced:
+      n: 48232
+      roof_type:
+        value: pitched_loft
+        share: 0.983
+      roof_insulation:
+        value: full
+        share: 0.456
+      wall_type:
+        value: cavity
+        share: 0.591
+      wall_insulation:
+        value: none
+        share: 0.56
+      glazing:
+        value: double
+        share: 0.94
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.78
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.665
+      renewables:
+        value: none
+        share: 0.972
+      main_fuel:
+        value: mains_gas
+        share: 0.971
+      energy_rating:
+        value: D
+        share: 0.537
+  '1950_1966':
+    bungalow:
+      n: 17226
+      roof_type:
+        value: pitched_loft
+        share: 0.96
+      roof_insulation:
+        value: full
+        share: 0.536
+      wall_type:
+        value: cavity
+        share: 0.923
+      wall_insulation:
+        value: full
+        share: 0.694
+      glazing:
+        value: double
+        share: 0.961
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.628
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.618
+      renewables:
+        value: none
+        share: 0.952
+      main_fuel:
+        value: mains_gas
+        share: 0.815
+      energy_rating:
+        value: D
+        share: 0.517
+    detached:
+      n: 8443
+      roof_type:
+        value: pitched_loft
+        share: 0.952
+      roof_insulation:
+        value: full
+        share: 0.411
+      wall_type:
+        value: cavity
+        share: 0.915
+      wall_insulation:
+        value: full
+        share: 0.535
+      glazing:
+        value: double
+        share: 0.933
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.663
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.657
+      renewables:
+        value: none
+        share: 0.965
+      main_fuel:
+        value: mains_gas
+        share: 0.897
+      energy_rating:
+        value: D
+        share: 0.515
+    flat:
+      n: 51941
+      roof_type:
+        value: dwelling_above
+        share: 0.687
+      roof_insulation:
+        value: full
+        share: 0.407
+      wall_type:
+        value: cavity
+        share: 0.621
+      wall_insulation:
+        value: full
+        share: 0.578
+      glazing:
+        value: double
+        share: 0.942
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.612
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.511
+      renewables:
+        value: none
+        share: 0.999
+      main_fuel:
+        value: mains_gas
+        share: 0.665
+      energy_rating:
+        value: C
+        share: 0.589
+    maisonette:
+      n: 5397
+      roof_type:
+        value: pitched_loft
+        share: 0.448
+      roof_insulation:
+        value: none
+        share: 0.428
+      wall_type:
+        value: cavity
+        share: 0.686
+      wall_insulation:
+        value: full
+        share: 0.512
+      glazing:
+        value: double
+        share: 0.945
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.714
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.583
+      renewables:
+        value: none
+        share: 0.999
+      main_fuel:
+        value: mains_gas
+        share: 0.77
+      energy_rating:
+        value: C
+        share: 0.529
+    semi_detached:
+      n: 53708
+      roof_type:
+        value: pitched_loft
+        share: 0.981
+      roof_insulation:
+        value: full
+        share: 0.487
+      wall_type:
+        value: cavity
+        share: 0.822
+      wall_insulation:
+        value: full
+        share: 0.637
+      glazing:
+        value: double
+        share: 0.963
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.732
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.647
+      renewables:
+        value: none
+        share: 0.974
+      main_fuel:
+        value: mains_gas
+        share: 0.954
+      energy_rating:
+        value: D
+        share: 0.512
+    terraced:
+      n: 42033
+      roof_type:
+        value: pitched_loft
+        share: 0.971
+      roof_insulation:
+        value: full
+        share: 0.5
+      wall_type:
+        value: cavity
+        share: 0.763
+      wall_insulation:
+        value: full
+        share: 0.637
+      glazing:
+        value: double
+        share: 0.962
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.742
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.658
+      renewables:
+        value: none
+        share: 0.966
+      main_fuel:
+        value: mains_gas
+        share: 0.943
+      energy_rating:
+        value: C
+        share: 0.439
+  '1967_1982':
+    bungalow:
+      n: 22042
+      roof_type:
+        value: pitched_loft
+        share: 0.95
+      roof_insulation:
+        value: full
+        share: 0.557
+      wall_type:
+        value: cavity
+        share: 0.88
+      wall_insulation:
+        value: full
+        share: 0.678
+      glazing:
+        value: double
+        share: 0.964
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.516
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.572
+      renewables:
+        value: none
+        share: 0.939
+      main_fuel:
+        value: mains_gas
+        share: 0.659
+      energy_rating:
+        value: D
+        share: 0.482
+    detached:
+      n: 15617
+      roof_type:
+        value: pitched_loft
+        share: 0.964
+      roof_insulation:
+        value: full
+        share: 0.476
+      wall_type:
+        value: cavity
+        share: 0.958
+      wall_insulation:
+        value: full
+        share: 0.591
+      glazing:
+        value: double
+        share: 0.956
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.618
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.629
+      renewables:
+        value: none
+        share: 0.959
+      main_fuel:
+        value: mains_gas
+        share: 0.87
+      energy_rating:
+        value: D
+        share: 0.548
+    flat:
+      n: 68541
+      roof_type:
+        value: dwelling_above
+        share: 0.628
+      roof_insulation:
+        value: low
+        share: 0.413
+      wall_type:
+        value: cavity
+        share: 0.778
+      wall_insulation:
+        value: full
+        share: 0.578
+      glazing:
+        value: double
+        share: 0.932
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.54
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.42
+      renewables:
+        value: none
+        share: 0.997
+      main_fuel:
+        value: mains_gas
+        share: 0.565
+      energy_rating:
+        value: C
+        share: 0.624
+    maisonette:
+      n: 6300
+      roof_type:
+        value: dwelling_above
+        share: 0.439
+      roof_insulation:
+        value: low
+        share: 0.482
+      wall_type:
+        value: cavity
+        share: 0.82
+      wall_insulation:
+        value: full
+        share: 0.522
+      glazing:
+        value: double
+        share: 0.914
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.63
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.473
+      renewables:
+        value: none
+        share: 0.994
+      main_fuel:
+        value: mains_gas
+        share: 0.664
+      energy_rating:
+        value: C
+        share: 0.573
+    semi_detached:
+      n: 23590
+      roof_type:
+        value: pitched_loft
+        share: 0.953
+      roof_insulation:
+        value: full
+        share: 0.439
+      wall_type:
+        value: cavity
+        share: 0.913
+      wall_insulation:
+        value: full
+        share: 0.616
+      glazing:
+        value: double
+        share: 0.969
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.691
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.613
+      renewables:
+        value: none
+        share: 0.97
+      main_fuel:
+        value: mains_gas
+        share: 0.922
+      energy_rating:
+        value: D
+        share: 0.508
+    terraced:
+      n: 48429
+      roof_type:
+        value: pitched_loft
+        share: 0.945
+      roof_insulation:
+        value: full
+        share: 0.48
+      wall_type:
+        value: cavity
+        share: 0.78
+      wall_insulation:
+        value: full
+        share: 0.604
+      glazing:
+        value: double
+        share: 0.958
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.723
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.629
+      renewables:
+        value: none
+        share: 0.953
+      main_fuel:
+        value: mains_gas
+        share: 0.888
+      energy_rating:
+        value: C
+        share: 0.558
+  '1983_1995':
+    bungalow:
+      n: 8880
+      roof_type:
+        value: pitched_loft
+        share: 0.98
+      roof_insulation:
+        value: full
+        share: 0.599
+      wall_type:
+        value: cavity
+        share: 0.857
+      wall_insulation:
+        value: full
+        share: 0.993
+      glazing:
+        value: double
+        share: 0.967
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.506
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.532
+      renewables:
+        value: none
+        share: 0.944
+      main_fuel:
+        value: mains_gas
+        share: 0.619
+      energy_rating:
+        value: D
+        share: 0.468
+    detached:
+      n: 12385
+      roof_type:
+        value: pitched_loft
+        share: 0.975
+      roof_insulation:
+        value: medium
+        share: 0.484
+      wall_type:
+        value: cavity
+        share: 0.926
+      wall_insulation:
+        value: full
+        share: 0.96
+      glazing:
+        value: double
+        share: 0.967
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.6
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.588
+      renewables:
+        value: none
+        share: 0.961
+      main_fuel:
+        value: mains_gas
+        share: 0.859
+      energy_rating:
+        value: D
+        share: 0.541
+    flat:
+      n: 34568
+      roof_type:
+        value: dwelling_above
+        share: 0.597
+      roof_insulation:
+        value: medium
+        share: 0.528
+      wall_type:
+        value: cavity
+        share: 0.888
+      wall_insulation:
+        value: full
+        share: 0.984
+      glazing:
+        value: double
+        share: 0.941
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.444
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.338
+      renewables:
+        value: none
+        share: 0.998
+      main_fuel:
+        value: mains_gas
+        share: 0.467
+      energy_rating:
+        value: C
+        share: 0.727
+    maisonette:
+      n: 1825
+      roof_type:
+        value: pitched_loft
+        share: 0.512
+      roof_insulation:
+        value: medium
+        share: 0.605
+      wall_type:
+        value: cavity
+        share: 0.873
+      wall_insulation:
+        value: full
+        share: 0.992
+      glazing:
+        value: double
+        share: 0.906
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.529
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.413
+      renewables:
+        value: none
+        share: 1.0
+      main_fuel:
+        value: mains_gas
+        share: 0.601
+      energy_rating:
+        value: C
+        share: 0.688
+    semi_detached:
+      n: 14256
+      roof_type:
+        value: pitched_loft
+        share: 0.989
+      roof_insulation:
+        value: medium
+        share: 0.481
+      wall_type:
+        value: cavity
+        share: 0.92
+      wall_insulation:
+        value: full
+        share: 0.974
+      glazing:
+        value: double
+        share: 0.962
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.674
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.601
+      renewables:
+        value: none
+        share: 0.975
+      main_fuel:
+        value: mains_gas
+        share: 0.895
+      energy_rating:
+        value: C
+        share: 0.543
+    terraced:
+      n: 17856
+      roof_type:
+        value: pitched_loft
+        share: 0.966
+      roof_insulation:
+        value: medium
+        share: 0.512
+      wall_type:
+        value: cavity
+        share: 0.914
+      wall_insulation:
+        value: full
+        share: 0.985
+      glazing:
+        value: double
+        share: 0.96
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.69
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.602
+      renewables:
+        value: none
+        share: 0.98
+      main_fuel:
+        value: mains_gas
+        share: 0.868
+      energy_rating:
+        value: C
+        share: 0.647
+  '1996_2006':
+    bungalow:
+      n: 4562
+      roof_type:
+        value: pitched_loft
+        share: 0.963
+      roof_insulation:
+        value: full
+        share: 0.811
+      wall_type:
+        value: cavity
+        share: 0.757
+      wall_insulation:
+        value: full
+        share: 0.993
+      glazing:
+        value: double
+        share: 0.988
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.572
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.665
+      renewables:
+        value: none
+        share: 0.949
+      main_fuel:
+        value: mains_gas
+        share: 0.675
+      energy_rating:
+        value: C
+        share: 0.585
+    detached:
+      n: 12723
+      roof_type:
+        value: pitched_loft
+        share: 0.967
+      roof_insulation:
+        value: full
+        share: 0.733
+      wall_type:
+        value: cavity
+        share: 0.872
+      wall_insulation:
+        value: full
+        share: 0.94
+      glazing:
+        value: double
+        share: 0.992
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.536
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.74
+      renewables:
+        value: none
+        share: 0.967
+      main_fuel:
+        value: mains_gas
+        share: 0.846
+      energy_rating:
+        value: C
+        share: 0.565
+    flat:
+      n: 58769
+      roof_type:
+        value: dwelling_above
+        share: 0.733
+      roof_insulation:
+        value: full
+        share: 0.889
+      wall_type:
+        value: cavity
+        share: 0.566
+      wall_insulation:
+        value: full
+        share: 0.996
+      glazing:
+        value: double
+        share: 0.974
+      heating_system:
+        value: electric_direct
+        share: 0.487
+      smart_controls:
+        value: programmer_thermostat
+        share: 0.376
+      renewables:
+        value: none
+        share: 0.998
+      main_fuel:
+        value: electricity
+        share: 0.651
+      energy_rating:
+        value: C
+        share: 0.66
+    maisonette:
+      n: 1721
+      roof_type:
+        value: pitched_loft
+        share: 0.44
+      roof_insulation:
+        value: full
+        share: 0.889
+      wall_type:
+        value: cavity
+        share: 0.561
+      wall_insulation:
+        value: full
+        share: 0.997
+      glazing:
+        value: double
+        share: 0.944
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.399
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.396
+      renewables:
+        value: none
+        share: 0.994
+      main_fuel:
+        value: mains_gas
+        share: 0.483
+      energy_rating:
+        value: C
+        share: 0.663
+    semi_detached:
+      n: 11350
+      roof_type:
+        value: pitched_loft
+        share: 0.964
+      roof_insulation:
+        value: full
+        share: 0.683
+      wall_type:
+        value: cavity
+        share: 0.886
+      wall_insulation:
+        value: full
+        share: 0.958
+      glazing:
+        value: double
+        share: 0.992
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.659
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.753
+      renewables:
+        value: none
+        share: 0.973
+      main_fuel:
+        value: mains_gas
+        share: 0.909
+      energy_rating:
+        value: C
+        share: 0.739
+    terraced:
+      n: 16857
+      roof_type:
+        value: pitched_loft
+        share: 0.908
+      roof_insulation:
+        value: full
+        share: 0.738
+      wall_type:
+        value: cavity
+        share: 0.863
+      wall_insulation:
+        value: full
+        share: 0.985
+      glazing:
+        value: double
+        share: 0.989
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.683
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.783
+      renewables:
+        value: none
+        share: 0.98
+      main_fuel:
+        value: mains_gas
+        share: 0.917
+      energy_rating:
+        value: C
+        share: 0.824
+  2007_onwards:
+    bungalow:
+      n: 5363
+      roof_type:
+        value: pitched_loft
+        share: 0.965
+      roof_insulation:
+        value: full
+        share: 0.971
+      wall_type:
+        value: cavity
+        share: 0.601
+      wall_insulation:
+        value: full
+        share: 0.986
+      glazing:
+        value: double
+        share: 0.991
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.477
+      smart_controls:
+        value: smart_zoned
+        share: 0.438
+      renewables:
+        value: none
+        share: 0.864
+      main_fuel:
+        value: mains_gas
+        share: 0.507
+      energy_rating:
+        value: C
+        share: 0.387
+    detached:
+      n: 23892
+      roof_type:
+        value: pitched_loft
+        share: 0.985
+      roof_insulation:
+        value: full
+        share: 0.982
+      wall_type:
+        value: cavity
+        share: 0.772
+      wall_insulation:
+        value: full
+        share: 0.995
+      glazing:
+        value: double
+        share: 0.996
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.759
+      smart_controls:
+        value: smart_zoned
+        share: 0.732
+      renewables:
+        value: none
+        share: 0.892
+      main_fuel:
+        value: mains_gas
+        share: 0.779
+      energy_rating:
+        value: B
+        share: 0.656
+    flat:
+      n: 117586
+      roof_type:
+        value: dwelling_above
+        share: 0.917
+      roof_insulation:
+        value: full
+        share: 0.954
+      wall_type:
+        value: timber_or_system
+        share: 0.475
+      wall_insulation:
+        value: full
+        share: 0.908
+      glazing:
+        value: double
+        share: 0.979
+      heating_system:
+        value: electric_direct
+        share: 0.678
+      smart_controls:
+        value: programmer_thermostat
+        share: 0.643
+      renewables:
+        value: none
+        share: 0.991
+      main_fuel:
+        value: electricity
+        share: 0.703
+      energy_rating:
+        value: B
+        share: 0.571
+    maisonette:
+      n: 2813
+      roof_type:
+        value: dwelling_above
+        share: 0.684
+      roof_insulation:
+        value: full
+        share: 0.954
+      wall_type:
+        value: cavity
+        share: 0.448
+      wall_insulation:
+        value: full
+        share: 0.919
+      glazing:
+        value: double
+        share: 0.949
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.502
+      smart_controls:
+        value: programmer_thermostat
+        share: 0.411
+      renewables:
+        value: none
+        share: 0.973
+      main_fuel:
+        value: mains_gas
+        share: 0.493
+      energy_rating:
+        value: B
+        share: 0.413
+    semi_detached:
+      n: 27554
+      roof_type:
+        value: pitched_loft
+        share: 0.987
+      roof_insulation:
+        value: full
+        share: 0.979
+      wall_type:
+        value: cavity
+        share: 0.783
+      wall_insulation:
+        value: full
+        share: 0.995
+      glazing:
+        value: double
+        share: 0.997
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.841
+      smart_controls:
+        value: smart_zoned
+        share: 0.578
+      renewables:
+        value: none
+        share: 0.866
+      main_fuel:
+        value: mains_gas
+        share: 0.849
+      energy_rating:
+        value: B
+        share: 0.7
+    terraced:
+      n: 28072
+      roof_type:
+        value: pitched_loft
+        share: 0.964
+      roof_insulation:
+        value: full
+        share: 0.97
+      wall_type:
+        value: cavity
+        share: 0.745
+      wall_insulation:
+        value: full
+        share: 0.99
+      glazing:
+        value: double
+        share: 0.994
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.813
+      smart_controls:
+        value: smart_zoned
+        share: 0.456
+      renewables:
+        value: none
+        share: 0.889
+      main_fuel:
+        value: mains_gas
+        share: 0.823
+      energy_rating:
+        value: B
+        share: 0.616
+  pre_1900:
+    bungalow:
+      n: 1038
+      roof_type:
+        value: pitched_loft
+        share: 0.896
+      roof_insulation:
+        value: full
+        share: 0.378
+      wall_type:
+        value: solid
+        share: 0.956
+      wall_insulation:
+        value: none
+        share: 0.843
+      glazing:
+        value: double
+        share: 0.752
+      heating_system:
+        value: other_fuel_boiler
+        share: 0.373
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.351
+      renewables:
+        value: none
+        share: 0.967
+      main_fuel:
+        value: other
+        share: 0.404
+      energy_rating:
+        value: E
+        share: 0.368
+    detached:
+      n: 10406
+      roof_type:
+        value: pitched_loft
+        share: 0.948
+      roof_insulation:
+        value: full
+        share: 0.453
+      wall_type:
+        value: solid
+        share: 0.977
+      wall_insulation:
+        value: none
+        share: 0.91
+      glazing:
+        value: double
+        share: 0.662
+      heating_system:
+        value: other_fuel_boiler
+        share: 0.499
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.451
+      renewables:
+        value: none
+        share: 0.944
+      main_fuel:
+        value: other
+        share: 0.518
+      energy_rating:
+        value: E
+        share: 0.366
+    flat:
+      n: 47464
+      roof_type:
+        value: dwelling_above
+        share: 0.689
+      roof_insulation:
+        value: none
+        share: 0.406
+      wall_type:
+        value: solid
+        share: 0.932
+      wall_insulation:
+        value: none
+        share: 0.928
+      glazing:
+        value: double
+        share: 0.442
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.607
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.404
+      renewables:
+        value: none
+        share: 0.999
+      main_fuel:
+        value: mains_gas
+        share: 0.706
+      energy_rating:
+        value: D
+        share: 0.437
+    maisonette:
+      n: 5416
+      roof_type:
+        value: pitched_loft
+        share: 0.616
+      roof_insulation:
+        value: none
+        share: 0.433
+      wall_type:
+        value: solid
+        share: 0.972
+      wall_insulation:
+        value: none
+        share: 0.948
+      glazing:
+        value: double
+        share: 0.447
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.721
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.521
+      renewables:
+        value: none
+        share: 0.998
+      main_fuel:
+        value: mains_gas
+        share: 0.861
+      energy_rating:
+        value: D
+        share: 0.493
+    semi_detached:
+      n: 10478
+      roof_type:
+        value: pitched_loft
+        share: 0.927
+      roof_insulation:
+        value: full
+        share: 0.365
+      wall_type:
+        value: solid
+        share: 0.955
+      wall_insulation:
+        value: none
+        share: 0.92
+      glazing:
+        value: double
+        share: 0.656
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.502
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.503
+      renewables:
+        value: none
+        share: 0.973
+      main_fuel:
+        value: mains_gas
+        share: 0.648
+      energy_rating:
+        value: E
+        share: 0.373
+    terraced:
+      n: 47605
+      roof_type:
+        value: pitched_loft
+        share: 0.925
+      roof_insulation:
+        value: none
+        share: 0.314
+      wall_type:
+        value: solid
+        share: 0.973
+      wall_insulation:
+        value: none
+        share: 0.96
+      glazing:
+        value: double
+        share: 0.752
+      heating_system:
+        value: gas_boiler_condensing
+        share: 0.683
+      smart_controls:
+        value: programmer_thermostat_trvs
+        share: 0.541
+      renewables:
+        value: none
+        share: 0.99
+      main_fuel:
+        value: mains_gas
+        share: 0.868
+      energy_rating:
+        value: D
+        share: 0.526
+energy_typical:
+  gas_homes_need_median_kwh_by_floor_area:
+    gas:
+      <50: 5395.0
+      50-100: 8937.0
+      100-150: 12084.0
+      150-200: 16532.0
+      '>200': 22449.0
+    electricity:
+      <50: 1816.0
+      50-100: 2317.0
+      100-150: 2882.0
+      150-200: 3679.0
+      '>200': 5141.0
+  electric_heated_homes_synthetic_median_electricity_kwh:
+    electric_direct:
+      100-150:
+        median_kwh: 11320.0
+        n: 139
+      50-100:
+        median_kwh: 6863.0
+        n: 2228
+      <50:
+        median_kwh: 4906.0
+        n: 1708
+    electric_storage:
+      100-150:
+        median_kwh: 13697.0
+        n: 115
+      50-100:
+        median_kwh: 7966.0
+        n: 1348
+      <50:
+        median_kwh: 5402.0
+        n: 820
+    heat_pump:
+      100-150:
+        median_kwh: 6103.0
+        n: 106
+      150-200:
+        median_kwh: 7688.0
+        n: 55
+      50-100:
+        median_kwh: 4141.0
+        n: 304
+      <50:
+        median_kwh: 3292.0
+        n: 52
+      '>200':
+        median_kwh: 11565.0
+        n: 37
+  note: 'Use only when no meter data: flag ENERGY_FROM_TYPICAL_HOMES (README P2.2).'

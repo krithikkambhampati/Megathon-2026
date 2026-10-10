@@ -1,0 +1,157 @@
+field,raw_value,count
+age_band,Pre-1900,26123
+age_band,Post-2006,6157
+age_band,0,171
+age_band,2108,31
+age_band,<null>,11
+age_band,Not applicable,9
+age_band,201,1
+age_band,2103,1
+age_band,2110,1
+age_band,3008,1
+glazing,SAP05:Windows,1813
+glazing,Ffenestri perfformiad uchel,545
+glazing,<null>,46
+glazing,Gwydrau dwbl llawn,12
+glazing,Gwydrau sengl,5
+glazing,Fully,1
+glazing,Gwydrau dwbl gan mwyaf,1
+glazing,"Solid, no insulation (assumed)",1
+heating_system,Community scheme,137258
+heating_system,SAP05:Main-Heating,3259
+heating_system,"Community scheme, mains gas",2183
+heating_system,Community scheme with CHP,1963
+heating_system,"Community scheme, radiators, mains gas",749
+heating_system,"Community scheme with CHP, mains gas",307
+heating_system,"Community scheme with CHP, waste combustion and waste combustion",158
+heating_system,"Community, community",156
+heating_system,"Community scheme, mains gas|Cynllun cymunedol, nwy prif gyflenwad",134
+heating_system,"Room heaters, |Gwresogyddion ystafell, |electric|trydan",113
+heating_system,"Community scheme, mains gas and biomass",105
+heating_system,"Community scheme utilising waste heat, mains gas",95
+heating_system,"Community heat pump, electric",76
+heating_system,"Community scheme, biomass",76
+heating_system,Community scheme utilising waste heat,65
+heating_system,"Community scheme, Room heaters, electric",60
+heating_system,"Community scheme, mains gas and mains gas",45
+heating_system,"Community heat pump, |Pwmp gwres cymunedol, |electric|trydan",38
+heating_system,"Community scheme, Room heaters, mains gas",22
+heating_system,"Community scheme, oil",22
+heating_system,"Bwyler a rheiddiaduron, trydan",20
+heating_system,Community scheme with CHP and mains gas,19
+heating_system,Community heat pump,13
+heating_system,"Community scheme, oil and mains gas",13
+heating_system,"Community scheme, Air source heat pump, underfloor, electric",10
+main_fuel,<null>,41931
+main_fuel,waste combustion,614
+main_fuel,LNG,6
+main_fuel,waste combustion - this is for backwards compatibility only and should not be used,1
+property_type,House,2880
+property_type,Park home,452
+renewables,<null>,292169
+roof_insulation,(another dwelling above),635600
+roof_insulation,(other premises above),117781
+roof_insulation,Average thermal transmittance 0.15 W/m²K,1883
+roof_insulation,"Pitched, Unknown loft insulation",1841
+roof_insulation,SAP05:Roof,1813
+roof_insulation,Average thermal transmittance 0.16 W/m²K,1401
+roof_insulation,Average thermal transmittance 0.18 W/m²K,1180
+roof_insulation,"Pitched, loft insulation",1127
+roof_insulation,Average thermal transmittance 0.14 W/m²K,1058
+roof_insulation,Average thermal transmittance 0.13 W/m²K,1037
+roof_insulation,Average thermal transmittance 0.11 W/m²K,1035
+roof_insulation,<null>,995
+roof_insulation,Average thermal transmittance 0.12 W/m²K,925
+roof_insulation,Average thermal transmittance 0.17 W/m²K,775
+roof_insulation,Average thermal transmittance 0.20 W/m²K,704
+roof_insulation,(same dwelling above),678
+roof_insulation,Pitched,673
+roof_insulation,Â²K,657
+roof_insulation,(other premises above)|(eiddo arall uwchben),517
+roof_insulation,Average thermal transmittance = 0.16 W/m?K,514
+roof_insulation,Average thermal transmittance 0.00 W/m?K,477
+roof_insulation,Average thermal transmittance 0 W/m²K,404
+roof_insulation,Average thermal transmittance 0.10 W/m²K,393
+roof_insulation,Average thermal transmittance 0.19 W/m²K,367
+roof_insulation,Flat,361
+roof_type,Average thermal transmittance 0.11 W/m²K,4444
+roof_type,Average thermal transmittance 0.15 W/m²K,4244
+roof_type,Average thermal transmittance 0.16 W/m²K,2863
+roof_type,Average thermal transmittance 0.13 W/m²K,2858
+roof_type,Average thermal transmittance 0.14 W/m²K,2831
+roof_type,Average thermal transmittance 0.12 W/m²K,2023
+roof_type,Average thermal transmittance 0.18 W/m²K,1996
+roof_type,Average thermal transmittance 0.10 W/m²K,1716
+roof_type,Average thermal transmittance 0.1 W/m²K,1467
+roof_type,SAP05:Roof,1333
+roof_type,Average thermal transmittance 0.17 W/m²K,1239
+roof_type,Average thermal transmittance 0.09 W/m²K,1142
+roof_type,<null>,848
+roof_type,Average thermal transmittance 0.20 W/m²K,641
+roof_type,(same dwelling above),636
+roof_type,Average thermal transmittance 0.19 W/m²K,559
+roof_type,Â²K,512
+roof_type,Average thermal transmittance 0.21 W/m²K,462
+roof_type,Average thermal transmittance 0.2 W/m²K,410
+roof_type,Average thermal transmittance 0.15 W/m?K,388
+roof_type,Average thermal transmittance 0.08 W/m²K,380
+roof_type,Average thermal transmittance 0.16 W/m?K,353
+roof_type,Average thermal transmittance 2.3 W/m²K,307
+roof_type,Average thermal transmittance 0.20 W/m?K,291
+roof_type,Average thermal transmittance 0.14 W/m?K,282
+smart_controls,SAP05:Main-Heating-Controls,3259
+smart_controls,"Flat rate charging, no stat control of room temperature",2341
+smart_controls,Not relevant (supplies DHW only),96
+smart_controls,<null>,5
+smart_controls,Rheolyddion i wresogyddion storio sy’n cadw llawer o wres,4
+smart_controls,Undefined Welsh description for crtrl code 2113,1
+wall_insulation,SAP05:Walls,1813
+wall_insulation,Â²K,1155
+wall_insulation,Average thermal transmittance = 0.32 W/m?K,503
+wall_insulation,Average thermal transmittance = 0.28 W/m?K,411
+wall_insulation,Average thermal transmittance = 0.29 W/m?K,337
+wall_insulation,Average thermal transmittance = 0.35 W/m?K,318
+wall_insulation,"Cavity wall,",292
+wall_insulation,Average thermal transmittance = 0.30 W/m?K,287
+wall_insulation,Average thermal transmittance = 0.27 W/m?K,265
+wall_insulation,Basement wall,196
+wall_insulation,Trawsyriannedd thermol cyfartalog 0.21 W/m²K,188
+wall_insulation,Average thermal transmittance = 0.26 W/m?K,169
+wall_insulation,Average thermal transmittance = 0.25 W/m?K,151
+wall_insulation,Trawsyriannedd thermol cyfartalog 0.17 W/m²K,142
+wall_insulation,Average thermal transmittance = 0.24 W/m?K,136
+wall_insulation,<null>,121
+wall_insulation,Average thermal transmittance = 0.20 W/m?K,117
+wall_insulation,Average thermal transmittance = 0.33 W/m?K,111
+wall_insulation,Average thermal transmittance = 0.39 W/m?K,106
+wall_insulation,"Cob, as built",103
+wall_insulation,Average thermal transmittance = 0.22 W/m?K,99
+wall_insulation,Average thermal transmittance = 0.31 W/m?K,97
+wall_insulation,Average thermal transmittance = 0.21 W/m?K,93
+wall_insulation,Average thermal transmittance = 0.36 W/m?K,88
+wall_insulation,Average thermal transmittance = 0.40 W/m?K,79
+wall_type,Average thermal transmittance 0.18 W/m²K,17310
+wall_type,Average thermal transmittance 0.19 W/m²K,17066
+wall_type,Average thermal transmittance 0.25 W/m²K,17005
+wall_type,Average thermal transmittance 0.27 W/m²K,16187
+wall_type,Average thermal transmittance 0.21 W/m²K,15602
+wall_type,Average thermal transmittance 0.20 W/m²K,15365
+wall_type,Average thermal transmittance 0.24 W/m²K,13168
+wall_type,Average thermal transmittance 0.28 W/m²K,12729
+wall_type,Average thermal transmittance 0.26 W/m²K,11805
+wall_type,Average thermal transmittance 0.23 W/m²K,11776
+wall_type,Average thermal transmittance 0.17 W/m²K,10907
+wall_type,Average thermal transmittance 0.22 W/m²K,10897
+wall_type,Average thermal transmittance 0.15 W/m²K,8650
+wall_type,Average thermal transmittance 0.16 W/m²K,8553
+wall_type,Average thermal transmittance 0.29 W/m²K,8003
+wall_type,Average thermal transmittance 0.14 W/m²K,6573
+wall_type,Average thermal transmittance 0.30 W/m²K,6141
+wall_type,Average thermal transmittance 0.31 W/m²K,3067
+wall_type,Average thermal transmittance 0.13 W/m²K,3020
+wall_type,Average thermal transmittance 1.00 W/m²K,2974
+wall_type,Average thermal transmittance 0.35 W/m²K,2457
+wall_type,Average thermal transmittance 0.34 W/m²K,2137
+wall_type,Average thermal transmittance 0.2 W/m²K,2122
+wall_type,Average thermal transmittance 0.33 W/m²K,2096
+wall_type,Average thermal transmittance 0.32 W/m²K,2066

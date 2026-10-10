@@ -1,0 +1,68 @@
+# Part 1 public data sources. Every file listed here is downloaded by download_public.py
+# into data/raw/<dataset>/ and recorded (url, sha256, bytes, accessed_at) in data/raw/DOWNLOADS.json.
+# EPC is NOT here: it needs a GOV.UK One Login and is downloaded manually (see data_pipeline/download/README.md).
+
+ppd:  # HM Land Registry Price Paid Data, OGL v3 (address data: Royal Mail/OS restrictions -> addresses dropped after join)
+  licence: "OGL v3. Contains HM Land Registry data (c) Crown copyright and database right. Address data subject to Royal Mail/OS terms."
+  files:
+    - {name: pp-2015.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2015.csv"}
+    - {name: pp-2016.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2016.csv"}
+    - {name: pp-2017.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2017.csv"}
+    - {name: pp-2018.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2018.csv"}
+    - {name: pp-2019.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2019.csv"}
+    - {name: pp-2020.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2020.csv"}
+    - {name: pp-2021.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2021.csv"}
+    - {name: pp-2022.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2022.csv"}
+    - {name: pp-2023.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2023.csv"}
+    - {name: pp-2024.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2024.csv"}
+    - {name: pp-2025.csv, url: "https://price-paid-data.publicdata.landregistry.gov.uk/pp-2025.csv"}
+
+hpi:  # UK House Price Index, OGL v3
+  licence: "OGL v3. Contains HM Land Registry data (c) Crown copyright."
+  files:
+    - {name: UK-HPI-full-file-2026-07.csv, url: "https://publicdata.landregistry.gov.uk/market-trend-data/house-price-index-data/UK-HPI-full-file-2026-07.csv"}
+
+need:  # DESNZ National Energy Efficiency Data-Framework, consumption tables 2026 (data year 2024), OGL v3
+  licence: "OGL v3. Department for Energy Security and Net Zero."
+  files:
+    - {name: Consumption_headline_EW_2024.xlsx, url: "https://assets.publishing.service.gov.uk/media/6a2827843b15d05a7ce31fa7/Consumption_headline_EW_2024.xlsx"}
+    - {name: Consumption_multiple_attributes_EW_2024.xlsx, url: "https://assets.publishing.service.gov.uk/media/6a282785ade52dc08822182a/Consumption_multiple_attributes_EW_2024.xlsx"}
+    - {name: Consumption_gas_per_square_metre_EW_2024.xlsx, url: "https://assets.publishing.service.gov.uk/media/6a2827843b15d05a7ce31fa6/Consumption_gas_per_square_metre_EW_2024.xlsx"}
+    - {name: Consumption_additional_EW_2024.xlsx, url: "https://assets.publishing.service.gov.uk/media/6a282783db0592d809052b13/Consumption_additional_EW_2024.xlsx"}
+    - {name: Consumption_new_builds_EW_2024.xlsx, url: "https://assets.publishing.service.gov.uk/media/6a2827853b15d05a7ce31fa8/Consumption_new_builds_EW_2024.xlsx"}
+
+ghg:  # DESNZ Greenhouse gas reporting conversion factors 2026, OGL v3
+  licence: "OGL v3. Department for Energy Security and Net Zero."
+  files:
+    - {name: ghg-conversion-factors-2026-flat-format-revised.xlsx, url: "https://assets.publishing.service.gov.uk/media/6a6c9748862aaf18d9c62ac9/ghg-conversion-factors-2026-flat-format-revised.xlsx"}
+
+metoffice:  # HadUK-Grid regional monthly mean temperature series, OGL v3
+  licence: "OGL v3. Met Office (c) Crown copyright."
+  files:
+    - {name: Tmean_England_and_Wales.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/England_and_Wales.txt"}
+    - {name: Tmean_England_E_and_NE.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/England_E_and_NE.txt"}
+    - {name: Tmean_England_NW_and_N_Wales.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/England_NW_and_N_Wales.txt"}
+    - {name: Tmean_Midlands.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/Midlands.txt"}
+    - {name: Tmean_East_Anglia.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/East_Anglia.txt"}
+    - {name: Tmean_England_SE_and_Central_S.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/England_SE_and_Central_S.txt"}
+    - {name: Tmean_England_SW_and_S_Wales.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/England_SW_and_S_Wales.txt"}
+    - {name: Tmean_Wales.txt, url: "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/datasets/Tmean/date/Wales.txt"}
+
+pvgis:  # EU JRC PVGIS v5.2, 1 kWp, 35 deg tilt, due south, 14% system loss. Free use with citation.
+  licence: "PVGIS (c) European Union, 2001-2026. Free use with attribution."
+  files:
+    - {name: pv_north_east.json,       url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=54.97&lon=-1.61&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_north_west.json,       url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=53.48&lon=-2.24&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_yorkshire_humber.json, url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=53.80&lon=-1.55&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_east_midlands.json,    url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=52.95&lon=-1.15&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_west_midlands.json,    url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=52.49&lon=-1.89&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_east_of_england.json,  url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=52.63&lon=1.30&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_london.json,           url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=51.51&lon=-0.13&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_south_east.json,       url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=50.82&lon=-0.14&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_south_west.json,       url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=51.45&lon=-2.59&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+    - {name: pv_wales.json,            url: "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=51.48&lon=-3.18&peakpower=1&loss=14&angle=35&aspect=0&outputformat=json"}
+
+lcl:  # UK Power Networks Low Carbon London smart meter trial (2011-2014), half-hourly electricity, CC BY
+  licence: "Creative Commons Attribution. UK Power Networks, SmartMeter Energy Consumption Data in London Households (London Datastore)."
+  files:
+    - {name: Partitioned_LCL_Data.zip, url: "https://data.london.gov.uk/download/vqm0d/04feba67-f1a3-4563-98d0-f3071e3d56d1/Partitioned%20LCL%20Data.zip"}

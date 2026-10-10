@@ -1,0 +1,23 @@
+# Part 1 (data pipeline) settings. Owned by Part 1.
+# seed and as_of_month must match config/global.yaml (owned by Part 2) once it exists.
+seed: 42
+as_of_month: "2026-07"          # last month of the UK HPI download; current values are indexed to this month
+energy_year_end_month: "2026-06" # synthetic meter year = 12 months ending here (last full month before as_of)
+
+# Local authorities sampled for the product dataset (regional spread + one off-gas-heavy area).
+# EPC rows outside these are ignored even if the downloaded file is national.
+target_local_authorities:
+  E08000003: Manchester            # north_west
+  E08000035: Leeds                 # yorkshire_humber
+  E08000021: Newcastle upon Tyne   # north_east
+  E08000025: Birmingham            # west_midlands
+  E06000018: Nottingham            # east_midlands
+  E07000148: Norwich               # east_of_england
+  E06000023: Bristol               # south_west
+  E06000052: Cornwall              # south_west (off-gas heavy)
+  W06000015: Cardiff               # wales
+  E09000007: Camden                # london
+  E06000043: Brighton and Hove     # south_east
+
+product_sample_size: 50000        # latest-certificate properties kept for the product dataset
+ppd_years: [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
