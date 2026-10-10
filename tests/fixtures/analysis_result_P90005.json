@@ -1,6 +1,6 @@
 {
-  "contract_version": "1.0.0",
-  "analysis_id": "28c0d9a4858a920319d652fdad77860bf294c3ed4ab4733b40fef8caff2e01dc",
+  "contract_version": "1.1.0",
+  "analysis_id": "98817f4a65cf995e7d583378d2e9ae4d4a19c9148f6f21a23a7f459fb6aff067",
   "model_versions": {
     "energy": "stub-0",
     "rating": "stub-0",
@@ -282,8 +282,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 8000.0,
-      "cost_high_gbp": 22000.0,
+      "cost_low_gbp": 12000.0,
+      "cost_high_gbp": 15000.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -301,8 +301,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 150.0,
-      "cost_high_gbp": 350.0,
+      "cost_low_gbp": 370.0,
+      "cost_high_gbp": 600.0,
       "assessor_likelihood": 0.5
     },
     {
@@ -321,7 +321,7 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 8000.0,
+      "cost_low_gbp": 10000.0,
       "cost_high_gbp": 14000.0,
       "assessor_likelihood": 0.5
     },
@@ -371,8 +371,8 @@
       "standalone_saving": null,
       "incremental_saving": null,
       "standalone_carbon_kg": null,
-      "cost_low_gbp": 5000.0,
-      "cost_high_gbp": 10000.0,
+      "cost_low_gbp": 3800.0,
+      "cost_high_gbp": 6000.0,
       "assessor_likelihood": null
     }
   ],

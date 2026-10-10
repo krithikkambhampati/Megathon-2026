@@ -203,5 +203,7 @@ class Engine:
   kWp, not a fractional effect).
 - `tests/conftest.py` puts its own directory on `sys.path`, so `from conftest import …` works whether or not
   `tests/` has an `__init__.py`.
+- `CONTRACT_VERSION` 1.1.0 (PR #1 review): `ResultDiff` adds `score_after` / `class_after` rows; `score` /
+  `score_class` stay (they move only with overrides). Fixtures regenerated.
 - In every result, `rank` and `incremental_saving` describe the reported package (recommended, custom or
   none), so incremental savings always sum to `savings.saving` (IT3).

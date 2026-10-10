@@ -29,7 +29,10 @@ def test_numeric_delta_is_new_minus_base(pair) -> None:
     base, new = pair
     rows = {r.key: r for r in diff_results(base, new).rows}
     assert rows["net_kwh"].delta == new.savings.saving.net_kwh - base.savings.saving.net_kwh
-    assert rows["score"].delta == new.score.score - base.score.score
+    assert rows["score"].delta == new.score.score - base.score.score == 0  # no overrides
+    assert rows["score_after"].delta == new.score_after.score - base.score_after.score
+    assert rows["score_after"].delta < 0  # loft alone scores lower than the full recommended package
+    assert rows["class_after"].delta is None
     assert rows["score_class"].delta is None and rows["rating_after"].delta is None
 
 
@@ -48,3 +51,11 @@ def test_missing_side_gives_no_delta() -> None:
     new = engine.analyse(home_input(heating_system=None, energy={}))  # savings insufficient
     rows = {r.key: r for r in diff_results(base, new).rows}
     assert rows["net_kwh"].new is None and rows["net_kwh"].delta is None
+
+
+def test_override_moves_current_score() -> None:
+    engine = Engine.from_config()
+    base = engine.analyse(home_input())
+    new = engine.run_scenario(home_input(), Scenario(name="dg", overrides={"glazing": "double"}))
+    rows = {r.key: r for r in diff_results(base, new).rows}
+    assert rows["score"].delta > 0
