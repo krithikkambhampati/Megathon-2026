@@ -38,3 +38,30 @@ def _request(method: str, path: str, *, json: Any = None, params: dict | None = 
 
 def health() -> dict:
     return _request("GET", "/v1/health", timeout=HEALTH_TIMEOUT_S)
+
+
+def examples() -> list[dict]:
+    return _request("GET", "/v1/examples")
+
+
+def example(property_id: str) -> dict:
+    return _request("GET", f"/v1/examples/{property_id}")
+
+
+def analyse(home: dict, customer_id: str | None = None) -> dict:
+    return _request("POST", "/v1/analyse", json={"home": home, "customer_id": customer_id})
+
+
+def scenario(home: dict, scenario: dict, customer_id: str | None = None) -> dict:
+    body = {"home": home, "scenario": scenario, "customer_id": customer_id}
+    return _request("POST", "/v1/scenario", json=body)
+
+
+def diff(base_analysis_id: str, new_analysis_id: str) -> dict:
+    return _request(
+        "POST", "/v1/diff", json={"base_analysis_id": base_analysis_id, "new_analysis_id": new_analysis_id}
+    )
+
+
+def methodology() -> dict:
+    return _request("GET", "/v1/methodology")

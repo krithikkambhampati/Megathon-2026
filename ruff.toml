@@ -8,7 +8,7 @@ select = ["E", "F", "I", "B", "UP"]
 [lint.isort]
 # ui/ modules are imported by bare name (Streamlit puts ui/ on sys.path)
 known-first-party = ["greenhome", "api", "data_pipeline", "training", "evaluation",
-                     "api_client", "state", "components"]
+                     "api_client", "state", "components", "labels"]
 
 [lint.flake8-bugbear]
 # FastAPI's dependency-injection idiom: `x = Depends(...)` in route signatures is intended
