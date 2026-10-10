@@ -1,0 +1,44 @@
+# P4 LLM layer settings (README P4.1, docs/ROADMAP_P4.md). Environment variables override the keys marked
+# "env". Secrets never go here: LLM_API_KEY lives only in .env.
+# The provider is NOT set here on purpose: it comes from env LLM_PROVIDER only (ollama | openai_compat), so
+# tests and machines without a .env run on templates.
+
+model: TODO_PIN_AFTER_BENCH       # env LLM_MODEL overrides. Pinned after `make llm-bench` on the demo laptop
+base_url: http://localhost:11434  # env LLM_BASE_URL (openai_compat: the endpoint's /v1 base URL)
+
+# `make llm-bench` candidates (exact tags confirmed with `ollama pull` on the demo laptop).
+# Must fit an RTX 4050 (6 GB VRAM) at num_ctx below: one 7–8B and one 3–4B instruct model.
+candidates:
+  - qwen2.5:7b-instruct-q4_K_M
+  - llama3.1:8b-instruct-q4_K_M
+  - qwen2.5:3b-instruct-q4_K_M
+
+# Determinism (README L5)
+temperature: 0
+seed: 42
+num_ctx: 4096                     # fact sheet ≲1.5k + system ~0.4k + retry ≈ 2.7k tokens; bench also tries 8192
+keep_alive: 2h                    # sent on EVERY Ollama request so the model stays loaded mid-demo
+
+# Time limits, seconds
+answer_budget_s: 25               # env LLM_ANSWER_BUDGET_S: cap for a WHOLE explain()/chat() answer (UI: 30 s)
+call_timeout_s: 30                # env LLM_TIMEOUT_S: hard cap for any single call
+call_cap_s:                       # per-prompt caps inside the budget
+  router: 4
+  whatif_parse: 6
+  memory_parse: 6
+  answer: 12
+min_call_s: 3                     # don't start an LLM call with less than this left
+min_retry_s: 8                    # TODO_BENCH: set to the bench's p95 answer time; retry only with this left
+connect_timeout_s: 2              # reachability check
+warmup_timeout_s: 120             # cold model load (runs in a background thread)
+
+# Max tokens per prompt (~170 words ≈ 230–260 tokens)
+max_tokens:
+  explain: 300
+  whatif_answer: 300
+  whatif_parse: 200
+  memory_parse: 200
+  router: 16
+  warmup: 1
+
+cache_max_entries: 1024           # in-memory LRU of identical requests
