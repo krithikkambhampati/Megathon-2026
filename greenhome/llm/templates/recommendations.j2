@@ -1,0 +1,24 @@
+{% set v = view.recommendations %}
+{% if not v["items"] %}
+There are no retrofits we can recommend for this home from the information given.
+{% else %}
+Here are the retrofits that suit your home, in the order we recommend doing them:
+{% for r in v["items"] %}
+- {% if r.rank %}{{ r.rank }}. {% endif %}{{ r.name }}{% if r.suitability %} (suitability: {{ r.suitability | lower }}){% endif %}{% if r.feasibility == "needs_survey" %} (needs a survey first){% endif %}.{% if r.reasons %} {{ r.reasons | join(" ") }}{% endif %}{% for fuel, word in [("gas_kwh", "Gas"), ("electricity_kwh", "Electricity")] if r.standalone and r.standalone[fuel] %} {{ word }} on its own: {{ r.standalone[fuel] }}{% if r.standalone[fuel ~ "_increase"] %} (use goes up){% else %} estimated saving{% endif %}.{% endfor %}{% if r.cost %} Typical cost before grants: {{ r.cost }}.{% endif %}{% if r.depends_on %} Best done after: {{ r.depends_on | join(", ") }}.{% endif %}
+
+{% endfor %}
+{% if v.savings_status == "out_of_scope" %}
+
+Savings can't be estimated for your heating fuel, so these are listed without savings figures.
+{% elif v.savings_status == "insufficient" %}
+
+We don't have enough information to estimate savings yet, so these are listed without savings figures.
+{% endif %}
+{% endif %}
+{% if v.infeasible %}
+
+Not suitable for your home: {% for r in v.infeasible %}{{ r.name }} ({{ r.reasons | join(" ") }}){{ "; " if not loop.last else "." }}{% endfor %}
+
+{% endif %}
+All savings are estimates, not guarantees.
+{% include "_notes.j2" %}

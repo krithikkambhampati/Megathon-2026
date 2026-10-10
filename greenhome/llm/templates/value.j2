@@ -1,0 +1,15 @@
+{% set v = view.value %}
+{% if v.status != "ok" %}
+We can't estimate a change in property value for this home yet. Your own estimate of its value, or its region, type, floor area and age, would let us give an indicative range.
+{% if v.rating %}
+The recommended retrofits could change the estimated EPC rating: {{ v.rating }}.
+{% endif %}
+{% else %}
+{% if v.rating %}
+The recommended retrofits could change your home's estimated EPC rating: {{ v.rating }} (SAP {{ v.sap_before }} → {{ v.sap_after }}).
+{% endif %}
+Starting from a current value of {{ v.current }} ({{ "the value you gave us" if v.current_source == "user" else "our model's estimate" }}), the indicative change in value is {{ v.uplift_range }}, with a middle estimate of {{ v.uplift_mid }}{% if v.value_range %}, which would put the value at roughly {{ v.value_range }}{% endif %}.
+
+This is indicative, not guaranteed or causal: it reflects how sale prices vary with EPC ratings across similar homes, not a promise that a retrofit adds this much. It is not financial or mortgage advice.
+{% endif %}
+{% include "_notes.j2" %}
