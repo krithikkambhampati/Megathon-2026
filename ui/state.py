@@ -11,6 +11,7 @@ DEFAULTS: dict = {
     "chat_history": [],  # list[dict]
     "customer_id": None,  # str | None
     "pending_memory": None,  # list[dict] | None  (unconfirmed memory proposal)
+    "scenario_diff": None,  # dict | None  (ResultDiff JSON: base_analysis vs scenario_analysis)
 }
 
 
