@@ -25,7 +25,6 @@ const bedroomsText = (n) => (n === null || n === undefined ? null : `${n} ${n ==
 function Hero() {
   return html`<section class="cat-hero" aria-labelledby="cat-title">
     <div class="stack gap-5 cat-hero-text">
-      <span class="eyebrow">Green Home Score</span>
       <h1 id="cat-title">Know how green a home is, and what it would take to improve it.</h1>
       <p class="lead">A score out of 100 from the home's details and energy use, with the improvements that matter most,
         what they could save and how they could change its value.</p>
@@ -51,7 +50,7 @@ function HomeCard({ home }) {
     ${home.reference && html`<div class="cat-ref"><${Icon} name="info" size=${14} />From the challenge brief</div>`}
     <div class="cat-card-top">
       <span class="cat-glyph"><${HouseGlyph} type=${glyphType(home.property_type)} size=${40} /></span>
-      <${EpcBadge} rating=${home.epc_rating} />
+      <span class="cat-epc"><span class="small muted">EPC</span><${EpcBadge} rating=${home.epc_rating} /></span>
     </div>
     <div class="stack gap-1">
       <h3 class="cat-name"><a href=${`#/home/${encodeURIComponent(home.id)}`} onClick=${open}>${home.name}</a></h3>
@@ -62,7 +61,7 @@ function HomeCard({ home }) {
       <${ScoreRing} score=${home.score ?? null} cls=${home.score_class} size=${64} stroke=${6} label="" />
       <div class="stack gap-1">
         <${ClassPill} cls=${home.score_class} />
-        ${hasAfter && html`<span class="cat-after">Could reach <strong class="num">${fmtScore(home.score_after)}</strong></span>`}
+        ${hasAfter && html`<span class="cat-after"><strong class="num">${fmtScore(home.score_after)}</strong> after improvements</span>`}
       </div>
     </div>
     ${home.highlights && home.highlights.length > 0 && html`<div class="row wrap gap-2 cat-chips">
@@ -105,7 +104,8 @@ export function CatalogueScreen() {
       <div class="cat-list-head">
         <div class="stack gap-2">
           <h2 id="cat-homes">Explore example homes</h2>
-          <p class="muted">Real homes from public records. Open one to see its full report, then try improvements. Scores are estimates.</p>
+          <p class="muted">Real homes from public energy certificates, chosen to show different situations. The number in the ring is
+            the Green Home Score out of 100; the coloured arrow is the official EPC rating. Open one to see its full report.</p>
         </div>
         ${homes && classes.length > 1 && html`<div class="cat-filter">
           <${Segmented} options=${filterOptions} value=${filter} onChange=${setFilter} ariaLabel="Filter by score" /></div>`}

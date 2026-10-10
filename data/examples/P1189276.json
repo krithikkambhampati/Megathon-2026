@@ -1,0 +1,88 @@
+{
+  "property_id": "P1189276",
+  "customer_id": "C391295",
+  "property_type": "semi_detached",
+  "age_band": "1930_1949",
+  "floor_area_m2": 115.0,
+  "bedrooms": 3,
+  "region": "north_west",
+  "current_value_gbp": 406800.0,
+  "energy_rating": "D",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "none",
+  "wall_type": "cavity",
+  "wall_insulation": "none",
+  "glazing": "double",
+  "heating_system": "gas_boiler_condensing",
+  "main_fuel": "mains_gas",
+  "renewables": "none",
+  "smart_controls": "programmer_thermostat",
+  "listed_or_conservation": null,
+  "outdoor_space": "yes",
+  "energy": {
+    "annual_electricity_kwh": null,
+    "annual_gas_kwh": null,
+    "monthly": [
+      {
+        "month": "2025-07",
+        "electricity_kwh": 144.4,
+        "gas_kwh": 735.1
+      },
+      {
+        "month": "2025-08",
+        "electricity_kwh": 145.3,
+        "gas_kwh": 727.2
+      },
+      {
+        "month": "2025-09",
+        "electricity_kwh": 144.5,
+        "gas_kwh": 987.2
+      },
+      {
+        "month": "2025-10",
+        "electricity_kwh": 169.4,
+        "gas_kwh": 1562.6
+      },
+      {
+        "month": "2025-11",
+        "electricity_kwh": 173.6,
+        "gas_kwh": 2235.0
+      },
+      {
+        "month": "2025-12",
+        "electricity_kwh": 188.7,
+        "gas_kwh": 2953.8
+      },
+      {
+        "month": "2026-01",
+        "electricity_kwh": 189.6,
+        "gas_kwh": 2931.1
+      },
+      {
+        "month": "2026-02",
+        "electricity_kwh": 169.4,
+        "gas_kwh": 2416.6
+      },
+      {
+        "month": "2026-03",
+        "electricity_kwh": 172.1,
+        "gas_kwh": 2564.3
+      },
+      {
+        "month": "2026-04",
+        "electricity_kwh": 153.7,
+        "gas_kwh": 1996.6
+      },
+      {
+        "month": "2026-05",
+        "electricity_kwh": 153.4,
+        "gas_kwh": 1408.4
+      },
+      {
+        "month": "2026-06",
+        "electricity_kwh": 144.9,
+        "gas_kwh": 863.2
+      }
+    ]
+  }
+}

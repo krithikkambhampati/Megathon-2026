@@ -95,10 +95,10 @@ function ValueBlock({ value }) {
   return html`<div class="rb-value">
     <div class="rb-value-ratings" aria-label="Energy rating today and after the plan">
       <div class="stack gap-1"><span class="stat-label">Rating today</span><div class="row gap-2"><${EpcBadge} rating=${value.rating_before} />
-        <span class="muted small num">SAP ${fmtSap(value.sap_before)}</span></div></div>
+        <span class="muted small"><span class="num">${fmtSap(value.sap_before)}</span> of 100 points</span></div></div>
       <${Icon} name="arrow-right" size=${20} className="faint" />
       <div class="stack gap-1"><span class="stat-label">After the plan</span><div class="row gap-2"><${EpcBadge} rating=${value.rating_after} />
-        <span class="muted small num">SAP ${fmtSap(value.sap_after)}</span></div></div>
+        <span class="muted small"><span class="num">${fmtSap(value.sap_after)}</span> of 100 points</span></div></div>
     </div>
     <div class="rb-stats">
       <${Stat} label="Indicative value change" value=${fmtPct(value.uplift_pct_mid)} hint=${`Likely between ${fmtRange(value.uplift_pct_low, value.uplift_pct_high, fmtPct)}`} />

@@ -72,3 +72,6 @@
 }
 .hm-form .field { align-content: start; }
 .hm-form .segmented { justify-self: start; max-width: 100%; }
+.hm-energy-why { display: grid; gap: 6px; margin: -4px 0 4px; padding: 14px 16px; list-style: none; background: var(--brand-tint);
+  border-radius: var(--r-sm); font-size: 14px; color: var(--ink-2); }
+.hm-energy-why strong { color: var(--ink); font-weight: 600; }

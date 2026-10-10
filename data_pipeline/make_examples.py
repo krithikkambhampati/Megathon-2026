@@ -206,6 +206,76 @@ def main() -> None:
             ),
         ),
     ]
+    # added 2026-10-11: fill gaps in the catalogue (Very poor, maisonette, London, North, A-rated)
+    examples += [
+        (
+            "Very poor electric home",
+            "Rated G with direct electric heating: the bottom of the scale",
+            pick(
+                test,
+                complete & test.energy_rating.eq("G") & test.heating_system.eq("electric_direct"),
+                "intensity",
+            ),
+        ),
+        (
+            "Maisonette",
+            "A two-storey flat with its own entrance, heated by gas",
+            pick(
+                test,
+                complete
+                & test.property_type.eq("maisonette")
+                & test.heating_system.eq("gas_boiler_condensing"),
+                "intensity",
+            ),
+        ),
+        (
+            "London terrace",
+            "A pre-1900 London terrace with solid walls",
+            pick(
+                test,
+                complete
+                & test.region.eq("london")
+                & test.property_type.eq("terraced")
+                & test.age_band.eq("pre_1900"),
+                "intensity",
+            ),
+        ),
+        (
+            "Insulate first",
+            "Empty loft and unfilled cavity walls: insulation comes before a heat pump",
+            pick(
+                test,
+                complete
+                & test.region.isin(["north_west", "north_east"])
+                & test.property_type.eq("semi_detached")
+                & test.roof_insulation.eq("none")
+                & test.wall_type.eq("cavity")
+                & test.wall_insulation.eq("none")
+                & test.heating_system.str.startswith("gas"),
+                "intensity",
+            ),
+        ),
+        (
+            "A-rated home",
+            "Rated A, but still gas heated: the score looks beyond the EPC rating",
+            pick(test, complete & test.energy_rating.eq("A"), "intensity"),
+        ),
+        (
+            "Solar water heating",
+            "Solar thermal panels heat water; they are not solar electricity",
+            pick(
+                test,
+                complete & test.renewables.eq("solar_thermal") & test.heating_system.str.startswith("gas"),
+            ),
+        ),
+        (
+            "Only yearly totals",
+            "No monthly readings, just a yearly total per fuel",
+            pick(
+                test, test.missingness_pattern.eq("annual_only") & test.heating_system.str.startswith("gas")
+            ),
+        ),
+    ]
     OUT.mkdir(parents=True, exist_ok=True)
     for f in OUT.glob("*.json"):
         f.unlink()

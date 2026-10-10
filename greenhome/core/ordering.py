@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from greenhome.config import get_config
 from greenhome.contracts import Feasibility, FuelSaving, HomeInput, Retrofit, Suitability
 from greenhome.core.score import insulation_sub_score
+from greenhome.format import round_half_up
 
 _WORST_LAST = [s.value for s in Suitability]  # high, medium, low
 
@@ -96,7 +97,8 @@ def rate_suitability(
                 reasons.append("QUICK_WIN_LOW_COST")
             if spec.cost_mid_gbp >= rs.high_cost_gbp and sh < rs.low_saving_share:
                 reasons.append("HIGH_COST_LOW_SAVING")
-            if sv.electricity_kwh < 0 and sv.gas_kwh > 0:
+            # only an increase the user can see: a few kWh of model noise displays as "0 kWh/year"
+            if round_half_up(sv.electricity_kwh, 10) < 0 and sv.gas_kwh > 0:
                 reasons.append("ELECTRICITY_RISES_GAS_FALLS")
             if c.feasibility == Feasibility.needs_survey:
                 level = _cap(level, Suitability.medium.value)

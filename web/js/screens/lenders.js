@@ -222,8 +222,9 @@ export function LendersScreen() {
     <header class="stack gap-3 lenders-intro">
       <span class="eyebrow">For lenders</span>
       <h1>Where a portfolio can improve most</h1>
-      <p class="lead">Every home is scored by the same models and ranked by improvement potential: the share of the energy it buys
-        that all suitable retrofits together could save. Start with the homes at the top.</p>
+      <p class="lead">For banks and lenders looking across many homes at once, such as a mortgage book. Every home is scored the
+        same way and ranked by improvement potential: how much of the electricity and gas it buys today could be saved if it
+        made every improvement that suits it. The homes at the top have the most to gain.</p>
     </header>
 
     ${err ? html`<${LoadError} err=${err} onRetry=${() => setAttempt(attempt + 1)} />`

@@ -66,6 +66,48 @@
     "synthetic": false
   },
   {
+    "property_id": "P1047080",
+    "title": "Very poor electric home",
+    "why_interesting": "Rated G with direct electric heating: the bottom of the scale",
+    "synthetic": false
+  },
+  {
+    "property_id": "P847173",
+    "title": "Maisonette",
+    "why_interesting": "A two-storey flat with its own entrance, heated by gas",
+    "synthetic": false
+  },
+  {
+    "property_id": "P258120",
+    "title": "London terrace",
+    "why_interesting": "A pre-1900 London terrace with solid walls",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1189276",
+    "title": "Insulate first",
+    "why_interesting": "Empty loft and unfilled cavity walls: insulation comes before a heat pump",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1866003",
+    "title": "A-rated home",
+    "why_interesting": "Rated A, but still gas heated: the score looks beyond the EPC rating",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1001607",
+    "title": "Solar water heating",
+    "why_interesting": "Solar thermal panels heat water; they are not solar electricity",
+    "synthetic": false
+  },
+  {
+    "property_id": "P1004136",
+    "title": "Only yearly totals",
+    "why_interesting": "No monthly readings, just a yearly total per fuel",
+    "synthetic": false
+  },
+  {
     "property_id": "P1000205_minimal",
     "title": "Almost no information",
     "why_interesting": "Only type and region known: app must say what it cannot estimate",

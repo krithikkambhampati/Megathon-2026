@@ -59,3 +59,4 @@
   .cat-card, .cat-go svg { transition: none; }
   .cat-card:not(.is-skeleton):hover { transform: none; }
 }
+.cat-epc { display: inline-flex; align-items: center; gap: 6px; }

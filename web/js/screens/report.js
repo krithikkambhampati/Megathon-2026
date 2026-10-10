@@ -11,7 +11,7 @@ import { ImpactSection } from "./report/impact.js";
 import { ScenarioSection } from "./report/scenario.js";
 import { AskDrawer } from "./report/ask.js";
 
-const TABS = [["overview", "Overview"], ["plan", "Improvement plan"], ["impact", "Savings and value"], ["try", "Try a scenario"]];
+const TABS = [["overview", "Overview"], ["plan", "Improvement plan"], ["impact", "Savings and value"], ["try", "Make your own plan"]];
 
 function SectionNav() {
   const [active, setActive] = useState("overview");

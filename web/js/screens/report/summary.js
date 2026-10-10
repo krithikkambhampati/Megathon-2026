@@ -63,7 +63,7 @@ function KeyStats({ analysis }) {
   const { score_after: after, savings, home, peer } = analysis;
   const stats = [];
   if (after?.status === "ok") {
-    stats.push(html`<${Stat} key="after" label="Score after the full plan" value=${fmtScore(after.score)}
+    stats.push(html`<${Stat} key="after" label="Score after all the improvements" value=${fmtScore(after.score)}
       hint=${label("ScoreClass", after.score_class)} tone="good" />`);
   }
   if (home.intensity_kwh_m2 !== null && home.intensity_kwh_m2 !== undefined) {
@@ -73,10 +73,10 @@ function KeyStats({ analysis }) {
     stats.push(html`<${Stat} key="use" label="Energy use" value=${fmtKwh(home.energy.purchased_kwh)} />`);
   }
   if (savings.status === "ok") {
-    stats.push(html`<${Stat} key="pot" label="Improvement potential" value=${fmtPct(savings.improvement_potential_pct)}
-      hint="Less energy bought each year. Estimate" tone="good" />`);
+    stats.push(html`<${Stat} key="pot" label="Energy you could stop buying" value=${fmtPct(savings.improvement_potential_pct)}
+      hint="Of the electricity and gas bought today, with every improvement. Estimate" tone="good" />`);
   } else {
-    stats.push(html`<${Stat} key="pot" label="Improvement potential" value="—"
+    stats.push(html`<${Stat} key="pot" label="Energy you could stop buying" value="—"
       hint=${savings.status === "out_of_scope" ? reasonText("OUT_OF_SCOPE_FUEL") : flagText("INSUFFICIENT_INFO_SAVINGS")} />`);
   }
   return html`<div class="rs-stats">${stats}</div>`;
@@ -125,7 +125,7 @@ export function ReportSummary({ analysis, homeName, onAsk }) {
             ${ranged && html`<span class="muted small">Likely between ${fmtRange(score.score_range[0], score.score_range[1], fmtScore)}, as some answers were estimated</span>`}
             <div class="row gap-2 rs-epc">
               <${EpcBadge} rating=${now} />
-              ${potential && html`<span class="muted small">now</span><span class="rs-arrow" aria-hidden="true">→</span><${EpcBadge} rating=${potential} /><span class="muted small">potential</span>`}
+              ${potential && html`<span class="muted small">now</span><span class="rs-arrow" aria-hidden="true">→</span><${EpcBadge} rating=${potential} /><span class="muted small">after improvements</span>`}
             </div>
           </div>
         </div>

@@ -41,7 +41,8 @@
   --cls-highly_efficient: #0f7a4e; --cls-good: #4f9d38; --cls-moderate: #c99a12; --cls-poor: #dc6b26; --cls-very_poor: #c2352d;
   /* type */
   --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Figures use the main face with tabular digits: monospace read as "technical" to homeowners. */
+  --mono: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   /* shape + depth */
   --r-sm: 8px; --r: 12px; --r-lg: 18px; --r-pill: 999px;
   --shadow: 0 1px 2px rgba(14, 26, 21, .05), 0 6px 20px rgba(14, 26, 21, .06);
@@ -66,11 +67,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 img, svg { display: block; max-width: 100%; }
 :focus-visible { outline: none; box-shadow: var(--ring); border-radius: var(--r-sm); }
 ::selection { background: var(--brand-soft); }
-.num, .tabular { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.num, .tabular { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: 0; }
 .muted { color: var(--muted); }
 .faint { color: var(--faint); }
 .small { font-size: 13px; }
-.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); }
+.eyebrow { font-size: 14px; font-weight: 600; color: var(--brand); }
 .lead { font-size: 1.125rem; color: var(--ink-2); max-width: 62ch; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
@@ -104,7 +105,14 @@ img, svg { display: block; max-width: 100%; }
 .nav a:hover { background: var(--surface-2); color: var(--ink); }
 .nav a[aria-current="page"] { color: var(--ink); background: var(--surface-3); }
 .topbar-cta { margin-left: auto; }
-@media (max-width: 760px) { .nav { display: none; } .topbar-inner { gap: 12px; } }
+@media (max-width: 760px) {
+  /* Phones: the links drop to a second row instead of disappearing. */
+  .topbar-inner { height: auto; flex-wrap: wrap; gap: 4px 12px; padding-top: 10px; padding-bottom: 6px; }
+  .nav { order: 3; width: calc(100% + 8px); margin-left: -8px; overflow-x: auto; scrollbar-width: none; }
+  .nav a { padding: 8px; }
+  .nav a { white-space: nowrap; }
+  .topbar-cta .btn-secondary { display: none; }
+}
 
 /* ---------- footer ---------- */
 .footer { border-top: 1px solid var(--line); padding-block: 32px 48px; color: var(--muted); font-size: 13px; }

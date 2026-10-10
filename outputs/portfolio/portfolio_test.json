@@ -1,16 +1,67 @@
 {
  "split": "test",
- "generated_at": "2026-10-10T19:24:03Z",
+ "generated_at": "2026-10-10T23:03:20Z",
  "model_versions": {
   "energy": "energy-202610101604",
   "rating": "rating-202610101459",
   "recommender": "recommender-202610101601",
   "value": "value-202610101837"
  },
- "total": 12,
+ "total": 19,
  "rows": [
   {
    "rank": 1,
+   "property_id": "P1189276",
+   "customer_id": "C391295",
+   "region": "north_west",
+   "property_type": "semi_detached",
+   "score": 41,
+   "score_class": "poor",
+   "is_poor": true,
+   "improvement_potential_pct": 78.02747053666347,
+   "key_issues": [
+    "POOR_ROOF_INSULATION",
+    "POOR_WALL_INSULATION",
+    "HIGH_INTENSITY"
+   ],
+   "savings_status": "ok"
+  },
+  {
+   "rank": 2,
+   "property_id": "P258120",
+   "customer_id": "C160899",
+   "region": "london",
+   "property_type": "terraced",
+   "score": 37,
+   "score_class": "poor",
+   "is_poor": true,
+   "improvement_potential_pct": 75.75117691934064,
+   "key_issues": [
+    "POOR_ROOF_INSULATION",
+    "POOR_WALL_INSULATION",
+    "OLD_HEATING"
+   ],
+   "savings_status": "ok"
+  },
+  {
+   "rank": 3,
+   "property_id": "P1004136",
+   "customer_id": "C1054215",
+   "region": "west_midlands",
+   "property_type": "semi_detached",
+   "score": 44,
+   "score_class": "poor",
+   "is_poor": true,
+   "improvement_potential_pct": 73.93382717429334,
+   "key_issues": [
+    "POOR_WALL_INSULATION",
+    "SINGLE_GLAZING",
+    "NO_RENEWABLES"
+   ],
+   "savings_status": "ok"
+  },
+  {
+   "rank": 4,
    "property_id": "P1122209",
    "customer_id": "C145204",
    "region": "east_of_england",
@@ -27,7 +78,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 2,
+   "rank": 5,
    "property_id": "P1001332",
    "customer_id": "C1117054",
    "region": "west_midlands",
@@ -44,7 +95,22 @@
    "savings_status": "ok"
   },
   {
-   "rank": 3,
+   "rank": 6,
+   "property_id": "P847173",
+   "customer_id": "C280688",
+   "region": "north_east",
+   "property_type": "maisonette",
+   "score": 51,
+   "score_class": "moderate",
+   "is_poor": false,
+   "improvement_potential_pct": 72.02154764492886,
+   "key_issues": [
+    "POOR_WALL_INSULATION"
+   ],
+   "savings_status": "ok"
+  },
+  {
+   "rank": 7,
    "property_id": "P1002021",
    "customer_id": "C948691",
    "region": "wales",
@@ -59,7 +125,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 4,
+   "rank": 8,
    "property_id": "P347548",
    "customer_id": "C1296799",
    "region": "yorkshire_humber",
@@ -76,7 +142,39 @@
    "savings_status": "ok"
   },
   {
-   "rank": 5,
+   "rank": 9,
+   "property_id": "P1001607",
+   "customer_id": "C879434",
+   "region": "south_west",
+   "property_type": "detached",
+   "score": 61,
+   "score_class": "moderate",
+   "is_poor": false,
+   "improvement_potential_pct": 70.12767995828196,
+   "key_issues": [
+    "POOR_WALL_INSULATION"
+   ],
+   "savings_status": "ok"
+  },
+  {
+   "rank": 10,
+   "property_id": "P1047080",
+   "customer_id": "C1165468",
+   "region": "west_midlands",
+   "property_type": "terraced",
+   "score": 27,
+   "score_class": "very_poor",
+   "is_poor": true,
+   "improvement_potential_pct": 68.4476136131312,
+   "key_issues": [
+    "LOW_RATING",
+    "POOR_ROOF_INSULATION",
+    "POOR_WALL_INSULATION"
+   ],
+   "savings_status": "ok"
+  },
+  {
+   "rank": 11,
    "property_id": "P1014307",
    "customer_id": "C712606",
    "region": "south_west",
@@ -91,7 +189,22 @@
    "savings_status": "ok"
   },
   {
-   "rank": 6,
+   "rank": 12,
+   "property_id": "P1866003",
+   "customer_id": "C1388127",
+   "region": "yorkshire_humber",
+   "property_type": "detached",
+   "score": 79,
+   "score_class": "good",
+   "is_poor": false,
+   "improvement_potential_pct": 66.2243318112606,
+   "key_issues": [
+    "NO_RENEWABLES"
+   ],
+   "savings_status": "ok"
+  },
+  {
+   "rank": 13,
    "property_id": "P1007007",
    "customer_id": "C43126",
    "region": "east_midlands",
@@ -104,7 +217,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 7,
+   "rank": 14,
    "property_id": "P1011233",
    "customer_id": "C111642",
    "region": "east_of_england",
@@ -120,7 +233,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 8,
+   "rank": 15,
    "property_id": "P10001",
    "customer_id": "C10001",
    "region": "east_midlands",
@@ -137,7 +250,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 9,
+   "rank": 16,
    "property_id": "P1024619",
    "customer_id": "C520304",
    "region": "south_east",
@@ -153,7 +266,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 10,
+   "rank": 17,
    "property_id": "P1223173",
    "customer_id": "C1177620",
    "region": "west_midlands",
@@ -170,7 +283,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 11,
+   "rank": 18,
    "property_id": "P1033772",
    "customer_id": "C786409",
    "region": "south_west",
@@ -185,7 +298,7 @@
    "savings_status": "ok"
   },
   {
-   "rank": 12,
+   "rank": 19,
    "property_id": "P1000205_minimal",
    "customer_id": "C42653",
    "region": "east_midlands",

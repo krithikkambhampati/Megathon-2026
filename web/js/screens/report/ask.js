@@ -11,7 +11,7 @@ function Turn({ turn }) {
   return html`<div class="rb-msg rb-msg-ai">
     <${AiAnswer} text=${turn.text} check=${turn.check} />
     ${turn.intent === "memory" && html`<p class="faint small">Nothing has been saved. Edit the home's details to change them.</p>`}
-    ${turn.intent === "whatif" && turn.diff && html`<p class="faint small">This scenario is now shown under "Try a scenario".</p>`}
+    ${turn.intent === "whatif" && turn.diff && html`<p class="faint small">This plan is now shown under "Make your own plan".</p>`}
   </div>`;
 }
 

@@ -146,8 +146,15 @@ function EnergySection() {
   const rowFor = (m) => (monthly || []).find((r) => r.month === m) || {};
 
   return html`<section class="hm-section" aria-labelledby="hm-energy">
-    <div class="hm-section-head"><h2 id="hm-energy">Energy use <${Changed} k="energy" /></h2>
-      <p class="muted">Your meter readings or bills make the biggest difference to accuracy. Leave them empty if you don't have them; we'll estimate from similar homes.</p></div>
+    <div class="hm-section-head"><h2 id="hm-energy">Energy use from your bills <${Changed} k="energy" /></h2>
+      <p class="muted">How much electricity and gas the home uses, in kWh (not pounds). You'll find it on your energy bills,
+        your annual statement or your supplier's app, usually labelled "kWh used". Leave it empty if you don't have it and we'll
+        estimate from similar homes.</p></div>
+    <ul class="hm-energy-why">
+      <li><strong>Your score:</strong> energy use per m² is a fifth of the Green Home Score.</li>
+      <li><strong>Your savings:</strong> every saving in the report is measured from these figures.</li>
+      <li><strong>Missing months are fine:</strong> we fill gaps using normal seasonal patterns and tell you when we did.</li>
+    </ul>
     <div class="stack gap-4">
       <${Segmented} ariaLabel="How you'd like to enter energy use" value=${mode} onChange=${switchMode}
         options=${[{ value: "annual", label: "Yearly totals" }, { value: "monthly", label: "Month by month" }]} />
@@ -159,7 +166,7 @@ function EnergySection() {
           <${NumberInput} id="hm-gas" value=${energy.annual_gas_kwh ?? null} suffix="kWh/year" step=${10} onChange=${(v) => setAnnual("annual_gas_kwh", v)} />
           <span class="field-hint">Enter 0 if the home has no gas supply.</span></div>
       </div>` : html`<div class="hm-monthly">
-        <p class="small muted">Fill in the months you have; gaps are fine. Readings in kWh.</p>
+        <p class="small muted">Fill in the months you have, in kWh. Leave a month empty if you don't have it, rather than entering 0.</p>
         <table>
           <thead><tr><th scope="col">Month</th><th scope="col"><span class="hm-th"><span class="hm-fuel hm-fuel-elec"><${Icon} name="bolt" size=${13} /></span>Electricity</span></th>
             <th scope="col"><span class="hm-th"><span class="hm-fuel hm-fuel-gas"><${Icon} name="flame" size=${13} /></span>Gas</span></th></tr></thead>
@@ -262,16 +269,16 @@ export function HomeScreen({ id }) {
           <${SelectField} k="region" enumName="Region" />
           <${NumberField} k="floor_area_m2" suffix="m²" hint="Total internal floor area. Often on the EPC certificate." />
           <${NumberField} k="bedrooms" integer />
-          <${NumberField} k="current_value_gbp" suffix="GBP" step=${1000} hint="Your own estimate. Leave empty and we'll estimate it." />
+          <${NumberField} k="current_value_gbp" suffix="£" step=${1000} hint="What you think it's worth today. Leave it empty and we'll estimate it." />
         <//>
-        <${Section} id="hm-fabric" title="Fabric" intro="The roof, walls and windows decide how much heat the home keeps.">
+        <${Section} id="hm-fabric" title="Roof, walls and windows" intro="These decide how much heat the home keeps in.">
           <${SelectField} k="roof_type" enumName="RoofType" />
           <${SelectField} k="roof_insulation" enumName="RoofInsulation" hint="Measure the depth between the loft joists if you can." />
           <${SelectField} k="wall_type" enumName="WallType" hint="Homes built after about 1930 usually have cavity walls." />
           <${SelectField} k="wall_insulation" enumName="WallInsulation" />
           <${SelectField} k="glazing" enumName="Glazing" />
         <//>
-        <${Section} id="hm-heating" title="Heating and energy" intro="How the home is heated and controlled.">
+        <${Section} id="hm-heating" title="Heating and rating" intro="How the home is heated, and its official energy rating if it has one.">
           <${SelectField} k="heating_system" enumName="HeatingSystem" />
           <${SelectField} k="main_fuel" enumName="MainFuel"
             hint=${mainFuel === "other" ? "We can score this home, but can't yet estimate bill savings for oil, LPG or solid fuel." : null} />
@@ -280,7 +287,7 @@ export function HomeScreen({ id }) {
           <${ChoiceField} k="energy_rating" wide hint="From the home's Energy Performance Certificate, if it has one."
             opts=${[...BANDS.map((b) => ({ value: b, label: b })), { value: null, label: NOT_SURE() }]} />
         <//>
-        <${Section} id="hm-constraints" title="Constraints" intro="These decide which improvements are possible.">
+        <${Section} id="hm-constraints" title="What can be changed" intro="These decide which improvements we can suggest.">
           <${ChoiceField} k="listed_or_conservation" opts=${yn} hint="Listed buildings and conservation areas limit changes to walls and windows." />
           <${ChoiceField} k="outdoor_space" opts=${yn} hint="A heat pump needs space outside for its unit, about the size of a washing machine." />
         <//>

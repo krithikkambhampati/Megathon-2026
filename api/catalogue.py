@@ -30,13 +30,35 @@ NAMES: dict[str, tuple[str, str]] = {  # id → (name, one-line summary)
         "A large, well-built house that still uses a lot of energy in total",
     ),
     "P1024619": ("Victorian conversion flat", "A one-bedroom flat with another home above it"),
-    "P1001332": ("Inter-war terraced house", "Solid walls and gas heating; some winter meter readings are missing"),
+    "P1001332": (
+        "Inter-war terraced house",
+        "Solid walls and gas heating; some winter meter readings are missing",
+    ),
     "P1011233": ("1970s purpose-built flat", "A good EPC rating, but energy use far above similar flats"),
     "P1033772": ("New-build bungalow with heat pump", "Already electric and well insulated"),
     "P1007007": ("1970s bungalow with solar panels", "Generates some of its own electricity"),
     "P1223173": ("Edwardian flat with storage heaters", "Electric storage heating and solid walls"),
     "P1122209": ("Victorian terraced house", "Solid brick walls and an older gas boiler"),
     "P1002021": ("Large 1970s detached house", "A five-bedroom family home with some gas readings missing"),
+    "P1047080": (
+        "Victorian house with electric heaters",
+        "Rated G: no wall or loft insulation and costly electric heat",
+    ),
+    "P847173": ("Edwardian maisonette", "A two-storey home within a larger building, with gas heating"),
+    "P258120": ("Victorian London terrace", "Solid walls, an empty loft and an older gas boiler"),
+    "P1189276": (
+        "1930s semi with an empty loft",
+        "Uninsulated loft and cavity walls: insulate before anything else",
+    ),
+    "P1866003": ("New-build detached house", "Rated A and well insulated, but still heated by gas"),
+    "P1001607": (
+        "1930s detached house with solar water heating",
+        "Solar panels that heat water, not electricity",
+    ),
+    "P1004136": (
+        "1930s semi with yearly meter totals",
+        "Only a yearly total for each fuel, no monthly readings",
+    ),
 }
 HIDDEN = {"P1000205_minimal"}  # too little information to make a useful catalogue card
 

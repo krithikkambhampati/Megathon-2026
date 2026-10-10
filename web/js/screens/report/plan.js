@@ -6,6 +6,7 @@ import { label, flagText, reasonText } from "../../labels.js";
 import { AiPanel } from "./score.js";
 
 const SUIT_TONE = { high: "good", medium: "brand", low: "" };
+const FIT = { high: "Strong fit for this home", medium: "Good fit for this home", low: "Weaker fit for this home" };
 const lower = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 const names = (codes) => codes.map((r) => label("Retrofit", r));
 function joinList(items) {
@@ -13,17 +14,19 @@ function joinList(items) {
   return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
+// `name` is [saved label, increase label]: "Electricity saved" vs "Extra electricity", so a red increase never
+// sits under a "saved" heading.
 function Saving({ icon, name, value, cls }) {
   const up = isIncrease(value);
   return html`<div class=${`rp-saving ${cls || ""} ${up ? "is-up" : ""}`}>
-    <span class="rp-saving-label">${icon && html`<${Icon} name=${icon} size=${14} />`}${name}</span>
+    <span class="rp-saving-label">${icon && html`<${Icon} name=${icon} size=${14} />`}${up ? name[1] : name[0]}</span>
     <span class="num rp-saving-value">${fmtKwhSaving(value)}</span></div>`;
 }
 
 function FeasChip({ rec }) {
   if (rec.feasibility === "needs_survey") return html`<${Chip} tone="warn" icon="info">${label("Feasibility", rec.feasibility)}<//>`;
   if (!rec.suitability) return null;
-  return html`<${Chip} tone=${SUIT_TONE[rec.suitability] || ""}>${label("Suitability", rec.suitability)} suitability<//>`;
+  return html`<${Chip} tone=${SUIT_TONE[rec.suitability] || ""}>${FIT[rec.suitability] || label("Suitability", rec.suitability)}<//>`;
 }
 
 function Recommendation({ rec, inPlan, onAsk }) {
@@ -39,10 +42,10 @@ function Recommendation({ rec, inPlan, onAsk }) {
         <div class="rp-cost"><span class="muted small">Typical cost</span> <span class="num">${fmtRange(rec.cost_low_gbp, rec.cost_high_gbp, fmtGbpCost)}</span></div>
       </div>
       ${s ? html`<div class="rp-savings">
-          <${Saving} icon="bolt" name="Electricity" value=${s.electricity_kwh} cls="is-elec" />
-          <${Saving} icon="flame" name="Gas" value=${s.gas_kwh} cls="is-gas" />
-          <${Saving} name="Net energy" value=${s.net_kwh} cls="is-net" />
-          <div class=${`rp-saving is-carbon ${carbonUp ? "is-up" : ""}`}><span class="rp-saving-label"><${Icon} name="leaf" size=${14} />Carbon</span>
+          <${Saving} icon="bolt" name=${["Electricity saved", "Extra electricity"]} value=${s.electricity_kwh} cls="is-elec" />
+          <${Saving} icon="flame" name=${["Gas saved", "Extra gas"]} value=${s.gas_kwh} cls="is-gas" />
+          <${Saving} name=${["Total energy saved", "Extra energy in total"]} value=${s.net_kwh} cls="is-net" />
+          <div class=${`rp-saving is-carbon ${carbonUp ? "is-up" : ""}`}><span class="rp-saving-label"><${Icon} name="leaf" size=${14} />${carbonUp ? "Extra carbon" : "Carbon saved"}</span>
             <span class="num rp-saving-value">${fmtKgSaving(rec.standalone_carbon_kg)}</span></div>
         </div>`
         : html`<p class="muted small">No energy saving estimate for this measure.</p>`}
@@ -59,10 +62,11 @@ function NotSuitable({ items }) {
   if (!items.length) return null;
   return html`<div class="stack gap-3 rp-out">
     <h3 class="rs-h3">Not in this plan</h3>
+    <p class="muted small">Measures the home already has, or that don't work for it.</p>
     <ul class="rp-out-list">
       ${items.map(({ retrofit, reasons, feasibility }) => html`<li key=${retrofit} class="rp-out-item">
         <div class="row wrap gap-2"><strong>${label("Retrofit", retrofit)}</strong>
-          ${feasibility === "infeasible" && html`<${Chip}>${label("Feasibility", feasibility)}<//>`}</div>
+          ${feasibility === "infeasible" && html`<${Chip}>${reasons.includes("ALREADY_INSTALLED") ? "Already done" : label("Feasibility", feasibility)}<//>`}</div>
         ${reasons.length > 0 && html`<span class="muted small">${reasons.map(reasonText).join(" ")}</span>`}
       </li>`)}
     </ul></div>`;
@@ -80,12 +84,12 @@ export function PlanSection({ analysis, onAsk }) {
 
   return html`<div class="rs-section">
     <${SectionHeader} eyebrow="Improvement plan" title="What to do, in order"
-      intro="Ranked by how well each measure suits this home. Savings are for each measure on its own, per year." />
+      intro="Do these in this order: earlier steps make later ones work better, for example insulating before a heat pump. Each card shows what that measure saves on its own, per year." />
     ${status === "out_of_scope" && html`<div class="rp-notice"><${Notice} tone="info" title=${flagText("OUT_OF_SCOPE_FUEL")}>${reasonText("OUT_OF_SCOPE_FUEL")} The measures below still apply.<//></div>`}
     ${status === "insufficient" && html`<div class="rp-notice"><${Notice} tone="info" title=${flagText("INSUFFICIENT_INFO_SAVINGS")}>Add your heating system and energy use to see savings for each measure.<//></div>`}
     ${plan.length
       ? html`<ol class="rp-list">${plan.map((r) => html`<${Recommendation} key=${r.retrofit} rec=${r} inPlan=${inPlan} onAsk=${onAsk} />`)}</ol>
-        <p class="faint small rp-note">Savings, carbon and costs are estimates. An increase is shown in red: some measures swap gas for electricity.</p>`
+        <p class="faint small rp-note">Savings, carbon and costs are estimates. Red means the home would use more of that fuel: a heat pump, for example, swaps gas for electricity.</p>`
       : html`<p class="muted">There are no measures we would recommend for this home right now.</p>`}
     <${NotSuitable} items=${out} />
     <${AiPanel} analysis=${analysis} section="recommendations" title="Why this order"

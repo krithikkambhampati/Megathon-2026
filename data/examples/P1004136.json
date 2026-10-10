@@ -1,0 +1,27 @@
+{
+  "property_id": "P1004136",
+  "customer_id": "C1054215",
+  "property_type": "semi_detached",
+  "age_band": "1930_1949",
+  "floor_area_m2": 79.0,
+  "bedrooms": 3,
+  "region": "west_midlands",
+  "current_value_gbp": 249600.0,
+  "energy_rating": "D",
+  "roof_type": "pitched_loft",
+  "roof_insulation": "medium",
+  "wall_type": "solid",
+  "wall_insulation": "none",
+  "glazing": "partial_double",
+  "heating_system": "gas_boiler_condensing",
+  "main_fuel": "mains_gas",
+  "renewables": "none",
+  "smart_controls": "programmer_thermostat_trvs",
+  "listed_or_conservation": null,
+  "outdoor_space": "yes",
+  "energy": {
+    "annual_electricity_kwh": 2158.0,
+    "annual_gas_kwh": 11630.0,
+    "monthly": null
+  }
+}
