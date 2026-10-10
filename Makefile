@@ -1,7 +1,7 @@
 # Owned by P5. Each part implements the module its target calls (roadmap.md §5.6).
 # Targets whose module does not exist yet print "TODO <owner>" instead of failing.
 
-.PHONY: setup data-raw data train portfolio eval llm-bench test lint api api-fixture ui all
+.PHONY: setup data-raw data train portfolio portfolio-examples eval llm-bench test lint api api-fixture ui all
 
 # .env (if present) holds LLM settings etc.; every target below loads it
 UV_ENV := $(if $(wildcard .env),--env-file .env,)
@@ -34,6 +34,10 @@ train:
 
 portfolio:
 	$(call run_mod,api.build_portfolio,--split test,P5)
+
+# Portfolio from the committed demo homes (no processed data needed)
+portfolio-examples:
+	$(call run_mod,api.build_portfolio,--source examples,P5)
 
 eval:
 	$(call run_mod,training.model_sizes,,P3)

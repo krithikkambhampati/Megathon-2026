@@ -11,7 +11,7 @@ from api.cache import ResultCache
 from api.deps import build_engine, build_llm, engine_info
 from api.errors import register_error_handlers
 from api.json import NaNSafeJSONResponse
-from api.routes import analyse, chat, diff, examples, explain, health, methodology
+from api.routes import analyse, chat, diff, examples, explain, health, methodology, portfolio
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("greenhome.api")
@@ -47,7 +47,7 @@ def create_app() -> FastAPI:
         response.headers["X-Request-Id"] = request.state.request_id
         return response
 
-    for module in (health, examples, analyse, diff, explain, chat, methodology):
+    for module in (health, examples, analyse, diff, explain, chat, methodology, portfolio):
         app.include_router(module.router, prefix="/v1")
     return app
 

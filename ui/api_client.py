@@ -31,6 +31,17 @@ def _request(
     params: dict | None = None,
     timeout: float = DEFAULT_TIMEOUT_S,
 ) -> Any:
+    return _send(method, path, json=json, params=params, timeout=timeout).json()
+
+
+def _send(
+    method: str,
+    path: str,
+    *,
+    json: Any = None,
+    params: dict | None = None,
+    timeout: float = DEFAULT_TIMEOUT_S,
+) -> httpx.Response:
     try:
         r = httpx.request(method, f"{BASE_URL}{path}", json=json, params=params, timeout=timeout)
     except httpx.HTTPError as exc:
@@ -41,7 +52,7 @@ def _request(
             raise APIError(r.status_code, err["code"], err["message"])
         except (ValueError, KeyError, TypeError):
             raise APIError(r.status_code, f"http_{r.status_code}", r.text[:200]) from None
-    return r.json()
+    return r
 
 
 def health() -> dict:
@@ -87,3 +98,9 @@ def explain(analysis_id: str, section: str) -> dict:
 def chat(request: dict) -> dict:
     """`request` is a ChatRequest: session_id, home, message, current_scenario, customer_id."""
     return _request("POST", "/v1/chat", json=request, timeout=CHAT_TIMEOUT_S)
+
+
+def portfolio(split: str = "test", limit: int = 500, poor_only: bool = False) -> dict:
+    """PortfolioResponse plus "source": "data" (P1's split) or "examples" (demo homes only)."""
+    r = _send("GET", "/v1/portfolio", params={"split": split, "limit": limit, "poor_only": poor_only})
+    return {**r.json(), "source": r.headers.get("X-Portfolio-Source", "data")}
