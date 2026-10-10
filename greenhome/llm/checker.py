@@ -291,6 +291,16 @@ def _direction_ok(text: str, span: tuple[int, int]) -> bool:
     return kind == "up"
 
 
+def banned_phrases(text: str) -> list[str]:
+    """Banned claims in `text`, skipping negated ones ("not guaranteed" is required wording)."""
+    out = []
+    for rx in _BANNED_RE.values():
+        for mt in rx.finditer(text):
+            if not _NEGATION.search(text[max(0, mt.start() - 30) : mt.start()]):
+                out.append(mt.group(0))
+    return out
+
+
 def check(text: str, sheet: FactSheet, *, extra_allowed: list[Fact] | None = None) -> CheckReport:
     """Check one reply against the sheet it was written from. `attempts` / `fallback_used` are left
     0 / False for the caller (explainer / chat) to fill in."""
@@ -308,11 +318,7 @@ def check(text: str, sheet: FactSheet, *, extra_allowed: list[Fact] | None = Non
             unsupported.append(f"{m.raw} (direction)")
     for rx in _NEVER_CLAIMS:
         unsupported += [f"{mt.group(0).strip()} (no such figure)" for mt in rx.finditer(text)]
-    banned = []
-    for rx in _BANNED_RE.values():
-        for mt in rx.finditer(text):
-            if not _NEGATION.search(text[max(0, mt.start() - 30) : mt.start()]):
-                banned.append(mt.group(0))
+    banned = banned_phrases(text)
     return CheckReport(
         passed=not unsupported and not banned,
         numbers_found=found,

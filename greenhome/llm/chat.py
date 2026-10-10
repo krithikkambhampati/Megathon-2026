@@ -96,6 +96,12 @@ def _memory_lines(events: list[MemoryEventIn]) -> tuple[list[str], list[Fact]]:
     return lines, facts
 
 
+def _keep(traces: list | None, trace) -> None:
+    """Hand the full answer trace (raw LLM attempts included) to the evaluator, if it asked for it."""
+    if traces is not None:
+        traces.append(trace)
+
+
 def _reply(
     req: ChatRequest,
     base: AnalysisResult,
@@ -120,7 +126,7 @@ def _reply(
     )
 
 
-def _whatif(req, engine, llm, ctx, base, deadline, s, focus) -> ChatResponse:
+def _whatif(req, engine, llm, ctx, base, deadline, s, focus, traces) -> ChatResponse:
     parsed = parse_whatif(
         req.message, req.home, base, req.current_scenario, llm=llm, deadline=deadline, settings=s
     )
@@ -152,12 +158,13 @@ def _whatif(req, engine, llm, ctx, base, deadline, s, focus) -> ChatResponse:
         tokens_key="whatif_answer",
         allow_retry=parsed.method != "llm",
     )  # an LLM parse already used part of the budget
+    _keep(traces, trace)
     return _reply(
         req, base, "whatif", trace.text, trace.check, scenario=parsed.scenario, result=result, diff=diff
     )
 
 
-def _explain(req, engine, llm, ctx, base, deadline, s, r) -> ChatResponse:
+def _explain(req, engine, llm, ctx, base, deadline, s, r, traces) -> ChatResponse:
     target, diff = base, None
     if req.current_scenario is not None and req.current_scenario != Scenario():
         try:
@@ -177,10 +184,12 @@ def _explain(req, engine, llm, ctx, base, deadline, s, r) -> ChatResponse:
                 template="whatif.j2",
                 tokens_key="whatif_answer",
             )
+            _keep(traces, trace)
             return _reply(req, base, "explain", trace.text, trace.check, result=target, diff=diff)
     trace = explain_traced(
         target, r.section, llm, deadline=deadline, question=req.message, focus=r.focus, settings=s
     )
+    _keep(traces, trace)
     return _reply(req, base, "explain", trace.text, trace.check, result=target)
 
 
@@ -209,8 +218,10 @@ def chat(
     base: AnalysisResult,
     *,
     settings: LLMSettings | None = None,
+    traces: list | None = None,
 ) -> ChatResponse:
-    """CR-7. `engine` is greenhome.core.orchestrator.Engine (or P5's FixtureEngine with the same methods)."""
+    """CR-7. `engine` is greenhome.core.orchestrator.Engine (or P5's FixtureEngine with the same methods).
+    `traces` (keyword-only, for eval_llm): receives each answer's AnswerTrace with the raw LLM attempts."""
     s = settings or get_llm_settings()
     deadline = Deadline(s.answer_budget_s)
     try:
@@ -218,9 +229,9 @@ def chat(
             req.message, has_scenario=req.current_scenario is not None, llm=llm, deadline=deadline, settings=s
         )
         if r.intent == "whatif":
-            return _whatif(req, engine, llm, ctx, base, deadline, s, r.focus)
+            return _whatif(req, engine, llm, ctx, base, deadline, s, r.focus, traces)
         if r.intent == "explain":
-            return _explain(req, engine, llm, ctx, base, deadline, s, r)
+            return _explain(req, engine, llm, ctx, base, deadline, s, r, traces)
         if r.intent == "memory":
             return _memory(req, llm, base, deadline, s)
         text, report = _template_reply(

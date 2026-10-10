@@ -20,7 +20,7 @@ import jinja2
 from greenhome.contracts import AnalysisResult, CheckReport
 from greenhome.llm.budget import Deadline
 from greenhome.llm.checker import check, feedback
-from greenhome.llm.client import LLMClient, LLMError
+from greenhome.llm.client import LLMClient, LLMError, LLMTimeout
 from greenhome.llm.facts import FactSheet, build_fact_sheet
 from greenhome.llm.settings import LLMSettings, get_llm_settings
 
@@ -57,7 +57,7 @@ class AnswerTrace:
     text: str
     check: CheckReport
     attempts: list[Attempt] = field(default_factory=list)
-    fallback_reason: str | None = None  # no_llm | no_time | llm_error | failed_check | None (LLM text shown)
+    fallback_reason: str | None = None  # no_llm | no_time | timeout | llm_error | failed_check | None (LLM)
     seconds: float = 0.0
 
 
@@ -139,7 +139,7 @@ def answer_sheet(
             )
         except LLMError as e:
             log.info("LLM attempt %d failed (%s); using the template", n, e)
-            return fallback("llm_error")
+            return fallback("timeout" if isinstance(e, LLMTimeout) else "llm_error")
         usage = getattr(llm, "last_usage", None)
         report = check(text, sheet)
         attempts.append(

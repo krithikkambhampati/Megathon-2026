@@ -87,10 +87,10 @@ def test_two_failures_fall_back_to_the_template(p10001) -> None:
     assert t.fallback_reason == "failed_check" and t.text.startswith("If you did all the recommended")
 
 
-@pytest.mark.parametrize("error", [LLMError("down"), LLMTimeout("slow")])
-def test_llm_errors_fall_back_to_the_template(p10001, error) -> None:
+@pytest.mark.parametrize("error,reason", [(LLMError("down"), "llm_error"), (LLMTimeout("slow"), "timeout")])
+def test_llm_errors_fall_back_to_the_template(p10001, error, reason) -> None:
     t = _trace(p10001, ScriptedClient([error]))
-    assert t.check.fallback_used and t.check.attempts == 0 and t.fallback_reason == "llm_error"
+    assert t.check.fallback_used and t.check.attempts == 0 and t.fallback_reason == reason
 
 
 def test_no_retry_without_enough_budget_left(p10001) -> None:

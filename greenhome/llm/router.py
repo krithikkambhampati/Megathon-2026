@@ -45,6 +45,7 @@ _EXPLAIN_ANY = re.compile(
     r"\b(?:why|how\s+come|how\s+much|how\s+does|explain|tell\s+me|show\s+me|what\s+is|"
     r"what's|what\s+are|what\s+does)\b"
 )
+_QUESTION = re.compile(r"\?\s*$|^(?:would|will|is|are|does|do|can|could|should|has|have|did)\b")
 _WEAK_WHATIF = re.compile(r"\b(?:only|just|without|skip|add|also|install|get|fit|instead\s+of)\b")
 _CHANGE = re.compile(
     r"\b(?:go(?:es)?\s+up|went\s+up|go(?:es)?\s+down|drop(?:s|ped)?|chang\w*|differ\w*|"
@@ -131,6 +132,8 @@ def route(
         return res("whatif")
     if not vocab.DOMAIN.search(text):
         return res("out_of_scope")
+    if _QUESTION.search(text):  # "Would a heat pump cut my energy use?" → explain, not unclear
+        return res("explain")
     return _llm_route(message, text, focus, has_scenario, llm, deadline, settings)
 
 
