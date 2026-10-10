@@ -166,3 +166,20 @@ def test_custom_scenario_is_not_called_the_recommended_plan() -> None:
     assert "retrofits in this scenario" in explain(custom, "savings", None)[0]
     plan_text, _ = explain(engine.analyse(home), "savings", None)
     assert "all the recommended retrofits" in plan_text
+
+
+def test_no_score_after_when_todays_score_is_insufficient() -> None:
+    """Eval item S68: for a home we can't score, neither the LLM nor the template may promise a score."""
+    from greenhome.contracts import HomeInput
+    from greenhome.core.orchestrator import Engine
+    from greenhome.llm.explainer import explain
+
+    home = HomeInput.model_validate_json(
+        (Path(__file__).resolve().parents[2] / "fixtures" / "home_input_P90003.json").read_text()
+    )
+    result = Engine.from_config().analyse(home)
+    assert result.score.status == "insufficient"
+    sheet = build_fact_sheet(result, "score")
+    assert sheet.get("score_after.score") is None
+    text, _ = explain(result, "score", None)
+    assert "estimated score would be" not in text  # the template's score-after sentence

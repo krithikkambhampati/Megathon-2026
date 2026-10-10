@@ -276,7 +276,9 @@ def _score(b: _Builder, r: AnalysisResult) -> dict:
         for n, i in enumerate(r.issues)
     ]
     v["custom"] = r.scenario.mode != "recommended"  # a what-if scenario, not the recommended plan
-    if r.score_after is not None and r.score_after.status == "ok":
+    # No "score after the works" when today's score can't be estimated: promising 86 for a home we can't score
+    # breaks the "say what you can't estimate" rule (eval item S68).
+    if r.score.status == "ok" and r.score_after is not None and r.score_after.status == "ok":
         v["after"] = {
             "score": b.num(
                 "score_after.score",
