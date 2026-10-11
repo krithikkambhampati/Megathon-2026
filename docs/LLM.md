@@ -6,7 +6,7 @@ Code: `greenhome/llm/`. Config: `config/llm.yaml`. Evaluation: `evaluation/`. Bu
 > **Current setup (2026-10-11).** Hosted open-weight model on Groq: `openai/gpt-oss-120b`, failing over to
 > `openai/gpt-oss-20b` when rate limited. Local Ollama is an optional offline alternative (§10). The guardrails
 > were loosened a little on 2026-10-11 (§1, §4, §6): friendlier prompt, off-topic chat answered by the LLM,
-> hedged roundings of a fact accepted. The evaluation in §8 was run before both changes and needs a re-run.
+> hedged roundings of a fact accepted. §8 reports the evaluation rerun on gpt-oss-120b after these changes.
 
 ## 1. What the LLM does, and what it never does
 
@@ -221,7 +221,9 @@ The templates go through the same checker in the tests. All 4 sections × 5 fixt
 
 ## 8. Evaluation
 
-Run on the demo laptop: `make eval` (`python -m evaluation.eval_llm`). Without an LLM it exits with an error.
+Run with the Groq key in `.env`: `make eval` (`python -m evaluation.eval_llm --tpm 6000`). `--tpm` paces the
+scenarios to stay under the free tier's 8,000 tokens per minute (≈35 min for 80 scenarios); `make eval
+EVAL_TPM=0` turns pacing off for a local model. Without an LLM it exits with an error.
 `--allow-no-llm` writes a clearly marked pipeline test (`reports/llm_eval_dryrun.md`) instead.
 
 | Set | Size | What |
@@ -238,36 +240,45 @@ Run on the demo laptop: `make eval` (`python -m evaluation.eval_llm`). Without a
 - **Also:** `must_not` violations, intent and scenario accuracy, what-if parse accuracy (rules only vs
   rules + LLM), fallback rate by reason, latency median/p95, tokens per answer.
 
-**Results** (`make eval` on the demo laptop with the **earlier local model** `qwen2.5:7b-instruct-q4_K_M`
-and the earlier, stricter guardrails, real engine models, commit `8c1447a`; full report `reports/llm_eval.md`).
-These are not yet re-measured on gpt-oss-120b: run `make eval` with the Groq key in `.env` to refresh them.
+**Results** (`make eval` on 2026-10-11 with `openai/gpt-oss-120b` on Groq, real engine models, commit
+`192cbe5`; full report `reports/llm_eval.md`, every answer in `reports/llm_eval_raw.jsonl`):
 
 | Metric | Before checker (raw first attempt) | After checker (answer shown) | Target |
 |---|---|---|---|
-| Numeric groundedness | 84.3% | **100.0%** | ≥ 90% |
+| Numeric groundedness | 70.5% | **100.0%** | ≥ 90% |
 | Factual accuracy (numbers matching a fact) | — | **100.0%** | ≥ 90% |
 | Unsupported claim rate (human) | — | pending human annotation | < 5% |
-| `must_mention` satisfied | — | 63.5% | ≥ 90% |
+| `must_mention` satisfied (automatic phrase match) | — | 79.4% (50 of 63) | ≥ 90% |
+| `must_mention` satisfied (misses read by hand) | — | 93.7% (59 of 63) | ≥ 90% |
 | `must_not` violations | — | 1 of 80 | 0 |
 | Intent / scenario accuracy | — | 100% / 100% | — |
-| What-if parse accuracy | rules only 46/50 | rules + LLM 44/50 | — |
-| Latency median / p95 | — | 3.3 s / 12.9 s | ≤ 25 s |
+| What-if parse accuracy | rules only 46/50 | rules + LLM 45/50 | — |
+| Latency median / p95 | — | 1.8 s / 3.6 s | ≤ 25 s |
+| Output tokens per answer (mean, incl. hidden reasoning) | — | 593 | — |
 
 How to read it:
-- **The checker does its job.** One in six raw drafts had an unsupported number (most often an electricity
-  increase described as a saving after a heat pump); every one was rewritten or replaced by the template,
-  so every number a user sees matches a fact. Answers by source: 64 LLM, 5 template after a failed check,
-  10 template after an LLM error, 1 template by design.
-- **The 10 LLM errors were over-long answers.** With the old 300-token cap and ≤ 170-word instruction,
-  recommendations answers listing up to six retrofits ran past the cap, so those answers were templates.
-  Correct, just not LLM-written. The caps are now 900 tokens / 250 words.
-- **`must_mention` is below target.** The LLM often leaves out data notes (estimated answers, scaled-up
-  meter readings) and infeasibility reasons that the template always includes. The check is a phrase
-  match, so some misses are correct answers worded differently, but the gap is real.
-- **The one `must_not` violation** (S41): asked about loft insulation on a flat under another flat, the
-  answer correctly said it isn't possible and kept every number right, but also wrote "the recommended plan
-  includes loft insulation", which it doesn't. The checker now rejects that sentence (§6 step 6).
-- **The LLM fallback hurts parsing slightly** (44/50 vs 46/50 rules only), so the rules-first design is right.
+- **The checker does its job.** Three in ten raw drafts had a number that isn't in the facts, most often an
+  invented percentage ("9 %", "71 %") or a count added to general advice; every one was rewritten on retry
+  or replaced by the template, so every number a user sees matches a fact. Raw groundedness is lower than in
+  the earlier local-model run (84.3%) because the loosened prompt invites general context, and the model
+  sometimes attaches a number to it. Answers by source: 70 LLM, 8 template after a failed check, 2 template
+  after an LLM error (two long answers that hit the time or token cap).
+- **`must_mention` is a phrase match, and it undercounts.** Of the 13 misses, 9 are correct answers worded
+  differently: "the tool doesn't have enough information" or "can't be calculated" for a home with too
+  little data (7), and "would cause an increase of about 3,990 kWh" for a heat pump's extra electricity (2).
+  The 4 real misses are data notes or reasons left out: similar-homes energy estimate (S27), unusual value
+  (S38), solar already installed (S50), and "indicative" in a one-line refusal (S77). We report the
+  automatic figure as the headline and the hand-checked one beside it.
+- **The infeasible-retrofit fix worked.** The earlier violation (S41, "the recommended plan includes loft
+  insulation" for a flat under another flat) is gone: no answer recommended an impossible retrofit, and 9 of
+  the 10 infeasible-request answers gave the reason (S50 left out that solar is already installed).
+- **The one `must_not` violation** (S68): asked to explain the score of a home with too little information,
+  the answer correctly said no score can be given, then listed the home's problem areas with a peer
+  percentile (a real fact, hence the `NUMBERS` flag) and described the seven score parts wrongly (it named
+  "hot water" and "ventilation"). The numbers were all right; the wording was not. This kind of non-numeric
+  error is what the human annotation measures.
+- **The LLM fallback hurts parsing slightly** (45/50 vs 46/50 rules only), so the rules-first design is right.
+- **Fast and free.** Median answer 1.8 s, p95 3.6 s; the whole run used the free tier.
 
 Pipeline test with templates only (dev machine, no LLM, stub models; this shows the pipeline works, not
 model quality): the shown answers were 100% grounded, `must_mention` was 100% satisfied, there were 0
@@ -285,6 +296,11 @@ model quality): the shown answers were 100% grounded, `must_mention` was 100% sa
 - General advice the LLM adds (rule 2) has no numbers but is not fact-checked; it is limited to widely
   known context, and the human annotation is where unhelpful or wrong advice would show up.
 - The hosted model depends on Groq's free-tier quota; when it runs out, answers fall back to templates.
+- Answers sometimes cite internal fact ids such as "(F13)" (6 of 70 LLM answers in the eval). Harmless for
+  accuracy, but visible to the user.
+- When a section can't be estimated, the LLM may still add general advice around the "not enough
+  information" message, and that advice can be wrong (S68). Sending such sections straight to the template
+  would remove the risk.
 
 ## 10. Offline alternative: a local model with Ollama
 

@@ -3,9 +3,8 @@
 How the Green Home Score & Retrofit Engine handles privacy, bias, explainability, hallucination, human
 oversight and data limitations (Problem Statement 2, deliverable H). Details are in the linked documents.
 
-LLM results come from `reports/llm_eval.md` (80 test scenarios), measured with the earlier local model
-(qwen2.5 7B) and the earlier, stricter guardrails; they need a re-run on the current model. The app uses the
-open-weight `gpt-oss-120b` hosted on Groq; only the fact sheet of computed numbers is sent, never an address
+LLM results come from `reports/llm_eval.md` (80 test scenarios, run on 2026-10-11 with the model the app
+uses). The app uses the open-weight `gpt-oss-120b` hosted on Groq; only the fact sheet of computed numbers is sent, never an address
 or personal details. The unsupported-claim rate is **pending** the human annotation of 40 answers.
 
 ## 1. Privacy
@@ -79,14 +78,15 @@ Any language model will sometimes invent or round numbers, so it is never truste
 - The whole answer has a **25-second budget**; after that the template answer is used, so a slow model never
   blocks the app. The app works with the language model off.
 
-Measured effect (80 scenarios, earlier local model and stricter guardrails): numeric groundedness **84.3%**
-in the model's raw first drafts and **100%** in the answers shown, with **100%** of shown numbers matching a
-fact (targets ≥ 90%). The checker's most frequent catch was an electricity increase after a heat pump
-described as a saving. Still open: answers mentioned required data notes and reasons only 63.5% of the time
-(target 90%; the template always includes them), and one of 80 answers wrongly said an impossible retrofit
-was in the plan. Since that run, the prompts ask for each relevant data note and reason, and the checker
-rejects that kind of answer. The human-annotated unsupported-claim rate (two independent annotators,
-target < 5%) is pending.
+Measured effect (80 scenarios, `gpt-oss-120b`): **100%** of the answers shown are numerically grounded and
+**100%** of their numbers match a fact (targets ≥ 90%), although only **70.5%** of the model's raw first drafts
+were; the checker rewrote or replaced the rest, mostly drafts with an invented percentage. Answers mention the
+required data notes and reasons 79.4% of the time by automatic phrase match (target 90%); read by hand, 9 of
+the 13 misses are correct answers worded differently, giving 93.7%. No answer recommended an impossible
+retrofit. One of 80 answers broke a rule: for a home with too little information it correctly said no score
+could be given, then described the score's parts wrongly. That is a wording error, not a wrong number, and is
+the kind of claim the human annotation checks. The human-annotated unsupported-claim rate (two independent
+annotators, target < 5%) is pending; the 40-answer pack is in `evaluation/annotation/`.
 Details: [LLM.md](LLM.md), `reports/llm_eval.md`.
 
 ## 5. Human oversight
