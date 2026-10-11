@@ -1,4 +1,4 @@
-"""Inference wrappers for the Part 3 models (README section 7.6). Load once, predict in batches.
+"""Inference wrappers for the Part 3 models (BUILD_GUIDE section 7.6). Load once, predict in batches.
 
 Every wrapper accepts homes as a pandas DataFrame with contract column names, OR a list of dicts /
 pydantic models (HomeInput / CleanHome.home); `to_frame` normalises them. Features are always built by
@@ -90,7 +90,7 @@ class _Loaded:
 
 class RatingModel:
     """M4: SAP points from home features. Part 2 anchors to the user's stated band and uses DELTAS for
-    post-retrofit ratings (README P2.8 step 8)."""
+    post-retrofit ratings (BUILD_GUIDE P2.8 step 8)."""
 
     def __init__(self):
         self.m = _Loaded.load("rating")

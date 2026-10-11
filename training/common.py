@@ -1,6 +1,6 @@
 """Shared training utilities (Part 3): data loading, artefact saving, bootstrap CIs.
 
-Conventions (README P3.0): train on `train`, early-stop/tune on `val`, report val AND test; never tune on
+Conventions (BUILD_GUIDE P3.0): train on `train`, early-stop/tune on `val`, report val AND test; never tune on
 test. LightGBM is seeded and deterministic. Every model directory holds model.txt (or model_XX.txt),
 features.json (ordered columns, categories, monotone constraints) and manifest.json (metrics, versions).
 CIs: bootstrap over PROPERTIES (rows of one property are resampled together), 200 resamples.

@@ -1,4 +1,4 @@
-"""Number checker (README P4.4): every number in a reply must come from the fact sheet it was given.
+"""Number checker (BUILD_GUIDE P4.4): every number in a reply must come from the fact sheet it was given.
 
 check() runs on every LLM reply, and in tests on every template answer, so the user never sees an
 unchecked number. Steps: extract numeric mentions → normalise to (|value|, unit class) → match against the
@@ -399,7 +399,7 @@ def check(text: str, sheet: FactSheet, *, extra_allowed: list[Fact] | None = Non
 
 
 def feedback(report: CheckReport) -> str:
-    """Retry message (README P4.4 rule 6), naming every kind of failure."""
+    """Retry message (BUILD_GUIDE P4.4 rule 6), naming every kind of failure."""
     parts = []
     nums = [u for u in report.unsupported if not u.endswith(")")]
     if nums:

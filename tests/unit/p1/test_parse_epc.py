@@ -1,4 +1,4 @@
-"""Unit tests for EPC text -> enum parsing (README P1.3). Strings are real EPC phrasings."""
+"""Unit tests for EPC text -> enum parsing (BUILD_GUIDE P1.3). Strings are real EPC phrasings."""
 
 import pandas as pd
 import pytest

@@ -1,4 +1,4 @@
-"""Current value baseline (README P1.8) -> final data/processed/properties.parquet.
+"""Current value baseline (BUILD_GUIDE P1.8) -> final data/processed/properties.parquet.
 
 current_value_gbp is the property's estimated value at as_of_month. It is a baseline estimate, NOT
 a sale price, and it is kept separate from sales_history (PS2 section 9):

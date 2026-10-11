@@ -1,4 +1,4 @@
-"""M4: SAP rating model on real EPC certificates (README P3.1).
+"""M4: SAP rating model on real EPC certificates (BUILD_GUIDE P3.1).
 
 Target: SAP points (1-100). Features: home only (greenhome.ml.features.rating_features), fields available
 in HomeInput. Monotone +1 on insulation/glazing/controls/renewables ordinals: a better state can never

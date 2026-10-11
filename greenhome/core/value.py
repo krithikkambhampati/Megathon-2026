@@ -1,4 +1,4 @@
-"""Property value uplift range from the value-model ensemble (README P2.8 step 8).
+"""Property value uplift range from the value-model ensemble (BUILD_GUIDE P2.8 step 8).
 
 Quantiles and the minimum half-width come from `engine.yaml: value`. Indicative, not causal.
 """

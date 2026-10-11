@@ -56,7 +56,7 @@ log = logging.getLogger("greenhome.api")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Loaded ONCE here, never per request (README P5 hazard 4).
+    # Loaded ONCE here, never per request (BUILD_GUIDE P5 hazard 4).
     app.state.engine = build_engine()  # Engine.from_config() or FixtureEngine (GREENHOME_ENGINE_MODE)
     app.state.llm = build_llm()  # None until P4 ships / if the LLM is down
     app.state.cache = ResultCache(maxsize=512)

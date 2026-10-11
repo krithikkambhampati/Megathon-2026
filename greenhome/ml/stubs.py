@@ -1,7 +1,7 @@
-"""Stub models (README P2.1): deterministic stand-ins for P3's models, implementing ml/protocols.py (§7.6).
+"""Stub models (BUILD_GUIDE P2.1): deterministic stand-ins for P3's models, implementing ml/protocols.py (§7.6).
 
 The engine, fixtures and every other part build against these until P3 ships `models/`. The numbers below
-are the README P2.1 stub constants, the one allowed set of literals outside config (ROADMAP convention 3).
+are the BUILD_GUIDE P2.1 stub constants, the one allowed set of literals outside config (ROADMAP convention 3).
 """
 
 from __future__ import annotations

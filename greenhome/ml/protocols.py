@@ -1,4 +1,4 @@
-"""Model interfaces (README §7.6). P2 codes against these; P3's wrappers and P2's stubs implement them.
+"""Model interfaces (BUILD_GUIDE §7.6). P2 codes against these; P3's wrappers and P2's stubs implement them.
 
 All calls are batched: one `analyse()` makes at most 3 calls per model, each < 50 ms on a laptop.
 Retrofit keys/values are the §7.2 strings (Retrofit is a str Enum, so either form works).

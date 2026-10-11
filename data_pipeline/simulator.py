@@ -1,6 +1,6 @@
 """Retrofit simulator: post-retrofit annual fuel use per (home, package), with hidden factors.
 
-For a package S applied to home p (README P1.9):
+For a package S applied to home p (BUILD_GUIDE P1.9):
   1. space heat after = baseline space heat x prod_{r in S, r acts on space heating} (1 - effect_r)
        effect_r = lo + u_r * (hi - lo), [lo, hi] from the catalogue for the home's STARTING state,
        u_r a hidden per-home draw. Fabric/glazing/control savings therefore compound multiplicatively

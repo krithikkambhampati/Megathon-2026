@@ -1,4 +1,4 @@
-"""The Your home form: widgets ↔ HomeInput JSON. "Not sure" and empty fields always become None (README P5
+"""The Your home form: widgets ↔ HomeInput JSON. "Not sure" and empty fields always become None (BUILD_GUIDE P5
 hazard 2), never "", "unknown" or 0."""
 
 import math

@@ -1,7 +1,7 @@
 """Shared model features: the ONE place model inputs are built, for training AND inference
-(README section 7.1 "Feature building" and P2.3). Part 2 should import this, never re-implement it.
+(BUILD_GUIDE section 7.1 "Feature building" and P2.3). Part 2 should import this, never re-implement it.
 
-Input: a pandas DataFrame with contract columns (README 7.2/7.3 HomeInput field names; null = unknown).
+Input: a pandas DataFrame with contract columns (BUILD_GUIDE 7.2/7.3 HomeInput field names; null = unknown).
 Only fields that exist in HomeInput are used, so every model can be served from what the app knows.
 (EPC-only fields such as habitable rooms or local authority are deliberately NOT features.)
 
@@ -46,7 +46,7 @@ CATEGORIES = {
     ],
     "main_fuel": ["mains_gas", "electricity", "other"],
 }
-ORDINALS = {  # higher = better / more efficient state (README P2.4 orderings)
+ORDINALS = {  # higher = better / more efficient state (BUILD_GUIDE P2.4 orderings)
     "age_band": [
         "pre_1900",
         "1900_1929",

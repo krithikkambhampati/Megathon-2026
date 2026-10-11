@@ -1,4 +1,4 @@
-# Generated: imputation tables for 'not sure' answers (README P2.2).
+# Generated: imputation tables for 'not sure' answers (BUILD_GUIDE P2.2).
 generated_by: data_pipeline/imputation_tables.py (do not edit by hand)
 basis: train split only; latest EPC per property for features; NEED 2024 medians for gas homes
 floor_area_by_type_bedrooms:
@@ -1694,4 +1694,4 @@ energy_typical:
       '>200':
         median_kwh: 11565.0
         n: 37
-  note: 'Use only when no meter data: flag ENERGY_FROM_TYPICAL_HOMES (README P2.2).'
+  note: 'Use only when no meter data: flag ENERGY_FROM_TYPICAL_HOMES (BUILD_GUIDE P2.2).'

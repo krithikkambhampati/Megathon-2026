@@ -1,4 +1,4 @@
-"""Carbon saving from a fuel saving (README P2.8 item 7): ΔC = Δelec × EF_elec + Δgas × EF_gas, kg CO2e.
+"""Carbon saving from a fuel saving (BUILD_GUIDE P2.8 item 7): ΔC = Δelec × EF_elec + Δgas × EF_gas, kg CO2e.
 
 Sign follows the saving (positive = reduction). Emission factors come from config/emission_factors.yaml.
 """

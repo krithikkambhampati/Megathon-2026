@@ -1,4 +1,4 @@
-# Engine rules [P2]: validation, annualisation, issues and value thresholds (README P2.2–P2.8).
+# Engine rules [P2]: validation, annualisation, issues and value thresholds (BUILD_GUIDE P2.2–P2.8).
 sap_bands: {A: [92, 100], B: [81, 91], C: [69, 80], D: [55, 68], E: [39, 54], F: [21, 38], G: [1, 20]}
 floor_area_band_edges: [50, 90, 130, 200]   # → lt50, 50_90, 90_130, 130_200, gt200
 stage_order: [fabric, glazing, controls, heating, generation]

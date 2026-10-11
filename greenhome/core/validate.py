@@ -1,4 +1,4 @@
-"""Validation and cleaning: HomeInput → CleanHome (README P2.2; inputs to the P2.5 min-info policy).
+"""Validation and cleaning: HomeInput → CleanHome (BUILD_GUIDE P2.2; inputs to the P2.5 min-info policy).
 
 Order: annualise → MISSING_FIELD and CONFLICT_ROOF_VS_TYPE → impute (floor area, score feature fields,
 main_fuel, typical-home energy) → intensity → conflict and outlier rules → rating (one batched

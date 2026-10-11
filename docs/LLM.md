@@ -96,7 +96,7 @@ Streamlit dashboard: "✓ all N numbers verified" / "Template answer").
 
 | File | Used for |
 |---|---|
-| `_system.j2` | shared system prompt: README P4.3 core verbatim + FACTS, DATA_NOTES, REASONS, statuses |
+| `_system.j2` | shared system prompt: BUILD_GUIDE P4.3 core verbatim + FACTS, DATA_NOTES, REASONS, statuses |
 | `explain_score.j2`, `explain_recommendations.j2`, `explain_savings.j2`, `explain_value.j2` | the task for each explain section |
 | `whatif_answer.j2` | explaining a what-if result against the recommended plan |
 | `whatif_parse.j2` | LLM fallback: message → `{"mode", "retrofits"}` (JSON schema; never numbers) |
@@ -207,7 +207,7 @@ The templates go through the same checker in the tests. All 4 sections × 5 fixt
   domain word → out of scope; otherwise the LLM classifies (JSON enum) or the answer is "unclear". Out of
   scope and unclear messages then go to the LLM with `general.j2` (checked like any answer).
 - **What-if parser** (`whatif_parser.py`): synonyms → retrofit ids, then operators applied **left to right on
-  one working list**, so follow-ups build on the current scenario (README §16 step 6: "only solar", then
+  one working list**, so follow-ups build on the current scenario (BUILD_GUIDE §16 step 6: "only solar", then
   "and a heat pump but no loft insulation", gives `[solar_pv, air_source_heat_pump]`; the engine then caps the
   heat pump at low with `INSULATE_FIRST`). Overrides use only numbers the user typed ("if my gas was 9,000
   kWh"), built from the user's raw input so the other fuel's monthly readings survive. Every scenario is
@@ -232,7 +232,7 @@ EVAL_TPM=0` turns pacing off for a local model. Without an LLM it exits with an 
 | `evaluation/whatif_parse_gold.jsonl` | 50 | labelled utterances → expected `Scenario`; 44 for the rules, 6 left to the LLM fallback |
 | Human annotation | 40 answers | stratified sample from the eval run, labelled claim by claim by P1 and P2 independently (`evaluation/annotation/RUBRIC.md`) |
 
-**Metrics** (targets from README P4.6):
+**Metrics** (targets from BUILD_GUIDE P4.6):
 - **Numeric groundedness** (target ≥ 90%): % of answers with 0 unsupported numbers, **before** the checker
   (raw first LLM attempt) and **after** it (the answer shown).
 - **Factual accuracy** (target ≥ 90%): % of numbers matching facts, plus `must_mention` satisfied.

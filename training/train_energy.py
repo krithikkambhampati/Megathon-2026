@@ -1,4 +1,4 @@
-"""M1: post-retrofit energy per fuel (README P3.2), trained on simulator labels with hidden factors.
+"""M1: post-retrofit energy per fuel (BUILD_GUIDE P3.2), trained on simulator labels with hidden factors.
 
 Why ML on simulated labels is not circular: the simulator uses hidden household factors (setpoint,
 occupancy, appliance use, exposure, true SCOP, PV orientation/self-use, per-home effect draws) that a
@@ -13,7 +13,7 @@ An earlier version normalised both fuels by the combined baseline; errors then l
 fabric/controls/solar flags; heat-pump flag free for electricity (it raises electricity in a gas home but
 lowers it in a storage-heater home). Predictions clipped >= 0.
 
-Baselines (README P3.2):
+Baselines (BUILD_GUIDE P3.2):
   B1 catalogue rule   per-fuel multiplicative midpoints (space heating ~70% of gas; HP at SCOP 2.8)
   B2 mean % by type   mean single-retrofit fractional change per fuel by property type (train),
                       multiplied across the package

@@ -1,4 +1,4 @@
-"""State changes from retrofits (README P2.3, §7.1 "State changes from retrofits").
+"""State changes from retrofits (BUILD_GUIDE P2.3, §7.1 "State changes from retrofits").
 
 The ONLY place a home's features change after retrofits; the simulator, training and orchestrator all use it.
 Idempotent and order-independent: each retrofit sets its own fields to a fixed or "at least" value.

@@ -64,7 +64,7 @@ Norwich, Bristol, Cornwall (off-gas heavy), Cardiff, Camden, Brighton & Hove, co
 | Validation | `manifest.py` | `MANIFEST.json` + contract checks |
 | Data report | `data_report.py` | `reports/data_report.md` + `reports/figures/` (validation charts) |
 
-## 4. Schema (`data/processed/`, all parquet; enums exactly as README §7.2; `null` = unknown)
+## 4. Schema (`data/processed/`, all parquet; enums exactly as BUILD_GUIDE §7.2; `null` = unknown)
 
 **`properties.parquet`**: 50,000 product homes (stratified sample of in-scope properties by LA × type)
 `property_id, customer_id, local_authority_code, epc_lodgement_date, data_source, property_type, age_band,
@@ -191,7 +191,7 @@ Median £277k (indexed sales) / £226k (area model).
 ## 9. Facts the other parts need
 | For | Fact |
 |---|---|
-| P2 carbon | electricity **0.13096**, gas **0.18231** kg CO2e/kWh (DESNZ 2026); the README's ~0.2 was wrong |
+| P2 carbon | electricity **0.13096**, gas **0.18231** kg CO2e/kWh (DESNZ 2026); the BUILD_GUIDE's ~0.2 was wrong |
 | P2 score | intensity bounds 85 / 230 kWh/m² (train P5/P95); NEED shows small homes have the highest gas/m², so compare with size-banded peers |
 | P2 annualisation | seasonal shares per region in `config/regions.yaml` (`gas_monthly_share`, `elec_monthly_share`) |
 | P2 stubs, P3 rating | real median ΔSAP for single-change repeat EPCs: solid wall +11, heat pump +10, cavity +8, solar +8, loft +7, glazing +6, controls +4 |

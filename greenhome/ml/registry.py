@@ -1,4 +1,4 @@
-"""Real (Part 3) models behind Part 2's interfaces (README section 7.6, D12).
+"""Real (Part 3) models behind Part 2's interfaces (BUILD_GUIDE section 7.6, D12).
 
 Engine.from_config() calls `load_models(models_dir)` when config/global.yaml has `models: real`.
 Each adapter implements the matching Protocol in greenhome/ml/protocols.py exactly, converting

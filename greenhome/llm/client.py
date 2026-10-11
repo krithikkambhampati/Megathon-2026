@@ -1,8 +1,8 @@
-"""LLM client adapters (README P4.1, CR-7): Ollama + any OpenAI-compatible endpoint, plus a cache.
+"""LLM client adapters (BUILD_GUIDE P4.1, CR-7): Ollama + any OpenAI-compatible endpoint, plus a cache.
 
 Both adapters stream over plain httpx so the caller's deadline is enforced on our side: we stop reading
 when time is up and raise `LLMTimeout`. Every failure is an `LLMError`; callers turn it into the template
-answer, so the app works with the LLM down (README P4 hazard 3). Temperature 0 and seed 42 (README L5).
+answer, so the app works with the LLM down (BUILD_GUIDE P4 hazard 3). Temperature 0 and seed 42 (BUILD_GUIDE L5).
 """
 
 from __future__ import annotations
@@ -281,7 +281,7 @@ class OllamaClient(_StreamingClient):
 
 
 class OpenAICompatClient(_StreamingClient):
-    """POST {base_url}/chat/completions on any OpenAI-compatible endpoint (README L5 hosted fallback).
+    """POST {base_url}/chat/completions on any OpenAI-compatible endpoint (BUILD_GUIDE L5 hosted fallback).
 
     Plain httpx instead of the `openai` SDK so streaming and the deadline work the same as Ollama.
     """
@@ -384,7 +384,7 @@ class OpenAICompatClient(_StreamingClient):
 
 
 class CachedClient:
-    """In-memory LRU over identical requests (README P4.1). Failures are not cached.
+    """In-memory LRU over identical requests (BUILD_GUIDE P4.1). Failures are not cached.
 
     Temperature 0 + fixed seed make a repeated request return the same text, so caching changes nothing
     but latency. The timeout is not part of the key: it changes when an answer arrives, not what it says.

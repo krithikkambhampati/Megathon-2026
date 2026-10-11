@@ -1,4 +1,4 @@
-"""Shared contracts: every enum and pydantic model exchanged between parts (README §7.2, §7.3).
+"""Shared contracts: every enum and pydantic model exchanged between parts (BUILD_GUIDE §7.2, §7.3).
 
 Field names are binding. Any change after the H+2 freeze needs a CONTRACT_VERSION bump, regenerated
 fixtures (`uv run python tests/fixtures/generate.py`) and an announcement in the team channel.
@@ -225,7 +225,7 @@ class HomeInput(Strict):
 
 # ---------- CLEANED ----------
 class DataFlag(Strict):
-    code: str  # from the flag code list in README P2.2
+    code: str  # from the flag code list in BUILD_GUIDE P2.2
     severity: FlagSeverity
     field: str | None = None
     message: str  # short human text (UI + LLM DATA_NOTES)
@@ -305,7 +305,7 @@ class RetrofitRecommendation(Strict):
     rank: int | None  # None if not in the reported package
     feasibility: Feasibility
     suitability: Suitability | None
-    reasons: list[str]  # reason codes, see README P2.7
+    reasons: list[str]  # reason codes, see BUILD_GUIDE P2.7
     depends_on: list[Retrofit]
     standalone_saving: FuelSaving | None
     incremental_saving: FuelSaving | None  # in recommended order; sums to package

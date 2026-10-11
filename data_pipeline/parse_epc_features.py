@@ -1,4 +1,4 @@
-"""Map raw EPC certificate fields (mostly free text) to the contract enums (README section 7.2).
+"""Map raw EPC certificate fields (mostly free text) to the contract enums (BUILD_GUIDE section 7.2).
 
 Design rules
   * Rules are case-insensitive regexes applied in a fixed priority order; first match wins.

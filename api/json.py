@@ -1,4 +1,4 @@
-"""JSON response that never emits NaN or Infinity (README §7.8: converted to null)."""
+"""JSON response that never emits NaN or Infinity (BUILD_GUIDE §7.8: converted to null)."""
 
 import json
 import math

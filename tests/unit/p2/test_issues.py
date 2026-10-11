@@ -1,4 +1,4 @@
-"""Issue rules and the poor flag (README P2.6)."""
+"""Issue rules and the poor flag (BUILD_GUIDE P2.6)."""
 
 from __future__ import annotations
 

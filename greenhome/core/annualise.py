@@ -1,4 +1,4 @@
-"""Monthly readings → annual kWh per fuel, weighted by seasonal shares (README P2.2 step 2).
+"""Monthly readings → annual kWh per fuel, weighted by seasonal shares (BUILD_GUIDE P2.2 step 2).
 
 coverage = Σ regional monthly share (regions.yaml) over the window months that have a reading. A missing
 month is never treated as 0: the readings are scaled up by 1/coverage instead. Typical-home imputation of

@@ -1,6 +1,6 @@
 """Regenerate `analysis_result_<id>.json` from every `home_input_<id>.json` using the STUB models.
 
-P4 and P5 build against these files (README P2.1, D2). Run after any contract or engine change:
+P4 and P5 build against these files (BUILD_GUIDE P2.1, D2). Run after any contract or engine change:
     .venv/bin/python tests/fixtures/generate.py
 `tests/integration/test_engine.py::test_fixtures_are_current` fails when they are stale.
 """

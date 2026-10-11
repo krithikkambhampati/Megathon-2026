@@ -1,4 +1,4 @@
-"""Chat (README §4.3, P4.5, CR-7): router → what-if / explain / memory / out-of-scope / unclear.
+"""Chat (BUILD_GUIDE §4.3, P4.5, CR-7): router → what-if / explain / memory / out-of-scope / unclear.
 
 Stateless: multi-turn state is `req.current_scenario` only; P5 keeps the transcript and passes
 `base = engine.analyse(req.home, ctx)`. What-ifs rerun P2's engine BEFORE anything is explained, so the

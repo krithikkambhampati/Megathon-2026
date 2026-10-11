@@ -1,4 +1,4 @@
-"""Suitability, prerequisites, install order and budget filtering of retrofits (README P2.8 steps 2–4, 6).
+"""Suitability, prerequisites, install order and budget filtering of retrofits (BUILD_GUIDE P2.8 steps 2–4, 6).
 
 Thresholds come from `score.yaml: suitability`; stages, prerequisites and soft edges from the catalogue and
 `engine.yaml: stage_order`.

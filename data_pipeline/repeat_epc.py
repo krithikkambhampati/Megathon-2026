@@ -1,4 +1,4 @@
-"""Real retrofit history from repeat EPCs of the same property (README P1.5).
+"""Real retrofit history from repeat EPCs of the same property (BUILD_GUIDE P1.5).
 
 For consecutive certificates of one property, an element that improves maps to a retrofit:
   roof_insulation up             -> loft_insulation      (pitched loft / room in roof)

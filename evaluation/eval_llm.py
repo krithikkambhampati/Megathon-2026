@@ -1,10 +1,10 @@
-"""LLM-layer evaluation (README P4.6): `make eval` → reports/llm_eval.md + reports/llm_eval_raw.jsonl.
+"""LLM-layer evaluation (BUILD_GUIDE P4.6): `make eval` → reports/llm_eval.md + reports/llm_eval_raw.jsonl.
 
 Runs every item of evaluation/llm_scenarios.jsonl through the real path (engine → explain/chat → checker)
 and the 50 what-if parse items through the parser. Targets: numeric groundedness ≥ 90 %, factual accuracy
 ≥ 90 %, unsupported claim rate < 5 % (the last one from human annotation, see evaluation/annotate.py).
 
-"Before vs after the checker" (README P4.6): *before* = the model's raw first attempt; *after* = the
+"Before vs after the checker" (BUILD_GUIDE P4.6): *before* = the model's raw first attempt; *after* = the
 answer actually shown (passed check, retried, or template fallback).
 
 The LLM is the uncached inner client, so latencies are real. With no LLM the script exits non-zero unless
@@ -347,7 +347,7 @@ def write_report(path: Path, info: dict, summ: dict, records: list[dict], dry_ru
     L += ["## Run", "", "| | |", "|---|---|"] + [f"| {k} | {v} |" for k, v in info.items()] + [""]
     p = summ["parse"]
     L += [
-        "## Summary vs targets (README P4.6)",
+        "## Summary vs targets (BUILD_GUIDE P4.6)",
         "",
         "| Metric | Value | Target |",
         "|---|---|---|",

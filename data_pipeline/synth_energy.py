@@ -7,7 +7,7 @@ split into months using the regional profiles in config/regions.yaml:
                shape, minus PV self-consumption x PVGIS monthly shape
 Each month gets +/-3% multiplicative measurement noise.
 
-Missingness patterns (README P1.7; seeded; missing = row value null, NEVER zero):
+Missingness patterns (BUILD_GUIDE P1.7; seeded; missing = row value null, NEVER zero):
   70% complete 12 months | 15% 1-3 random months missing | 7% 4-8 consecutive months missing
    3% gas column missing although gas is used | 2% only annual totals (no monthly)
    3% no energy data at all

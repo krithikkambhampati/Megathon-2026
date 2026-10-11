@@ -1,4 +1,4 @@
-"""Feasibility rules (README P2.7)."""
+"""Feasibility rules (BUILD_GUIDE P2.7)."""
 
 from __future__ import annotations
 

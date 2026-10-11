@@ -5,7 +5,7 @@
 > stricter LLM prompt). For how the system works now, see `README.md` and `docs/` (RUN, ARCHITECTURE, LLM,
 > SCORING, DATA, MODELS, RESPONSIBLE_AI).
 
-Source of truth for *what* to build: the team guide (README §2.11, §4.3, PART 4) plus P5's change requests
+Source of truth for *what* to build: the team guide (BUILD_GUIDE §2.11, §4.3, PART 4) plus P5's change requests
 (`docs/archive/P5_change_requests.md`, CR-1/2/7/8) and P5's follow-ups (one answer budget, warm-up). This file says *how*
 and *in what order*, so a human or an agent can pick up any task cold. Tick boxes as tasks land. Task IDs
 are commit IDs: task `P4-05` lands as commit `P4-05: …`.
@@ -19,7 +19,7 @@ facts: never an error, never an unchecked number.
 - `uv run pytest` green with **no LLM running** (LLM behaviour is tested with a scripted client) ·
   `uv run ruff check .` clean
 - `explain()` returns checked text for 4 sections × 5 fixtures with the LLM off; every template passes the checker
-- `chat()` on stubs handles README §16 step 6 (turn 1 "What if I only install solar?" → `custom [solar_pv]`;
+- `chat()` on stubs handles BUILD_GUIDE §16 step 6 (turn 1 "What if I only install solar?" → `custom [solar_pv]`;
   turn 2 "and a heat pump but no loft insulation?" → `custom [solar_pv, air_source_heat_pump]`, heat pump
   `low` + `INSULATE_FIRST` in the answer) and step 8 ("We installed loft insulation last year and we don't
   want a heat pump" → intent `memory`, proposal = completed loft + exclude heat pump, nothing stored)
@@ -33,7 +33,7 @@ facts: never an error, never an unchecked number.
 ```
                          ┌─────────── explain(result, section, llm) ───────────┐
 AnalysisResult ─► facts.py ─► FactSheet ─► prompts/*.j2 ─► client.py ─► LLM text
-  (P2 engine)       │  display strings      (README P4.3 system     (Ollama / OpenAI-compat over httpx,
+  (P2 engine)       │  display strings      (BUILD_GUIDE P4.3 system     (Ollama / OpenAI-compat over httpx,
                     │  from format.py ONLY   prompt + FACTS lines +   temp 0, seed 42, cache, deadline)
                     │  diff from diff.py     DATA_NOTES + REASONS)              │
                     │                                                           ▼
@@ -60,7 +60,7 @@ keeps the transcript, stores memory only after the user confirms, and passes `ba
 
 ## Phases and tasks
 
-`→` = depends on. Estimates are for one focused engineer or agent. Target hours are README §14.
+`→` = depends on. Estimates are for one focused engineer or agent. Target hours are BUILD_GUIDE §14.
 
 ### Phase 0 — Foundation · ~2.5 h
 - [x] P4-01 `docs/ROADMAP_P4.md`: this file
@@ -141,9 +141,9 @@ While the model says `TODO_PIN_AFTER_BENCH`, `make_client()` returns `None` and 
 7. Replace every `TODO_BENCH` / `TODO_PIN_AFTER_BENCH`.
 
 **If the laptop is not ready by H+20:** generate the annotation responses and eval with the hosted
-OpenAI-compatible endpoint (README L5), and say so in the report header and the CSVs. **If no candidate passes
+OpenAI-compatible endpoint (BUILD_GUIDE L5), and say so in the report header and the CSVs. **If no candidate passes
 the bench bar:** explanations default to templates, the LLM is used only in chat, and the pin falls back to
-the best 3–4B model or the hosted endpoint, with the reason in `docs/LLM.md` (README §17).
+the best 3–4B model or the hosted endpoint, with the reason in `docs/LLM.md` (BUILD_GUIDE §17).
 
 **Candidates** (exact tags confirmed with `ollama pull`): one 7–8B instruct model at 4-bit and one 3–4B
 instruct model. Pass bar, measured with no deadline: p95 answer time ≤ the 12 s answer cap, `Scenario` JSON
@@ -153,7 +153,7 @@ wins among those that pass.
 ---
 
 ## Code conventions (P2's, plus LLM-specific ones)
-1. `from __future__ import annotations` first. The module docstring says what the module owns and its README §.
+1. `from __future__ import annotations` first. The module docstring says what the module owns and its BUILD_GUIDE §.
 2. Python 3.11 type hints. Ruff config in `ruff.toml` (line length 110).
 3. **No number formatting outside `greenhome/format.py`.** Facts carry display strings; prompts and templates
    print `fact.display`, never a raw float. If a formatter is missing (intensity, floor area), the number is
@@ -218,7 +218,7 @@ class LLMClient(Protocol):
     def generate(self, system: str, messages: list[dict], json_schema: dict | None = None,
                  max_tokens: int = 400, *, timeout_s: float | None = None) -> str: ...
     def ping(self, timeout_s: float = 2) -> bool: ...
-    # README P4.1 signature + keyword-only timeout_s. `last_usage` (tokens in/out, seconds, load seconds)
+    # BUILD_GUIDE P4.1 signature + keyword-only timeout_s. `last_usage` (tokens in/out, seconds, load seconds)
     # is set after each call for the bench and eval.
 class OllamaClient: ...                 # POST /api/chat, stream, options{temperature, seed, num_ctx,
                                         # num_predict}, keep_alive, format=schema; done_reason "length" → LLMError
@@ -248,7 +248,7 @@ class FactSheet(BaseModel):
     facts: list[Fact]; notes: list[str]; reasons: dict[str, str]; statuses: dict[str, str]
     view: dict                          # nested display strings for the templates
     def lines(self) -> str: ...         # prompt form: "F7 Heat pump · electricity: 3,600 kWh/year increase"
-def build_facts(result: AnalysisResult, base: AnalysisResult | None = None) -> list[Fact]: ...  # README P4.2
+def build_facts(result: AnalysisResult, base: AnalysisResult | None = None) -> list[Fact]: ...  # BUILD_GUIDE P4.2
 def build_fact_sheet(result, section, base=None, diff=None, focus: list[str] | None = None,
                      user_facts: list[Fact] | None = None) -> FactSheet: ...
 
@@ -382,11 +382,11 @@ text2 = llm.generate(..., msgs + [assistant text1, user feedback(r1)])          
 r2 = check(text2, sheet);  if r2.passed: return text2, r2 (attempts=2)
 return template + check (attempts=2, fallback)
 ```
-- `prompts/_system.j2` holds the README P4.3 system-prompt core **verbatim** (7 rules, ≤ 170 words, no
+- `prompts/_system.j2` holds the BUILD_GUIDE P4.3 system-prompt core **verbatim** (7 rules, ≤ 170 words, no
   tables), with FACTS (as lines), DATA_NOTES and REASONS. A test checks the 7 rules are present.
 - The templates carry the same guardrail sentences: savings are "estimated"; value is "indicative, not
   guaranteed or causal"; "electricity use goes up" whenever `ELECTRICITY_RISES_GAS_FALLS` applies.
-- Prompt files: one per section (`explain_savings.j2` and `explain_value.j2` instead of the README's combined
+- Prompt files: one per section (`explain_savings.j2` and `explain_value.j2` instead of the BUILD_GUIDE's combined
   `explain_savings_value.j2`, because CR-7's `Section` treats them separately).
 
 ## Router (P4-07), in this order

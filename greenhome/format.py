@@ -1,4 +1,4 @@
-"""The ONLY number formatter (README §7.1). Engine and models never round; P4 and P5 import these.
+"""The ONLY number formatter (BUILD_GUIDE §7.1). Engine and models never round; P4 and P5 import these.
 
 Rounding rules: kWh → nearest 10 · kg → nearest 10 · tonnes → 1 dp · £ value → nearest £500 ·
 £ cost/bill → nearest £10 · % → 1 dp · score → int · SAP → int. All rounding is half-up.

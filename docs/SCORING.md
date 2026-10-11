@@ -374,7 +374,7 @@ ranking and suitability only, never a kWh, carbon, score or value number.
 
 | Priority | w_p | w_save | w_cost |
 |---|---|---|---|
-| balanced (default, README) | 0.4 | 0.4 | 0.2 |
+| balanced (default, BUILD_GUIDE) | 0.4 | 0.4 | 0.2 |
 | carbon | 0.3 | 0.5 | 0.2 |
 | bills | 0.3 | 0.3 | 0.4 |
 | value | 0.4 | 0.4 | 0.2 |

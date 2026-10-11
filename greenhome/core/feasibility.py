@@ -1,4 +1,4 @@
-"""Deterministic retrofit feasibility with reason codes (README P2.7). P1's simulator imports it too.
+"""Deterministic retrofit feasibility with reason codes (BUILD_GUIDE P2.7). P1's simulator imports it too.
 
 Each retrofit has an ordered rule list. The first matching `infeasible` rule wins (single reason); otherwise
 every matching `needs_survey` rule contributes its reason; otherwise the retrofit is feasible. `info` rules
@@ -13,7 +13,7 @@ from typing import Any
 
 from greenhome.contracts import FEATURE_FIELDS, Feasibility, HomeInput, Retrofit
 
-# Reason codes (binding for P4 templates, README P2.7).
+# Reason codes (binding for P4 templates, BUILD_GUIDE P2.7).
 ALREADY_INSTALLED = "ALREADY_INSTALLED"
 NO_LOFT_DWELLING_ABOVE = "NO_LOFT_DWELLING_ABOVE"
 FLAT_ROOF_INSULATION_DIFFERENT_MEASURE = "FLAT_ROOF_INSULATION_DIFFERENT_MEASURE"

@@ -1,4 +1,4 @@
-"""Build the product dataset (README section 7.5) from the parsed EPC properties.
+"""Build the product dataset (BUILD_GUIDE section 7.5) from the parsed EPC properties.
 
   1. stratified sample of `product_sample_size` in-scope properties (local authority x property type)
   2. synthetic customers + the single customer-grouped train/val/test split

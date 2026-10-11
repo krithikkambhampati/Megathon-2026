@@ -1,4 +1,4 @@
-"""Calibrate the physics model so synthetic consumption matches real NEED statistics (README P1.7).
+"""Calibrate the physics model so synthetic consumption matches real NEED statistics (BUILD_GUIDE P1.7).
 
 Targets: NEED multiple-attributes table, latest year (2024), medians and quartiles per cell.
 Prebound (by EPC band): real poorly-rated homes use far less gas than their rating implies (NEED: F/G

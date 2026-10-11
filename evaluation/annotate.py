@@ -1,4 +1,4 @@
-"""Human annotation (README P4.6): export 40 answers for two annotators, then score their labels.
+"""Human annotation (BUILD_GUIDE P4.6): export 40 answers for two annotators, then score their labels.
 
 - `export(records, info)` (called by eval_llm): writes evaluation/annotation/RESPONSES.md (each answer with
   the fact sheet it was written from, split into numbered sentences), responses.json, and one CSV per

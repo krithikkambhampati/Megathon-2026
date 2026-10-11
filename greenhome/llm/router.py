@@ -1,4 +1,4 @@
-"""Intent router (README P4.5): rules first, the LLM (JSON enum) only for messages no rule matches.
+"""Intent router (BUILD_GUIDE P4.5): rules first, the LLM (JSON enum) only for messages no rule matches.
 
 Order matters (docs/archive/ROADMAP_P4.md): hypotheticals are what-ifs before the memory rules run, so
 "what if we had a heat pump" is not taken as a statement about the home.

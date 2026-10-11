@@ -1,4 +1,4 @@
-"""format.py: README §7.1 rounding rules and CR-8 display strings."""
+"""format.py: BUILD_GUIDE §7.1 rounding rules and CR-8 display strings."""
 
 from __future__ import annotations
 

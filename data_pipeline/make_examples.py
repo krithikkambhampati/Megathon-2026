@@ -1,8 +1,8 @@
-"""Demo homes for the "Load example home" dropdown (README P1.10) -> data/examples/*.json + index.json.
+"""Demo homes for the "Load example home" dropdown (BUILD_GUIDE P1.10) -> data/examples/*.json + index.json.
 
 Real homes come from the TEST split only (never seen in training), one per scenario the judges may
 try. P10001 is the PS2 example home: synthetic, labelled as such, using the reserved id range.
-Every file is a HomeInput JSON (README section 7.3): null = "not sure"; missing months are absent.
+Every file is a HomeInput JSON (BUILD_GUIDE section 7.3): null = "not sure"; missing months are absent.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Memory proposals (README P4.5, CR-1): message → `list[MemoryEventIn]`, rules first, LLM JSON fallback.
+"""Memory proposals (BUILD_GUIDE P4.5, CR-1): message → `list[MemoryEventIn]`, rules first, LLM JSON fallback.
 
 P4 NEVER stores anything. `chat()` returns the proposal; P5's UI asks the user to confirm, then P5 stores it.
 A budget is only accepted if the user typed that amount (the LLM never supplies a number).

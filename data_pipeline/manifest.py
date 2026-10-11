@@ -1,4 +1,4 @@
-"""Validate processed outputs against the contract (README section 7) and write MANIFEST.json.
+"""Validate processed outputs against the contract (BUILD_GUIDE section 7) and write MANIFEST.json.
 
 Checks (fail loudly): enum columns only contain contract values (or null), required columns exist,
 ids are well formed, no hidden simulator column leaks into properties.parquet, splits are leak-free,

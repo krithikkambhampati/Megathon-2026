@@ -22,17 +22,17 @@ Fixtures: `tests/fixtures/analysis_result_*.json` (4 homes, stub models), regene
 - **P5 isn't waiting.** Until you reply, P5 builds against the code in this document **exactly as written**,
   treating it as a placeholder. If you edit or reject a CR, P5 adapts its code to your version (or to that CR's
   "If rejected" fallback). Nothing on your side is blocked by this.
-- **Where P5's code is:** branch `p5/main` in `github.com/krithikkambhampati/Megathon-2026`. Already there:
+- **Where P5's code is:** branch `p5/main` in the team repository. Already there:
   - the API shell (`api/`): error envelope `{"error": {"code", "message"}}`, NaN → `null` on every response,
     and `GET /v1/health`
   - the UI shell (`ui/`) with 9 placeholder pages
 - **What P5 needs from you next, besides the replies:** `greenhome/contracts.py` and
   `tests/fixtures/analysis_result_P10001.json` (README D1/D2). Until they land, P5 uses a temporary stand-in
-  built from README §7.3 plus these CRs. Your real files replace it, and the stand-in is never merged to `main`.
+  built from BUILD_GUIDE §7.3 plus these CRs. Your real files replace it, and the stand-in is never merged to `main`.
 
 ## Why
 The README contract (§7.3 / §7.7 / §7.8) leaves out some things the UI and API need. P5 isn't allowed to compute
-numbers (README P5 hazard 1), so a missing value can't be worked out in the UI. It has to come from P2. Each
+numbers (BUILD_GUIDE P5 hazard 1), so a missing value can't be worked out in the UI. It has to come from P2. Each
 CR below gives exact code, then says what P5 does if you reject it.
 
 ## How to reply
@@ -46,14 +46,14 @@ wins. "P5 status" shows what P5 is building against right now.
 | CR-3 | `PeerComparison` + `AnalysisResult.peer` | **Edit**: band names `lt50 / 50_90 / 90_130 / 130_200 / gt200` (match config); `property_type` nullable; `None` also when energy is typical-home imputed | Done |
 | CR-4 | `PortfolioRow` / `PortfolioResponse`; `engine.portfolio()` returns typed rows | **Accept**: `customer_id` is `str \| None`. Not batched across homes: ~5 ms/home on stubs (9k homes ≈ 45 s); revisit with real models | Done |
 | CR-5 | `analysis_id` hash includes the customer context | **Accept** (was already implemented) | Done |
-| CR-6 | Engine applies all `CustomerContext` rules (incl. `priority`) | **Edit**: budget uses net mid cost (cost midpoint − grant, floored at 0), not `cost_high`, to match README P2.8 cost-efficiency. Weights live at `score.yaml: suitability.priority_weights` with keys `assessor / saving_share / cost_eff`. `carbon` re-weights the kWh share (no separate carbon share yet) | Done |
+| CR-6 | Engine applies all `CustomerContext` rules (incl. `priority`) | **Edit**: budget uses net mid cost (cost midpoint − grant, floored at 0), not `cost_high`, to match BUILD_GUIDE P2.8 cost-efficiency. Weights live at `score.yaml: suitability.priority_weights` with keys `assessor / saving_share / cost_eff`. `carbon` re-weights the kWh share (no separate carbon share yet) | Done |
 | CR-7 | Fixed signatures for P4's `explain`, `chat`, `make_client` | P4: (P2 confirms `Engine` is `greenhome.core.orchestrator.Engine`) | Waiting on P4 |
 | CR-8 | Minimum function list for `format.py` | **Accept**: names as listed + `fmt_kg_saving`; `fmt_delta` units = `DiffRow.unit` (`score`, `sap`, `kwh_per_year`, `kg_per_year`, `pct` → `pp`); minus sign is U+2212 | Done |
 
 ---
 
 ## CR-1: Memory events + memory proposal on `ChatResponse`
-**Gap:** README P4.5 says P4 extracts a memory change from chat and the UI asks the user to confirm it.
+**Gap:** BUILD_GUIDE P4.5 says P4 extracts a memory change from chat and the UI asks the user to confirm it.
 `ChatResponse` has no field to carry it, and the event schema exists only in P5's SQLite table. P4 produces
 this type, so it has to live in the shared contract.
 
@@ -107,7 +107,7 @@ class MemoryEvent(Strict):
 
 ## CR-2: `ResultDiff`, computed by P2 code
 **Gap:** the what-if screen shows a before/after diff table, and the score card shows "36 → 61 (+16)". The UI
-may not subtract. README P4.2 already needs diff facts "computed by code" for the LLM, so one P2 function
+may not subtract. BUILD_GUIDE P4.2 already needs diff facts "computed by code" for the LLM, so one P2 function
 should serve both the UI and P4.
 
 ```python
@@ -159,7 +159,7 @@ gauge otherwise.
 
 ## CR-4: Typed portfolio rows + precomputed portfolio
 **Gap:** `engine.portfolio()` returns `list[dict]`, so its columns are undefined. Computing it live is also
-too slow. The test split is ~4.5k–9k homes, and at the README's 500 ms per `analyse()` that's 40–75 minutes.
+too slow. The test split is ~4.5k–9k homes, and at the BUILD_GUIDE's 500 ms per `analyse()` that's 40–75 minutes.
 
 ```python
 class PortfolioRow(Strict):
@@ -189,7 +189,7 @@ class PortfolioResponse(Strict):
 **If rejected:** P5 maps your dicts to `PortfolioRow` in the API. Please post the dict keys in writing.
 
 ## CR-5: `analysis_id` includes the customer context
-**Gap:** README §7.3 hashes "canonical input + scenario + model versions". With memory, the same home gives
+**Gap:** BUILD_GUIDE §7.3 hashes "canonical input + scenario + model versions". With memory, the same home gives
 different results for different customer contexts, so the API's result cache would serve stale results.
 
 **Change:**
@@ -198,7 +198,7 @@ different results for different customer contexts, so the API's result cache wou
 **If rejected:** P5 keys its cache on `(analysis_id, sha256(ctx))`. That works, but duplicates logic.
 
 ## CR-6: The engine applies all `CustomerContext` rules
-**Gap:** README P5.4 has P5's `context.py` applying completed retrofits to the home, while README P2.8 step 6
+**Gap:** BUILD_GUIDE P5.4 has P5's `context.py` applying completed retrofits to the home, while BUILD_GUIDE P2.8 step 6
 has the engine handling exclusions and budget. Split across two places, they'll drift apart.
 **Proposal:** P5 only turns memory events into a `CustomerContext`. `engine.analyse(home, ctx)` and
 `run_scenario(home, scenario, ctx)` apply **every** rule:
@@ -214,14 +214,14 @@ has the engine handling exclusions and budget. Split across two places, they'll 
 The PS (§10) explicitly lists "stated constraints **or preferences**" as memory that should adapt
 recommendations, so `priority` should do something. Proposed addition to `config/score.yaml`:
 ```yaml
-# u_r = w_p * p_r + w_save * norm(save_r) + w_cost * norm(cost_eff_r)      (README P2.8 step 3)
+# u_r = w_p * p_r + w_save * norm(save_r) + w_cost * norm(cost_eff_r)      (BUILD_GUIDE P2.8 step 3)
 priority_weights:
   balanced: {w_p: 0.4, w_save: 0.4, w_cost: 0.2}   # = README default
   carbon:   {w_p: 0.3, w_save: 0.5, w_cost: 0.2}   # save_r = standalone CARBON saving share, not net kWh share
   bills:    {w_p: 0.3, w_save: 0.3, w_cost: 0.4}
   value:    {w_p: 0.4, w_save: 0.4, w_cost: 0.2}   # = balanced; no per-retrofit value model (documented limitation)
 ```
-Improvement potential still uses the full feasible package minus completed retrofits (README P2.8 step 6).
+Improvement potential still uses the full feasible package minus completed retrofits (BUILD_GUIDE P2.8 step 6).
 
 For reference, P5 builds the context from events like this (`greenhome/memory/context.py`). Events are
 processed in `(ts, id)` order:
@@ -254,7 +254,7 @@ def make_client() -> LLMClient | None:   # None if LLM_PROVIDER unset/unreachabl
 **If rejected:** P4 posts their actual signatures by H+3, and P5 adapts.
 
 ## CR-8: Functions `format.py` must provide
-P2 chooses the names. P5 needs at least these, following the README §7.1 rounding rules. Each one accepts
+P2 chooses the names. P5 needs at least these, following the BUILD_GUIDE §7.1 rounding rules. Each one accepts
 `None` and returns `"—"`:
 
 | Function | Example output |

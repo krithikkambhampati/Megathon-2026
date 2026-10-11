@@ -1,4 +1,4 @@
-"""Count stored parameters of every trained model (README deliverable C / MODELS.md).
+"""Count stored parameters of every trained model (BUILD_GUIDE deliverable C / MODELS.md).
 
 A gradient-boosted tree stores, per internal split, a feature index + threshold (2 numbers) and, per
 leaf, an output value (1 number). Parameters = 2 x splits + leaves, summed over all trees.

@@ -1,4 +1,4 @@
-"""Green Home Score (README P2.4) and its minimum-information policy (README P2.5).
+"""Green Home Score (BUILD_GUIDE P2.4) and its minimum-information policy (BUILD_GUIDE P2.5).
 
 Every table, weight and bound comes from `config/score.yaml` (and the generated intensity bounds). One pure
 helper, `_sub_scores`, turns a flat dict of values into the 7 sub-scores; the main path, the score-range
@@ -28,7 +28,7 @@ from greenhome.contracts import (
 )
 from greenhome.format import round_score
 
-# Enum value sets enumerated for the score range (README §7.2).
+# Enum value sets enumerated for the score range (BUILD_GUIDE §7.2).
 _ENUMS: dict[str, type] = {
     "energy_rating": EnergyRating,
     "roof_type": RoofType,
@@ -114,7 +114,7 @@ def classify(score_raw: float) -> tuple[int, str]:
 
 
 def _enough_info(clean: CleanHome, unknown: set[str]) -> bool:
-    """README P2.5: floor area AND (known rating OR non-imputed annual energy) AND few unknown features."""
+    """BUILD_GUIDE P2.5: floor area AND (known rating OR non-imputed annual energy) AND few unknown features."""
     cfg = get_config()
     energy_ok = clean.energy.purchased_kwh is not None and all(
         clean.provenance.get(f) != Provenance.imputed.value for f in ("electricity_kwh", "gas_kwh")
@@ -172,7 +172,7 @@ def _worst_provenance(clean: CleanHome, fields: tuple[str, ...]) -> str:
 
 
 def compute_score(clean: CleanHome) -> ScoreResult:
-    """Green Home Score with components, class and an exact range over unknown inputs (README P2.4/P2.5)."""
+    """Green Home Score with components, class and an exact range over unknown inputs (BUILD_GUIDE P2.4/P2.5)."""
     s = get_config().score
     h = clean.home
     purchased = clean.energy.purchased_kwh

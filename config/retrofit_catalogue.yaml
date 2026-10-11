@@ -1,4 +1,4 @@
-# Retrofit catalogue (Part 1 authors the values; Part 2 owns the schema; README section 7.4).
+# Retrofit catalogue (Part 1 authors the values; Part 2 owns the schema; BUILD_GUIDE section 7.4).
 # This catalogue takes precedence over the PS2 illustrative table, as PS2 section 4 allows.
 #
 # Field meanings
@@ -114,7 +114,7 @@
   notes: >
     PS2's illustrative 15-25% purchased-energy reduction is far below physics: replacing a 75-88% efficient
     gas boiler with an SCOP ~2.8 heat pump cuts purchased heating kWh by ~70%. We model physics and
-    document the deviation (README section 2.2). Electricity use RISES while gas falls; cooking gas remains.
+    document the deviation (BUILD_GUIDE section 2.2). Electricity use RISES while gas falls; cooking gas remains.
 
 - retrofit: solar_pv
   stage: generation

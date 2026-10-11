@@ -1,4 +1,4 @@
-"""Join Land Registry sales to EPC properties by address (README P1.6) -> real sales history.
+"""Join Land Registry sales to EPC properties by address (BUILD_GUIDE P1.6) -> real sales history.
 
 Matching, within the same postcode only:
   1. exact key: (postcode, PAON, SAON) where EPC PAON/SAON are extracted from ADDRESS1/2/3

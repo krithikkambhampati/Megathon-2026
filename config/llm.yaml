@@ -1,4 +1,4 @@
-# P4 LLM layer settings (README P4.1, docs/LLM.md). Environment variables override the keys marked
+# P4 LLM layer settings (BUILD_GUIDE P4.1, docs/LLM.md). Environment variables override the keys marked
 # "env". Secrets never go here: LLM_API_KEY lives only in .env.
 # Decision 2026-10-11: hosted open-weight model on Groq (OpenAI-compatible API) instead of local Ollama.
 # Ollama still works as an optional offline fallback (LLM_PROVIDER=ollama + LLM_BASE_URL + LLM_MODEL in .env).
@@ -30,7 +30,7 @@ request_extra:
   qwen/:
     reasoning_effort: none
 
-# Determinism (README L5)
+# Determinism (BUILD_GUIDE L5)
 temperature: 0
 seed: 42
 num_ctx: 4096                     # ollama only. fact sheet ≲1.5k + system ~0.4k + retry ≈ 2.7k tokens; bench also tries 8192

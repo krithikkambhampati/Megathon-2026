@@ -1,4 +1,4 @@
-"""M3: hedonic property value model on REAL Land Registry sales (README P3.4).
+"""M3: hedonic property value model on REAL Land Registry sales (BUILD_GUIDE P3.4).
 
 Rows: sales with the EPC certificate valid at sale (no look-ahead); features as at that certificate.
 Features: HomeInput-available fields only (region, not local authority) + rating at sale + market

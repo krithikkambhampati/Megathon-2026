@@ -1,4 +1,4 @@
-"""M2: retrofit relevance model on REAL EPC assessor recommendations (README P3.3).
+"""M2: retrofit relevance model on REAL EPC assessor recommendations (BUILD_GUIDE P3.3).
 
 One LightGBM binary classifier per retrofit, trained only on certificates where the retrofit is
 rule-feasible: P(an EPC assessor would recommend r | home). Feasibility itself is never ML.

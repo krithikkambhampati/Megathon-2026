@@ -1,4 +1,4 @@
-"""EPC certificates (interim) -> clean property tables (README P1.2-P1.4).
+"""EPC certificates (interim) -> clean property tables (BUILD_GUIDE P1.2-P1.4).
 
 Steps
   1. basic validity: rating A-G, SAP 1-100 (clip >100), floor area 15-1000 m2, parseable lodgement date
@@ -262,7 +262,7 @@ def main() -> None:
     model.to_parquet(PROCESSED / "epc_certificates_model.parquet", index=False)
 
     if labels is not None:
-        # recommender labels (README P3.3): one row per certificate x retrofit
+        # recommender labels (BUILD_GUIDE P3.3): one row per certificate x retrofit
         feas = feasible_set(
             df.set_index("CERT_ID")[
                 [

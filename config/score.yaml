@@ -24,13 +24,13 @@ glazing: {single: 0, partial_double: 40, secondary: 50, double: 80, triple: 100}
 renewables: {none: 0, solar_thermal: 40, solar_pv: 80, solar_pv_battery: 100}
 smart_controls: {none: 0, timer_only: 25, programmer_thermostat: 50,
                  programmer_thermostat_trvs: 65, smart_thermostat: 85, smart_zoned: 100}
-min_info:      # README P2.5
+min_info:      # BUILD_GUIDE P2.5
   max_unknown_feature_fields: 3
 score_range:
   rating_band_spread: 1      # an imputed rating may be this many bands either side
-suitability:   # README P2.8; thresholds tuned on val by P3 (D13)
+suitability:   # BUILD_GUIDE P2.8; thresholds tuned on val by P3 (D13)
   # u = assessor·p + saving_share·norm(share) + cost_eff·norm(kWh per £1k). CustomerContext.priority picks
-  # the row (CR-6); it changes ranking and suitability only, never a number. balanced = README default.
+  # the row (CR-6); it changes ranking and suitability only, never a number. balanced = BUILD_GUIDE default.
   priority_weights:
     balanced: {assessor: 0.4, saving_share: 0.4, cost_eff: 0.2}
     carbon:   {assessor: 0.3, saving_share: 0.5, cost_eff: 0.2}

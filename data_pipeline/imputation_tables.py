@@ -1,4 +1,4 @@
-"""Imputation tables for "not sure" answers (README P2.2: "P1 supplies it").
+"""Imputation tables for "not sure" answers (BUILD_GUIDE P2.2: "P1 supplies it").
 
 All fitted on TRAIN-split data only. Written to config/generated/imputation.yaml so Part 2 can load
 them without pandas/parquet. Every value is labelled with its basis and sample size.
@@ -131,11 +131,11 @@ def main() -> None:
         "energy_typical": {
             "gas_homes_need_median_kwh_by_floor_area": by_fa,
             "electric_heated_homes_synthetic_median_electricity_kwh": elec_heat,
-            "note": "Use only when no meter data: flag ENERGY_FROM_TYPICAL_HOMES (README P2.2).",
+            "note": "Use only when no meter data: flag ENERGY_FROM_TYPICAL_HOMES (BUILD_GUIDE P2.2).",
         },
     }
     OUT.write_text(
-        "# Generated: imputation tables for 'not sure' answers (README P2.2).\n"
+        "# Generated: imputation tables for 'not sure' answers (BUILD_GUIDE P2.2).\n"
         + yaml.safe_dump(doc, sort_keys=False, width=200)
     )
     print(

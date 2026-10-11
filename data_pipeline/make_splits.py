@@ -1,4 +1,4 @@
-"""Synthetic customers and the single train/val/test split everyone uses (README P1.8, P1.10).
+"""Synthetic customers and the single train/val/test split everyone uses (BUILD_GUIDE P1.8, P1.10).
 
 Applied to ALL EPC properties (not just the product sample), because the rating, recommender and
 value models train on every certificate/sale and must respect the same split.

@@ -1,4 +1,4 @@
-"""Explanations (README P4.3/P4.4, CR-7): fact sheet → LLM → number checker → retry once → template.
+"""Explanations (BUILD_GUIDE P4.3/P4.4, CR-7): fact sheet → LLM → number checker → retry once → template.
 
 `explain()` never raises. With no LLM, a timeout, an LLM error or two failed checks it returns the
 deterministic template built from the same fact sheet, with `CheckReport.fallback_used = True`. The whole

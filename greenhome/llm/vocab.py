@@ -1,4 +1,4 @@
-"""Shared words for the rules-first router and parsers (README P4.5): retrofit synonyms and operators.
+"""Shared words for the rules-first router and parsers (BUILD_GUIDE P4.5): retrofit synonyms and operators.
 
 Every pattern has word boundaries, so "install" never reads as "all" and "address" never reads as "add".
 """

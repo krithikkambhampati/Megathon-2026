@@ -1,6 +1,6 @@
-"""Issue detection and the poor flag (README P2.6).
+"""Issue detection and the poor flag (BUILD_GUIDE P2.6).
 
-Rules are applied in the README table order; a rule is skipped when its input is unknown (None). Output is
+Rules are applied in the BUILD_GUIDE table order; a rule is skipped when its input is unknown (None). Output is
 sorted by severity (high → medium → low), table order within a severity. Peer percentiles come from config.
 """
 
@@ -11,7 +11,7 @@ from typing import Any
 from greenhome.config import get_config
 from greenhome.contracts import CleanHome, Feasibility, Issue, ScoreClass, ScoreResult
 
-# Issue codes (binding, README P2.6).
+# Issue codes (binding, BUILD_GUIDE P2.6).
 HIGH_INTENSITY = "HIGH_INTENSITY"
 LOW_RATING = "LOW_RATING"
 POOR_ROOF_INSULATION = "POOR_ROOF_INSULATION"

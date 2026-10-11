@@ -1,4 +1,4 @@
-"""What-if parser (README P4.5): message → a valid `Scenario`, rules first, LLM JSON as the fallback.
+"""What-if parser (BUILD_GUIDE P4.5): message → a valid `Scenario`, rules first, LLM JSON as the fallback.
 
 Operators are applied left to right to ONE working list of retrofits (docs/archive/ROADMAP_P4.md), so a follow-up
 like "and a heat pump but no loft insulation" builds on the current scenario. Numbers in overrides are the

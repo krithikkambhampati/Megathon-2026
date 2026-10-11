@@ -193,7 +193,7 @@ def main() -> None:
         rec.write_parquet(OUT_REC)
         print(f"recommendations for target certificates: {len(rec):,}")
     else:
-        print("WARNING: no recommendations file found; the recommender labels (README P3.3) need it")
+        print("WARNING: no recommendations file found; the recommender labels (BUILD_GUIDE P3.3) need it")
     for f in CHUNKS.iterdir():
         f.unlink()
     CHUNKS.rmdir()

@@ -1,4 +1,4 @@
-"""Engine: the single entry point for P4/P5 (README §4.2, §4.3, §7.7, P2.8).
+"""Engine: the single entry point for P4/P5 (BUILD_GUIDE §4.2, §4.3, §7.7, P2.8).
 
     engine = Engine.from_config()
     res = engine.analyse(home, ctx=None)
@@ -161,7 +161,7 @@ class Engine:
         after_energy = savings.after
         carbon = compute_carbon(savings.saving) if savings.saving else None
 
-        # Rating and value before/after (README P2.8 steps 8–9).
+        # Rating and value before/after (BUILD_GUIDE P2.8 steps 8–9).
         after_home = apply_retrofits(clean.home, order)
         after_clean = _after_clean(clean, after_home, after_energy)
         raw_before, raw_after = self.models.rating.predict_sap([clean, after_clean])

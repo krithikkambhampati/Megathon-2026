@@ -55,7 +55,7 @@ def epc_chip(rating: str | None) -> str:
 
 
 def saving_md(x: float | None, kg: bool = False) -> str:
-    """Saving as markdown; an increase (negative saving) is shown in red, never as a saving (README §7.1)."""
+    """Saving as markdown; an increase (negative saving) is shown in red, never as a saving (BUILD_GUIDE §7.1)."""
     text = F.fmt_kg_saving(x) if kg else F.fmt_kwh_saving(x)
     return f":red[**{text}**]" if x is not None and F.round_half_up(x, 10) < 0 else text
 

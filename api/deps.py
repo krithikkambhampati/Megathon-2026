@@ -82,7 +82,7 @@ def build_engine() -> Any | None:
 
 
 def build_llm() -> Any | None:
-    """P4's client, or None (templates only). The app must work with the LLM down (README P4.1)."""
+    """P4's client, or None (templates only). The app must work with the LLM down (BUILD_GUIDE P4.1)."""
     try:
         from greenhome.llm.client import make_client
     except ImportError:

@@ -1,4 +1,4 @@
-"""Typed, cached loader for everything in `config/` (README §7.4). No magic numbers live in code.
+"""Typed, cached loader for everything in `config/` (BUILD_GUIDE §7.4). No magic numbers live in code.
 
 Usage:
     from greenhome.config import get_config
@@ -206,7 +206,7 @@ class RetrofitSpec(_P1Cfg):
     model_config = ConfigDict(extra="ignore", frozen=True, use_enum_values=True)
     retrofit: Retrofit
     stage: str
-    # space_heating | heat_supply | grid_import (P1); README §7.4 called it applies_to_end_use
+    # space_heating | heat_supply | grid_import (P1); BUILD_GUIDE §7.4 called it applies_to_end_use
     applies_to: str = Field(validation_alias=AliasChoices("applies_to", "applies_to_end_use"))
     state_field: str | None = None
     effect_range_frac: dict[str, tuple[float, float]] | None = None

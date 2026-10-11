@@ -27,7 +27,7 @@ def results() -> dict[str, AnalysisResult]:
 def test_every_sheet_builds_and_stays_small(results, fx, section) -> None:
     sheet = build_fact_sheet(results[fx], section)
     assert [f.id for f in sheet.facts] == [f"F{i + 1}" for i in range(len(sheet.facts))]
-    assert len(sheet.lines()) <= 6000  # ≈ 1.5k tokens (README P4 hazard 5)
+    assert len(sheet.lines()) <= 6000  # ≈ 1.5k tokens (BUILD_GUIDE P4 hazard 5)
     for f in sheet.facts:
         assert f.display and f.display != "—" and f.label
 

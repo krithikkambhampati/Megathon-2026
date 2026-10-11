@@ -1,4 +1,4 @@
-"""Builds evaluation/llm_scenarios.jsonl (README P4.6): ~80 labelled LLM-layer scenarios.
+"""Builds evaluation/llm_scenarios.jsonl (BUILD_GUIDE P4.6): ~80 labelled LLM-layer scenarios.
 
 Run: `uv run python -m evaluation.build_llm_scenarios`. The file is committed; this script documents how
 every item was chosen. Homes are P2's fixture inputs (`tests/fixtures/home_input_*.json`) plus small,

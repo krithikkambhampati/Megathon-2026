@@ -1,4 +1,4 @@
-"""Integration tests IT1–IT12 (README P2.9), owned with P5. Run on stubs, or real models once P3 ships."""
+"""Integration tests IT1–IT12 (BUILD_GUIDE P2.9), owned with P5. Run on stubs, or real models once P3 ships."""
 
 from __future__ import annotations
 

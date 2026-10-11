@@ -1,4 +1,4 @@
-"""Fact sheets (README P4.2): AnalysisResult → the only numbers the LLM and the templates may use.
+"""Fact sheets (BUILD_GUIDE P4.2): AnalysisResult → the only numbers the LLM and the templates may use.
 
 Every display string comes from `greenhome/format.py`, so the chat says exactly what the screens say.
 Diff facts come from `greenhome/core/diff.py`; P4 does no arithmetic on result numbers (the one conversion
@@ -359,7 +359,7 @@ def _rec(b: _Builder, rec: RetrofitRecommendation, *, full: bool, incremental: b
 
 def _recommendations(b: _Builder, r: AnalysisResult, focus: list[str], only: list[str] | None = None) -> dict:
     """Feasible / needs-survey items in rank order with standalone savings; infeasible ones by name + reason.
-    Items in `focus` (named by the user) get full detail incl. incremental savings (README P4 hazard 5).
+    Items in `focus` (named by the user) get full detail incl. incremental savings (BUILD_GUIDE P4 hazard 5).
     `only` restricts to a scenario's package (+ focus)."""
     shown, infeasible = [], []
     for rec in r.recommendations:
@@ -599,7 +599,7 @@ def build_fact_sheet(
     `user_facts` = numbers the user stated that went into an override or memory payload.
 
     `whatif` needs `base`: it holds the diff (recommended plan → scenario), the scenario's package with
-    suitability and reasons, and every rejected item with its reason (README P4.3 rule 5).
+    suitability and reasons, and every rejected item with its reason (BUILD_GUIDE P4.3 rule 5).
     """
     b = _Builder()
     focus = list(focus or [])
@@ -654,7 +654,7 @@ def build_fact_sheet(
 
 
 def build_facts(result: AnalysisResult, base: AnalysisResult | None = None) -> list[Fact]:
-    """README P4.2 signature: every fact for a result (4 sections, plus the what-if sheet if `base`)."""
+    """BUILD_GUIDE P4.2 signature: every fact for a result (4 sections, plus the what-if sheet if `base`)."""
     sections: list[SheetSection] = ["score", "recommendations", "savings", "value"]
     facts = [f for s in sections for f in build_fact_sheet(result, s).facts]
     if base is not None:

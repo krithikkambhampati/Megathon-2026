@@ -11,7 +11,7 @@ import = electricity demand - self-consumed PV.
 
 Hidden household factors (setpoint, occupancy, true SCOP, PV orientation, self-consumption share and
 the per-home retrofit effect draws) live in sim_hidden.parquet and are NEVER model features. They are
-why the ML models have a real prediction problem (README section 2.1).
+why the ML models have a real prediction problem (BUILD_GUIDE section 2.1).
 
 All parameters are module constants or config values so the data docs can cite them.
 """
@@ -137,7 +137,7 @@ def fabric_index(p: pd.DataFrame) -> pd.Series:
 
 
 def insulation_sub_score(p: pd.DataFrame) -> pd.Series:
-    """Same mapping as config/score.yaml (README P2.4), used for the heat-pump SCOP penalty."""
+    """Same mapping as config/score.yaml (BUILD_GUIDE P2.4), used for the heat-pump SCOP penalty."""
     roof = p["roof_insulation"].map({"none": 0, "low": 35, "medium": 65, "full": 100})
     wall_none = p["wall_type"].map({"solid": 0, "cavity": 20, "timber_or_system": 30}).fillna(20)
     wall = np.where(

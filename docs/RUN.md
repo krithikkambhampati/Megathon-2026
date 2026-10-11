@@ -11,7 +11,7 @@ language model.
 
 1. Install uv (≥ 0.4): `pip install --user uv`, or the installer at https://docs.astral.sh/uv/. `make`
    calls `uv`, so `~/.local/bin` must be on your `PATH` (open a new terminal after installing).
-2. `git clone https://github.com/krithikkambhampati/Megathon-2026.git && cd Megathon-2026`
+2. `git clone <this repository> && cd <repository folder>`
 3. `make setup`: installs Python 3.11 if needed and every pinned package from `uv.lock` into `.venv`.
 4. `make test`: the whole suite should pass.
 5. `make api`, then open **http://localhost:8000**. That is the web app (API docs at `/docs`).

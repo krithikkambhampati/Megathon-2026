@@ -14,7 +14,7 @@ from greenhome.labels import (  # noqa: F401  (re-exported for the pages)
     label,
 )
 
-# ScoreClass → colour (green → red, README P5.3)
+# ScoreClass → colour (green → red, BUILD_GUIDE P5.3)
 CLASS_COLOUR: dict[str, str] = {
     "highly_efficient": "#1a9850",
     "good": "#91cf60",

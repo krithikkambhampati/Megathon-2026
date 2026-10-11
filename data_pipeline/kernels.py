@@ -1,7 +1,7 @@
 """Vectorised access to Part 2's shared kernels for the data pipeline.
 
 greenhome.core.feasibility.feasible_set and greenhome.core.transitions.apply_retrofits are the single
-source of truth (README P2.3/P2.7), so "feasible" in the simulator labels is exactly "feasible" in the app.
+source of truth (BUILD_GUIDE P2.3/P2.7), so "feasible" in the simulator labels is exactly "feasible" in the app.
 They work on one HomeInput at a time; here they run once per unique combination of the fields they read
 (a few thousand across millions of rows) and the result is broadcast back to every row.
 """

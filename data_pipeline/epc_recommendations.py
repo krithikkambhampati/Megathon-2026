@@ -1,4 +1,4 @@
-"""EPC assessor recommendations -> our retrofit enum (README P3.3 labels) + old-boiler signal.
+"""EPC assessor recommendations -> our retrofit enum (BUILD_GUIDE P3.3 labels) + old-boiler signal.
 
 EPC recommendations use a fixed IMPROVEMENT_ID vocabulary (RdSAP improvement codes). We map by ID,
 which is exact, and fall back to summary-text regex only for heat pumps (newer RdSAP versions) and

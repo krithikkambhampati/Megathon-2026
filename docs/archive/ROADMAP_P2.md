@@ -5,7 +5,7 @@
 > stricter LLM prompt). For how the system works now, see `README.md` and `docs/` (RUN, ARCHITECTURE, LLM,
 > SCORING, DATA, MODELS, RESPONSIBLE_AI).
 
-Source of truth for *what* to build: the team guide (README §7 contracts, PART 2). This file says *how* and
+Source of truth for *what* to build: the team guide (BUILD_GUIDE §7 contracts, PART 2). This file says *how* and
 *in what order*, so a human or an agent can pick up any task cold. Tick boxes as tasks land.
 
 **Definition of done (whole part):** `uv run pytest` green · `uv run ruff check .` clean ·
@@ -43,7 +43,7 @@ workstream lands the body). The one in-phase dependency: B's `insulation_sub_sco
 - [x] T2.3 `tests/unit/p2/test_orchestrator.py` (ctx, budget, scenario modes) → T2.1
 
 ### Phase 3 — Integration & docs (parallel) · ~1.5 h
-- [x] T3.1 `tests/integration/test_engine.py` — IT1–IT12 (README P2.9) → T2.2
+- [x] T3.1 `tests/integration/test_engine.py` — IT1–IT12 (BUILD_GUIDE P2.9) → T2.2
 - [x] T3.2 `docs/SCORING.md` — tables, 4 justifications, worked example, min-info policy, feasibility
 - [x] T3.3 Review pass: ruff, dead code, every threshold in YAML, no rounding outside `format.py`
 
@@ -64,10 +64,10 @@ workstream lands the body). The one in-phase dependency: B's `insulation_sub_sco
 
 ## Code conventions (every file, every author)
 
-1. `from __future__ import annotations` first; module docstring says what the module owns + README section.
+1. `from __future__ import annotations` first; module docstring says what the module owns + BUILD_GUIDE section.
 2. Type hints on every public function. Python 3.11 syntax (`X | None`, `list[str]`).
 3. **No magic numbers.** Every threshold/factor/table comes from `get_config()`; add YAML keys (and the
-   matching field in `config.py`) rather than literals. Stub constants from README P2.1 are the one exception,
+   matching field in `config.py`) rather than literals. Stub constants from BUILD_GUIDE P2.1 are the one exception,
    kept as named module constants at the top of `ml/stubs.py`.
 4. **No rounding** anywhere except `greenhome/format.py` (`round_half_up`, `round_score`).
 5. Enum values are plain strings at runtime (`use_enum_values=True`). Compare with `==` against `Enum.member`
@@ -75,7 +75,7 @@ workstream lands the body). The one in-phase dependency: B's `insulation_sub_sco
 6. Missing = `None`. Never `0` for unknown. Pandas uses `NaN` internally only.
 7. Pure functions; no I/O except `config.py` and `Engine.portfolio()`. Determinism: no `random` without the
    config seed.
-8. Flags/issues/reasons use the binding codes from README P2.2/P2.6/P2.7 exactly (constants below).
+8. Flags/issues/reasons use the binding codes from BUILD_GUIDE P2.2/P2.6/P2.7 exactly (constants below).
 9. Tests in `tests/unit/p2/test_<module>.py`, plain pytest functions, shared builders from `tests/conftest.py`.
    Test behaviour, not internals. Import builders with `from conftest import home_input, make_clean`.
    Run tests with `.venv/bin/python -m pytest` (plain `uv run` re-resolves deps and needs network).
@@ -107,7 +107,7 @@ def annualise_fuel(readings: dict[str, float], shares: Sequence[float], window: 
     month present. Returns (annual or None, coverage). coverage = Σ shares[month-1] of present months in
     window. annual = Σ values / coverage if coverage ≥ coverage_min else None."""
 def annualise(energy: EnergyInput, region: str | None) -> tuple[AnnualEnergy, list[DataFlag]]:
-    """Per-fuel monthly-vs-annual logic of README P2.2 step 2. No typical-home imputation here.
+    """Per-fuel monthly-vs-annual logic of BUILD_GUIDE P2.2 step 2. No typical-home imputation here.
     Raises ValueError on duplicate months."""
 
 # core/validate.py  [WS-A]
@@ -122,7 +122,7 @@ def validate_and_clean(home: HomeInput, rating_model: RatingModel | None = None)
 # core/score.py  [WS-B]
 def insulation_sub_score(roof_type, roof_insulation, wall_type, wall_insulation) -> float | None
 def compute_score(clean: CleanHome) -> ScoreResult
-    # README P2.4 + P2.5. Unknown = provenance in {"imputed", "assumed"}. Range: enumerate every value of
+    # BUILD_GUIDE P2.4 + P2.5. Unknown = provenance in {"imputed", "assumed"}. Range: enumerate every value of
     # each unknown score_feature_field (exact; ≤3 by min-info rule) and an imputed rating ±rating_band_spread.
 
 # core/features.py  [WS-B]  — REMOVED: P3's greenhome/ml/features.py is the single feature builder
@@ -197,7 +197,7 @@ class Engine:
   `score.yaml: suitability.priority_weights` (CR-6, budget uses net mid cost, not `cost_high`);
   `format.py` CR-8 names, "—" for unknown, `/year` units, `fmt_delta` (CR-8).
 - P1 config compatibility: P1-generated files load with `extra="ignore"` (their extra keys are documentation);
-  P2-owned files stay `extra="forbid"`. Catalogue `applies_to` (alias of README's `applies_to_end_use`);
+  P2-owned files stay `extra="forbid"`. Catalogue `applies_to` (alias of BUILD_GUIDE's `applies_to_end_use`);
   `state_field` derived from a fixed retrofit → field map when absent; national `hdd_factor` = 1.0 by
   definition, national PV yield/profile = regional mean; region share tolerance 1e-3 (P1 writes 5 dp).
 - Retrofit costs are flat indicative ranges (P1: "typical semi"); `cost_scales_with_floor_area` is not applied

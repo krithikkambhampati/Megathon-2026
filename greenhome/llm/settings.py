@@ -1,4 +1,4 @@
-"""LLM settings (README P4.1, §5.4): `config/llm.yaml` with environment overrides.
+"""LLM settings (BUILD_GUIDE P4.1, §5.4): `config/llm.yaml` with environment overrides.
 
 P4's own small loader, so P2's `greenhome/config.py` stays untouched. Env always wins over the YAML, and the
 provider comes from env only, so tests and machines without a `.env` run on templates. Nothing here loads
@@ -23,7 +23,7 @@ _PLACEHOLDER = re.compile(r"^<.*>$")  # e.g. "<exact ollama tag>" copied from .e
 Provider = Literal["ollama", "openai_compat"]
 
 # env var → (settings field, type). LLM_PROVIDER / LLM_MODEL / LLM_BASE_URL / LLM_API_KEY / LLM_TIMEOUT_S
-# are the README §5.4 names; LLM_ANSWER_BUDGET_S is P4's (P5 request: one budget per answer).
+# are the BUILD_GUIDE §5.4 names; LLM_ANSWER_BUDGET_S is P4's (P5 request: one budget per answer).
 _ENV: dict[str, tuple[str, type]] = {
     "LLM_PROVIDER": ("provider", str),
     "LLM_MODEL": ("model", str),

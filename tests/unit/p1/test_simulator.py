@@ -1,4 +1,4 @@
-"""Behavioural tests for the physics model and retrofit simulator (README P1.9)."""
+"""Behavioural tests for the physics model and retrofit simulator (BUILD_GUIDE P1.9)."""
 
 import numpy as np
 import pandas as pd

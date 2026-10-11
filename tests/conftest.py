@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 # Tests pin the deterministic stub models; the real-model checks load greenhome.ml.registry explicitly.
 os.environ.setdefault("GREENHOME_MODELS", "stub")
 
-# The PS example home (README P1.10, P2.4 worked example).
+# The PS example home (BUILD_GUIDE P1.10, P2.4 worked example).
 P10001: dict[str, Any] = {
     "property_id": "P10001",
     "property_type": "semi_detached",

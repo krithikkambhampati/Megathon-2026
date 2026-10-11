@@ -143,7 +143,7 @@ SCORE_COMPONENT: dict[str, str] = {
     "smart_controls": "Smart energy management",
 }
 
-# DataFlag.code (README P2.2 + P2.5)
+# DataFlag.code (BUILD_GUIDE P2.2 + P2.5)
 FLAG_TEXT: dict[str, str] = {
     "MISSING_FIELD": "Answer missing",
     "IMPUTED_FIELD": "Estimated value used",
@@ -164,7 +164,7 @@ FLAG_TEXT: dict[str, str] = {
     "INSUFFICIENT_INFO_VALUE": "Not enough information for a value estimate",
 }
 
-# Issue.code (README P2.6)
+# Issue.code (BUILD_GUIDE P2.6)
 ISSUE_TEXT: dict[str, str] = {
     "HIGH_INTENSITY": "High energy use for a home this size",
     "LOW_RATING": "Low EPC rating",
@@ -176,7 +176,7 @@ ISSUE_TEXT: dict[str, str] = {
     "NO_SMART_CONTROLS": "Basic or no heating controls",
 }
 
-# RetrofitRecommendation.reasons / RejectedRetrofit.reason (README P2.7)
+# RetrofitRecommendation.reasons / RejectedRetrofit.reason (BUILD_GUIDE P2.7)
 REASON_TEXT: dict[str, str] = {
     "ALREADY_INSTALLED": "You already have this.",
     "NO_LOFT_DWELLING_ABOVE": "There's another home above, so there's no loft to insulate.",

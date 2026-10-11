@@ -1,4 +1,4 @@
-"""Carbon formula (README P2.8 item 7)."""
+"""Carbon formula (BUILD_GUIDE P2.8 item 7)."""
 
 from __future__ import annotations
 

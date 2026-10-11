@@ -1,4 +1,4 @@
-"""The ONLY place the UI talks to the API. All numbers come from here (README P5 hazard 1)."""
+"""The ONLY place the UI talks to the API. All numbers come from here (BUILD_GUIDE P5 hazard 1)."""
 
 import os
 from typing import Any
