@@ -13,7 +13,7 @@
 | budget_s | 25.0 |
 | engine models | real |
 
-## Summary vs targets (README P4.6)
+## Summary vs targets (BUILD_GUIDE P4.6)
 
 | Metric | Value | Target |
 |---|---|---|
