@@ -43,6 +43,7 @@ GOLD = ROOT / "evaluation" / "whatif_parse_gold.jsonl"
 FIXTURES = ROOT / "tests" / "fixtures"
 REPORTS = ROOT / "reports"
 TARGETS = {"groundedness": 90.0, "accuracy": 90.0, "unsupported_claims": 5.0}
+PACE_UNKNOWN_TOKENS = 1500  # --tpm: assumed use of a scenario whose usage wasn't reported (router/parse only)
 
 # must_mention code → phrase the final answer must contain (case-insensitive)
 PHRASES: dict[str, str] = {
@@ -339,8 +340,8 @@ def write_report(path: Path, info: dict, summ: dict, records: list[dict], dry_ru
     if dry_run:
         L += [
             "> **PIPELINE TEST, not results.** No LLM was available, so every answer is a template. The",
-            "> numbers below only show that the evaluation runs; the real report comes from `make eval` on",
-            "> the demo laptop.",
+            "> numbers below only show that the evaluation runs; the real report comes from `make eval`",
+            "> with an LLM configured.",
             "",
         ]
     L += ["## Run", "", "| | |", "|---|---|"] + [f"| {k} | {v} |" for k, v in info.items()] + [""]
@@ -367,7 +368,9 @@ def write_report(path: Path, info: dict, summ: dict, records: list[dict], dry_ru
         f"{_f(summ['latency_p95'], ' s')} "
         f"| ≤ {info['budget_s']:.0f} s |",
         f"| Output tokens per LLM answer (mean) | {_f(summ['tokens_per_answer'], '')} | — |",
-        "| Cost | £0 (local model) | — |",
+        "| Cost | "
+        + ("£0 (local model)" if str(info["llm"]).startswith("ollama") else "£0 (hosted free tier)")
+        + " | — |",
         "| Unsupported claim rate (human annotation) | see `reports/llm_annotation.md` | < 5% |",
         "",
     ]
@@ -434,6 +437,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--annotation", type=int, default=40, help="responses to export for human annotation (0: none)"
     )
+    ap.add_argument(
+        "--tpm",
+        type=int,
+        default=0,
+        help="pace scenarios to stay under this many tokens per minute (hosted free tiers; 0: no pacing)",
+    )
     args = ap.parse_args(argv)
 
     settings = get_llm_settings()
@@ -456,6 +465,10 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"[{i}/{len(items)}] {item['id']} {item['category']}: {records[-1]['seconds']:.1f} s", flush=True
         )
+        if args.tpm and i < len(items):
+            # Wait so this scenario's tokens fit the per-minute quota; the wait is not counted as latency.
+            used = (records[-1]["prompt_tokens"] or 0) + (records[-1]["completion_tokens"] or 0)
+            time.sleep(max(0.0, 60.0 * (used or PACE_UNKNOWN_TOKENS) / args.tpm - records[-1]["seconds"]))
     summ = summarise(records, parse_eval(llm, settings))
     info = run_info(llm, settings) | {"engine models": engine.cfg.global_.models}
     stem = "llm_eval_dryrun" if dry_run else "llm_eval"

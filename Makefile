@@ -39,10 +39,13 @@ portfolio:
 portfolio-examples:
 	$(call run_mod,api.build_portfolio,--source examples,P5)
 
+# Groq free tier: 8000 tokens/min per model, so the LLM eval is paced (≈35 min). EVAL_TPM=0 for Ollama.
+EVAL_TPM ?= 6000
+
 eval:
 	$(call run_mod,training.model_sizes,,P3)
 	$(call run_mod,training.evaluation_report,,P3)
-	$(call run_mod,evaluation.eval_llm,,P4)
+	$(call run_mod,evaluation.eval_llm,--tpm $(EVAL_TPM),P4)
 
 # P4's model benchmark against the configured provider (.env; Ollama path only for LLM_PROVIDER=ollama)
 llm-bench:

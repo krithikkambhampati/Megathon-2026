@@ -12,13 +12,13 @@
     "scenarios": 80,
     "rows": [
       {"metric": "Numbers grounded in facts, answer shown", "value": "100%", "target": "≥ 90%"},
-      {"metric": "Numbers grounded in facts, raw first draft", "value": "84.3%", "target": "—"},
+      {"metric": "Numbers grounded in facts, raw first draft", "value": "70.5%", "target": "—"},
       {"metric": "Numbers matching the right fact", "value": "100%", "target": "≥ 90%"},
-      {"metric": "Required points mentioned", "value": "63.5%", "target": "≥ 90%"},
+      {"metric": "Required points mentioned", "value": "79.4%", "target": "≥ 90%"},
       {"metric": "Answers breaking a never-say rule", "value": "1 of 80", "target": "0"},
       {"metric": "Unsupported claims (human annotation)", "value": "pending", "target": "< 5%"},
-      {"metric": "Answer time, median / p95", "value": "3.3 s / 12.9 s", "target": "≤ 25 s"}
+      {"metric": "Answer time, median / p95", "value": "1.8 s / 3.6 s", "target": "≤ 25 s"}
     ],
-    "source": "reports/llm_eval.md, reports/llm_bench_cachyos-x8664.md"
+    "source": "reports/llm_eval.md"
   }
 }
